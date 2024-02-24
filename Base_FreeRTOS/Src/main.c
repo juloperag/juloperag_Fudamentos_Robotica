@@ -10,6 +10,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "stdio.h"
+#include <stm32f411xe.h>
 
 //#if !defined(__SOFT_FP__) && defined(__ARM_FP)
 //  #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
@@ -25,6 +26,20 @@ void vTaskTwo( void * pvParameters );
 
 int main(void)
 {
+	//Activamos la unidad de punto flotante (FPU)
+	SCB->CPACR    |= (0xF << 20);
+	//Activamos del contador de Ticks
+	DWT->CTRL    |= (1 << 0);
+
+	//---------------------Inicio de uso funciones para el funcionamiento del SEGGER----------------------
+	//Necesaria para el SEGGER
+	vInitPrioGroupValue();
+	/* Primero configuramos */
+	SEGGER_SYSVIEW_Conf();
+	/* Despues activamos el sistema */
+	SEGGER_SYSVIEW_Start();
+	//-----------------------Fin de uso Funciones para el funcionamiento del SEGGER----------------------
+
 	BaseType_t xReturned;
 	TaskHandle_t xHandleTask1 = NULL;
 	TaskHandle_t xHandleTask2 = NULL;
@@ -65,6 +80,7 @@ void vTaskOne( void * pvParameters )
 	while(1)
 	{
 		printf("%s\n",(char *) pvParameters);
+		//Funcion para que la tarea suelte el procesador
 		taskYIELD();
 	}
 }
@@ -77,6 +93,7 @@ void vTaskTwo( void * pvParameters )
 		while(1)
 		{
 			printf("%s\n",(char *) pvParameters);
+			//Funcion para que la tarea suelte el procesador
 			taskYIELD();
 		}
 	}

@@ -1,78 +1,13 @@
-11:53:27 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
+16:18:27 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
 make -j4 all 
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/portable/MemMang/heap_4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/portable/MemMang/heap_4.d" -MT"ThirdParty/FreeRTOS/portable/MemMang/heap_4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/portable/MemMang/heap_4.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.d" -MT"ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/croutine.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/croutine.d" -MT"ThirdParty/FreeRTOS/croutine.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/croutine.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/event_groups.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/event_groups.d" -MT"ThirdParty/FreeRTOS/event_groups.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/event_groups.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/list.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/list.d" -MT"ThirdParty/FreeRTOS/list.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/list.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/queue.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/queue.d" -MT"ThirdParty/FreeRTOS/queue.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/queue.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/stream_buffer.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/stream_buffer.d" -MT"ThirdParty/FreeRTOS/stream_buffer.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/stream_buffer.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/tasks.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/tasks.d" -MT"ThirdParty/FreeRTOS/tasks.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/tasks.o"
-arm-none-eabi-gcc "../ThirdParty/FreeRTOS/timers.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"ThirdParty/FreeRTOS/timers.d" -MT"ThirdParty/FreeRTOS/timers.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/timers.o"
-arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/Config" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/OS" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/SEGGER" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
 arm-none-eabi-gcc -o "Base_FreeRTOS.elf" @"objects.list"   -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Base_FreeRTOS\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Base_FreeRTOS.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Base_FreeRTOS.elf
  
 arm-none-eabi-size   Base_FreeRTOS.elf 
 arm-none-eabi-objdump -h -S  Base_FreeRTOS.elf  > "Base_FreeRTOS.list"
    text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
-Finished building: default.size.stdout
- 
-Finished building: Base_FreeRTOS.list
- 
-11:55:10 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
-make -j4 all 
-arm-none-eabi-size   Base_FreeRTOS.elf 
-   text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
-Finished building: default.size.stdout
- 
-11:55:54 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
-make -j4 all 
-arm-none-eabi-size   Base_FreeRTOS.elf 
-   text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
-Finished building: default.size.stdout
- 
-11:56:08 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
-make -j4 all 
-arm-none-eabi-size   Base_FreeRTOS.elf 
-   text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
-Finished building: default.size.stdout
- 
-11:58:05 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
-make -j4 all 
-arm-none-eabi-size   Base_FreeRTOS.elf 
-   text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
-Finished building: default.size.stdout
- 
-11:58:25 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
-make -j4 all 
-arm-none-eabi-size   Base_FreeRTOS.elf 
-   text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
-Finished building: default.size.stdout
- 
-14:35:25 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
-make -j4 all 
-arm-none-eabi-size   Base_FreeRTOS.elf 
-   text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
-Finished building: default.size.stdout
- 
-14:37:44 **** Incremental Build of configuration Debug for project Base_FreeRTOS ****
-make -j4 all 
-arm-none-eabi-gcc "../Src/syscalls.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/syscalls.d" -MT"Src/syscalls.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/syscalls.o"
-arm-none-eabi-gcc -o "Base_FreeRTOS.elf" @"objects.list"   -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Base_FreeRTOS\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Base_FreeRTOS.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Base_FreeRTOS.elf
- 
-arm-none-eabi-size   Base_FreeRTOS.elf 
-arm-none-eabi-objdump -h -S  Base_FreeRTOS.elf  > "Base_FreeRTOS.list"
-   text	   data	    bss	    dec	    hex	filename
-  12644	    120	  78808	  91572	  165b4	Base_FreeRTOS.elf
+  21992	    120	  84560	 106672	  1a0b0	Base_FreeRTOS.elf
 Finished building: default.size.stdout
  
 Finished building: Base_FreeRTOS.list

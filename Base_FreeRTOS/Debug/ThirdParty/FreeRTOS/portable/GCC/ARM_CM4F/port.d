@@ -2,6 +2,13 @@ ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.o: \
  ../ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.c \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/FreeRTOS.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc/FreeRTOSConfig.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/SEGGER/SEGGER_SYSVIEW.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/SEGGER/SEGGER.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/Config/Global.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/SEGGER/SEGGER_SYSVIEW_ConfDefaults.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/Config/SEGGER_SYSVIEW_Conf.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/Config/SEGGER_RTT_Conf.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/projdefs.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/portable.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/deprecated_definitions.h \
@@ -11,6 +18,13 @@ ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.o: \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/list.h
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/FreeRTOS.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/Inc/FreeRTOSConfig.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/SEGGER/SEGGER_SYSVIEW.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/SEGGER/SEGGER.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/Config/Global.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/SEGGER/SEGGER_SYSVIEW_ConfDefaults.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/Config/SEGGER_SYSVIEW_Conf.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/SEGGER/Config/SEGGER_RTT_Conf.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/projdefs.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/portable.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Base_FreeRTOS/ThirdParty/FreeRTOS/include/deprecated_definitions.h:
