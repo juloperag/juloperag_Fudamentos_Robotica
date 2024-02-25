@@ -1,0 +1,15 @@
+B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include/core_cm4.h:1688:22:__NVIC_EnableIRQ	16	static
+../Src/USARTxDriver.c:30:6:USART_Config	24	static,ignoring_inline_asm
+../Src/USARTxDriver.c:290:10:getValueBaudRate	48	static
+../Src/USARTxDriver.c:303:6:writeChar	16	static,ignoring_inline_asm
+../Src/USARTxDriver.c:316:6:writeMsg	24	static
+../Src/USARTxDriver.c:329:6:writeCharForTXE	16	static,ignoring_inline_asm
+../Src/USARTxDriver.c:347:6:writeMsgForTXE	16	static
+../Src/USARTxDriver.c:366:9:getRxData	4	static
+../Src/USARTxDriver.c:372:6:interruptionTX	16	static
+../Src/USARTxDriver.c:388:28:BasicUSART1_Callback	4	static,ignoring_inline_asm
+../Src/USARTxDriver.c:394:28:BasicUSART2_Callback	4	static,ignoring_inline_asm
+../Src/USARTxDriver.c:400:28:BasicUSART6_Callback	4	static,ignoring_inline_asm
+../Src/USARTxDriver.c:411:6:USART1_IRQHandler	8	static,ignoring_inline_asm
+../Src/USARTxDriver.c:471:6:USART2_IRQHandler	8	static,ignoring_inline_asm
+../Src/USARTxDriver.c:531:6:USART6_IRQHandler	8	static,ignoring_inline_asm

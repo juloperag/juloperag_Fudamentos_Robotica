@@ -1,0 +1,6 @@
+../Src/PwmDriver.c:11:6:pwm_Config	16	static,ignoring_inline_asm
+../Src/PwmDriver.c:150:6:statusInOutPWM	16	static
+../Src/PwmDriver.c:226:6:statusPolarityPWM	16	static
+../Src/PwmDriver.c:303:6:setDuttyCycle	16	static
+../Src/PwmDriver.c:339:6:updateDuttyCycle	16	static
+../Src/PwmDriver.c:348:6:updateDuttyCyclePercentage	16	static

@@ -1,0 +1,14 @@
+../Src/RTCDriver.c:14:6:configRTC	16	static,ignoring_inline_asm
+../Src/RTCDriver.c:99:6:timeConfigRTC	24	static
+../Src/RTCDriver.c:118:6:dateConfigRTC	24	static
+../Src/RTCDriver.c:140:6:updatetimeConfigRTC	16	static,ignoring_inline_asm
+../Src/RTCDriver.c:170:6:updateDateConfigRTC	16	static,ignoring_inline_asm
+../Src/RTCDriver.c:203:6:initTimeShowRTC	4	static,ignoring_inline_asm
+../Src/RTCDriver.c:217:6:initDateShowRTC	4	static,ignoring_inline_asm
+../Src/RTCDriver.c:232:9:segShowRTC	16	static
+../Src/RTCDriver.c:242:9:minShowRTC	16	static
+../Src/RTCDriver.c:252:9:hourShowRTC	16	static
+../Src/RTCDriver.c:263:9:dayweekShowRTC	16	static
+../Src/RTCDriver.c:273:9:dateShowRTC	16	static
+../Src/RTCDriver.c:283:9:monthShowRTC	16	static
+../Src/RTCDriver.c:293:9:yearShowRTC	16	static

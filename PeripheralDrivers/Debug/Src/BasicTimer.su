@@ -1,0 +1,12 @@
+B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include/core_cm4.h:1688:22:__NVIC_EnableIRQ	16	static
+../Src/BasicTimer.c:17:6:BasicTimer_Config	24	static,ignoring_inline_asm
+../Src/BasicTimer.c:143:28:BasicTimer2_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:148:28:BasicTimer3_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:153:28:BasicTimer4_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:158:28:BasicTimer5_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:167:6:TIM2_IRQHandler	8	static
+../Src/BasicTimer.c:178:6:TIM3_IRQHandler	8	static
+../Src/BasicTimer.c:189:6:TIM4_IRQHandler	8	static
+../Src/BasicTimer.c:200:6:TIM5_IRQHandler	8	static
+../Src/BasicTimer.c:213:6:statusiInterruptionTimer	16	static
+../Src/BasicTimer.c:230:6:updateFrequencyTimer	16	static

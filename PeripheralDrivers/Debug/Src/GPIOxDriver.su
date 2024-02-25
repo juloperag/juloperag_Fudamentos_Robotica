@@ -1,0 +1,5 @@
+../Src/GPIOxDriver.c:16:6:GPIO_PIN_Config	16	static
+../Src/GPIOxDriver.c:27:6:GPIO_Config	24	static
+../Src/GPIOxDriver.c:158:6:GPIO_writePin	16	static
+../Src/GPIOxDriver.c:176:10:GPIO_RedPin	24	static
+../Src/GPIOxDriver.c:191:6:GPIOxTooglePin	16	static

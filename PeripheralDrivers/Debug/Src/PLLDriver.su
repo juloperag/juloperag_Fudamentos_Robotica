@@ -1,0 +1,6 @@
+../Src/PLLDriver.c:12:6:configPLL	16	static,ignoring_inline_asm
+../Src/PLLDriver.c:102:6:adjustHSI	16	static
+../Src/PLLDriver.c:112:9:getConfigPLL	16	static
+../Src/PLLDriver.c:128:9:getClockAPB1	16	static
+../Src/PLLDriver.c:146:6:configMCO1	16	static
+../Src/PLLDriver.c:153:6:configMCO1PRE	16	static,ignoring_inline_asm

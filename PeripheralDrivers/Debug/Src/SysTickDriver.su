@@ -1,0 +1,8 @@
+B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include/core_cm4.h:1688:22:__NVIC_EnableIRQ	16	static
+../Src/SysTickDriver.c:17:6:config_SysTick_ms	16	static,ignoring_inline_asm
+../Src/SysTickDriver.c:73:10:getTicksMs	4	static
+../Src/SysTickDriver.c:79:6:delay_ms	32	static
+../Src/SysTickDriver.c:99:6:config_SysTick_us	16	static,ignoring_inline_asm
+../Src/SysTickDriver.c:133:10:getTicksUs	4	static
+../Src/SysTickDriver.c:139:6:delay_us	32	static
+../Src/SysTickDriver.c:158:6:SysTick_Handler	4	static
