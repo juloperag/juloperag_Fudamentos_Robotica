@@ -1,0 +1,10 @@
+18:25:00 **** Incremental Build of configuration Debug for project Test_PWM_Encoder ****
+make -j4 all 
+arm-none-eabi-size   Test_PWM_Encoder.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39944	    488	   4168	  44600	   ae38	Test_PWM_Encoder.elf
+Finished building: default.size.stdout
+ 
+
+18:25:00 Build Finished. 0 errors, 0 warnings. (took 316ms)
+

@@ -1,0 +1,4 @@
+../Src/main.c:44:5:main	32	static,ignoring_inline_asm
+../Src/main.c:98:6:initSystem	16	static
+../Src/main.c:120:6:vTask_blink_led	32	static
+../Src/main.c:149:6:vTaskTwo	32	static

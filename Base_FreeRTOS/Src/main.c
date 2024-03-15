@@ -23,6 +23,8 @@ uint32_t SystemCoreClock = 1600000;
 //Cabeceras de las funciones del programa
 void vTaskOne( void * pvParameters );
 void vTaskTwo( void * pvParameters );
+//Le indicamos al sistema que hay una funcion para inicio de la comunicacion del SEGGER por UART
+extern void SEGGER_UART_init(uint32_t);
 
 int main(void)
 {
@@ -34,10 +36,13 @@ int main(void)
 	//---------------------Inicio de uso funciones para el funcionamiento del SEGGER----------------------
 	//Necesaria para el SEGGER
 	vInitPrioGroupValue();
+	//Configuramos el puerto Serial para trabajar  con el SEGGER
+	SEGGER_UART_init(500000);
 	/* Primero configuramos */
 	SEGGER_SYSVIEW_Conf();
 	/* Despues activamos el sistema */
-	SEGGER_SYSVIEW_Start();
+	//SEGGER_SYSVIEW_Start();
+
 	//-----------------------Fin de uso Funciones para el funcionamiento del SEGGER----------------------
 
 	BaseType_t xReturned;

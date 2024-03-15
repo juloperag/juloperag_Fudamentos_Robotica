@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="STM32F411xE"/>
+		<item key="selection" value="bufferMsgForTXE_inLine"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="bufferMsgForTXE_inLine"/>
+			<item value="estudio"/>
+			<item value="test"/>
+			<item value="handler_PWM"/>
+			<item value="handler_PWM_Motor"/>
+			<item value="handler_TIMER_PWM"/>
+			<item value="handler_GPIO_PWM"/>
+			<item value="handler_EXTI_Button"/>
+			<item value="handler_GPIO_Button"/>
+			<item value="vTaskOne"/>
 			<item value="STM32F411xE"/>
 			<item value="RTT_BUFFER"/>
 			<item value="RTT"/>
 		</list>
 		<list key="replacehistory">
+			<item value=""/>
+			<item value="study"/>
+			<item value="estudio"/>
+			<item value="handler_PWM_Motor"/>
+			<item value="handler_TIMER_Motor"/>
+			<item value="handler_GPIO_Motor"/>
+			<item value=" handler_EXTI_Foto"/>
+			<item value="handler_GPIO_Foto"/>
+			<item value="vTask_blink_led"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
