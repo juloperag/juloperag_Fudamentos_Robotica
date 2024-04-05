@@ -4,3 +4,4 @@
 ../Src/PwmDriver.c:303:6:setDuttyCycle	16	static
 ../Src/PwmDriver.c:339:6:updateDuttyCycle	16	static
 ../Src/PwmDriver.c:348:6:updateDuttyCyclePercentage	16	static
+../Src/PwmDriver.c:357:6:updateDuttyCyclePercentageFloat	16	static

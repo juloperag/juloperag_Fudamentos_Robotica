@@ -14,6 +14,7 @@
 
 #define EXTERNAL_INTERRUPP_FALLING_EDGE 0
 #define EXTERNAL_INTERRUPP_RISING_EDGE 1
+#define EXTERNAL_INTERRUPP_RISING_FALLING_EDGE 2
 
 /*Definimos una estructura que contine los registros del periferico EXTI y
  * la configuracion de la interrupcion como flaco de subida o bajada

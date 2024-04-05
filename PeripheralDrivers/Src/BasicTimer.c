@@ -64,7 +64,18 @@ void BasicTimer_Config(BasicTimer_Handler_t *ptrBTimerHandler)
 	//------------------------------2) Configurando el pre-escaler-----------------------------------------
 	//Registro:TIMx_PSC		//Es un valor de 32 bit
 
+	uint8_t clockSystem = getConfigPLL();          //Guardamos la velocidad de reloj entregada al bus APB1
 	uint8_t clock = getClockAPB1();          //Guardamos la velocidad de reloj entregada al bus APB1
+
+	//Verificamos si el multiplicador del Timer esta activado por el preescaler
+	if(clockSystem>=50)
+	{
+		clock = clock*2;
+	}
+	else
+	{
+		__NOP();
+	}
 
 	/*La frecuencia de reloj contador CK_CNT es igual a fck_psc/(psc[15:0]+1)
 	 * por tanto define la velocidad a la que incrementa el counter*/

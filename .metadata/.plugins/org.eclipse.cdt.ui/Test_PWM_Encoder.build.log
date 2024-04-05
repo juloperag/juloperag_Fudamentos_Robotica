@@ -1,10 +1,16 @@
-18:25:00 **** Incremental Build of configuration Debug for project Test_PWM_Encoder ****
+17:39:50 **** Incremental Build of configuration Debug for project Test_PWM_Encoder ****
 make -j4 all 
+arm-none-eabi-gcc -o "Test_PWM_Encoder.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Test_PWM_Encoder\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Test_PWM_Encoder.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Test_PWM_Encoder.elf
+ 
 arm-none-eabi-size   Test_PWM_Encoder.elf 
+arm-none-eabi-objdump -h -S  Test_PWM_Encoder.elf  > "Test_PWM_Encoder.list"
    text	   data	    bss	    dec	    hex	filename
-  39944	    488	   4168	  44600	   ae38	Test_PWM_Encoder.elf
+  41632	    496	   4176	  46304	   b4e0	Test_PWM_Encoder.elf
 Finished building: default.size.stdout
  
+Finished building: Test_PWM_Encoder.list
+ 
 
-18:25:00 Build Finished. 0 errors, 0 warnings. (took 316ms)
+17:39:51 Build Finished. 0 errors, 0 warnings. (took 730ms)
 

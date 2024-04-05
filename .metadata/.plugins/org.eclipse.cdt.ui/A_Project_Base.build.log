@@ -1,10 +1,16 @@
-17:39:15 **** Build of configuration Debug for project A_Project_Base ****
+17:39:38 **** Incremental Build of configuration Debug for project A_Project_Base ****
 make -j4 all 
+arm-none-eabi-gcc -o "A_Project_Base.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\A_Project_Base\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="A_Project_Base.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: A_Project_Base.elf
+ 
 arm-none-eabi-size   A_Project_Base.elf 
+arm-none-eabi-objdump -h -S  A_Project_Base.elf  > "A_Project_Base.list"
    text	   data	    bss	    dec	    hex	filename
-  38836	    500	   4032	  43368	   a968	A_Project_Base.elf
+  38956	    500	   4032	  43488	   a9e0	A_Project_Base.elf
 Finished building: default.size.stdout
  
+Finished building: A_Project_Base.list
+ 
 
-17:39:16 Build Finished. 0 errors, 0 warnings. (took 550ms)
+17:39:39 Build Finished. 0 errors, 0 warnings. (took 1s.230ms)
 

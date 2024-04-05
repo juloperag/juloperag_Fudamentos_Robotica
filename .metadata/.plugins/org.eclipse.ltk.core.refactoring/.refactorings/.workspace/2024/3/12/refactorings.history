@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;Control_Robot/App/Inc/MotorDriver&apos;" deleteContents="false" description="Delete resource &apos;Control_Robot/App/Inc/MotorDriver&apos;" element1="/Control_Robot/App/Inc/MotorDriver" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1711036867915"/>&#x0A;<refactoring comment="Delete 3 resources" deleteContents="false" description="Delete 3 resources" element1="/Control_Robot/Debug" element2="/Control_Robot/Release" element3="/Control_Robot/Test_PWM_Encoder Debug.launch" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="3" stamp="1711059245504"/>
+</session>

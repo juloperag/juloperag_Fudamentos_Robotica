@@ -1,10 +1,16 @@
-13:03:34 **** Incremental Build of configuration Debug for project Prueba_Comandos ****
+17:39:49 **** Incremental Build of configuration Debug for project Prueba_Comandos ****
 make -j4 all 
+arm-none-eabi-gcc -o "Prueba_Comandos.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Prueba_Comandos\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Prueba_Comandos.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Prueba_Comandos.elf
+ 
 arm-none-eabi-size   Prueba_Comandos.elf 
+arm-none-eabi-objdump -h -S  Prueba_Comandos.elf  > "Prueba_Comandos.list"
    text	   data	    bss	    dec	    hex	filename
-  33488	    480	   3896	  37864	   93e8	Prueba_Comandos.elf
+  33512	    480	   3896	  37888	   9400	Prueba_Comandos.elf
 Finished building: default.size.stdout
  
+Finished building: Prueba_Comandos.list
+ 
 
-13:03:34 Build Finished. 0 errors, 0 warnings. (took 279ms)
+17:39:50 Build Finished. 0 errors, 0 warnings. (took 725ms)
 

@@ -681,7 +681,10 @@ void extInt_Config(EXTI_Config_t *extiConfig) // *extiConfig = &handlerEXTI
 	}
 	else
 	{
-		__NOP();
+		EXTI->FTSR &= ~(0b1<<extiConfig->pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
+		EXTI->RTSR &= ~(0b1<<extiConfig->pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
+		EXTI->FTSR |= (0b1<<extiConfig->pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
+		EXTI->RTSR |= (0b1<<extiConfig->pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
 	}
 	//-------b)Activamos la interrupcion del EXTIx---------
 	EXTI->IMR &= ~(0b1<<extiConfig->pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);

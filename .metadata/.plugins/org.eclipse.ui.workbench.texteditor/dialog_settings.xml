@@ -1,37 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="bufferMsgForTXE_inLine"/>
+		<item key="selection" value="value_period"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="bufferMsgForTXE_inLine"/>
-			<item value="estudio"/>
-			<item value="test"/>
-			<item value="handler_PWM"/>
-			<item value="handler_PWM_Motor"/>
-			<item value="handler_TIMER_PWM"/>
-			<item value="handler_GPIO_PWM"/>
-			<item value="handler_EXTI_Button"/>
-			<item value="handler_GPIO_Button"/>
-			<item value="vTaskOne"/>
-			<item value="STM32F411xE"/>
-			<item value="RTT_BUFFER"/>
-			<item value="RTT"/>
+			<item value="value_perido"/>
+			<item value="frequency_TIMER_Count"/>
+			<item value="handler_TIMER_study"/>
+			<item value="frequency"/>
+			<item value="config_study"/>
+			<item value="flag_study"/>
+			<item value="status_study"/>
+			<item value="vTaskTwo"/>
+			<item value="xHandleTaskBL"/>
+			<item value="vTask_blink_led"/>
+			<item value="xHandleTask1"/>
+			<item value="handler_PWM_Motor_Test"/>
+			<item value="handler_GPIO_Motor_IN_Test"/>
+			<item value="handler_GPIO_Motor_EN_Test"/>
+			<item value="handler_GIOP_BlinkyPin"/>
 		</list>
 		<list key="replacehistory">
-			<item value=""/>
-			<item value="study"/>
-			<item value="estudio"/>
-			<item value="handler_PWM_Motor"/>
-			<item value="handler_TIMER_Motor"/>
-			<item value="handler_GPIO_Motor"/>
-			<item value=" handler_EXTI_Foto"/>
-			<item value="handler_GPIO_Foto"/>
-			<item value="vTask_blink_led"/>
+			<item value="value_period"/>
+			<item value="periodo_TIMER_Count"/>
+			<item value="handler_TIMER_Count"/>
+			<item value="Period_PWM_Motor"/>
+			<item value="Periodo"/>
+			<item value="config_motor"/>
+			<item value="flag_motor"/>
+			<item value="status_motor"/>
+			<item value="vTaskButton"/>
+			<item value="xHandleTaskSL"/>
+			<item value="vTask_Status_Led"/>
+			<item value="xHandleTaskBL"/>
+			<item value="handler_PWM_Motor_Execute"/>
+			<item value="handler_GPIO_Motor_IN_Execute"/>
+			<item value="handler_GPIO_Motor_EN_Execute"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
@@ -40,5 +48,9 @@
 		<item key="DIALOG_WIDTH" value="545"/>
 		<item key="DIALOG_HEIGHT" value="326"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="447"/>
+		<item key="DIALOG_Y_ORIGIN" value="240"/>
 	</section>
 </section>

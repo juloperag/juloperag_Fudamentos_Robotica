@@ -292,7 +292,7 @@ uint16_t getValueBaudRate(uint8_t fck, uint32_t baudRate)
     uint32_t usartDiv = (fck*10000000000)/(16*baudRate);
     uint32_t mantiza = usartDiv/10000;
     uint32_t decimal = usartDiv-mantiza*10000;
-    uint8_t div_Fraction = (decimal-1000)/625;
+    uint8_t div_Fraction = (decimal-1000)/625;  //1000
     uint16_t value  = mantiza<<USART_BRR_DIV_Mantissa_Pos | div_Fraction;
 
     return value;

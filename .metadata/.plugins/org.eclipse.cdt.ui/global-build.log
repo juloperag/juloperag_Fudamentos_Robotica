@@ -1,21 +1,49 @@
-18:24:56 **** Incremental Build of configuration Debug for project Test_PWM_Encoder ****
+18:54:18 **** Incremental Build of configuration Debug for project Control_Robot ****
 make -j4 all 
-arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Test_PWM_Encoder/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Test_PWM_Encoder/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Test_PWM_Encoder/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Test_PWM_Encoder/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
-arm-none-eabi-gcc -o "Test_PWM_Encoder.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Test_PWM_Encoder\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Test_PWM_Encoder.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Test_PWM_Encoder.elf
+arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
+arm-none-eabi-gcc -o "Control_Robot.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Control_Robot.elf
  
-arm-none-eabi-size   Test_PWM_Encoder.elf 
-arm-none-eabi-objdump -h -S  Test_PWM_Encoder.elf  > "Test_PWM_Encoder.list"
+arm-none-eabi-size   Control_Robot.elf 
+arm-none-eabi-objdump -h -S  Control_Robot.elf  > "Control_Robot.list"
    text	   data	    bss	    dec	    hex	filename
-  39944	    488	   4168	  44600	   ae38	Test_PWM_Encoder.elf
+  42992	    488	   4288	  47768	   ba98	Control_Robot.elf
 Finished building: default.size.stdout
  
-Finished building: Test_PWM_Encoder.list
+Finished building: Control_Robot.list
  
-18:25:00 **** Incremental Build of configuration Debug for project Test_PWM_Encoder ****
+18:54:26 **** Incremental Build of configuration Debug for project Control_Robot ****
 make -j4 all 
-arm-none-eabi-size   Test_PWM_Encoder.elf 
+arm-none-eabi-size   Control_Robot.elf 
    text	   data	    bss	    dec	    hex	filename
-  39944	    488	   4168	  44600	   ae38	Test_PWM_Encoder.elf
+  42992	    488	   4288	  47768	   ba98	Control_Robot.elf
 Finished building: default.size.stdout
+ 
+18:55:31 **** Incremental Build of configuration Debug for project Control_Robot_v2 ****
+make -j4 all 
+arm-none-eabi-size   Control_Robot_v2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  41904	    504	   4200	  46608	   b610	Control_Robot_v2.elf
+Finished building: default.size.stdout
+ 
+18:56:45 **** Incremental Build of configuration Debug for project Control_Robot_v2 ****
+make -j4 all 
+arm-none-eabi-size   Control_Robot_v2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  41904	    504	   4200	  46608	   b610	Control_Robot_v2.elf
+Finished building: default.size.stdout
+ 
+19:00:58 **** Incremental Build of configuration Debug for project Control_Robot_v2 ****
+make -j4 all 
+arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v2/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v2/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v2/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v2/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
+arm-none-eabi-gcc -o "Control_Robot_v2.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot_v2\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot_v2.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Control_Robot_v2.elf
+ 
+arm-none-eabi-size   Control_Robot_v2.elf 
+arm-none-eabi-objdump -h -S  Control_Robot_v2.elf  > "Control_Robot_v2.list"
+   text	   data	    bss	    dec	    hex	filename
+  41904	    504	   4200	  46608	   b610	Control_Robot_v2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Control_Robot_v2.list
  

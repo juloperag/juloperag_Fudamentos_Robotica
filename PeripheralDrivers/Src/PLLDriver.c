@@ -32,7 +32,7 @@ void configPLL(uint8_t clockSpeed)
 	//---------------------------------1) Calibracion HSI------------------------------------------
 	//Registro: CR
 
-	adjustHSI();
+	//adjustHSI();
 
 	//-------------2) Seleccion del HSI como la fuente de reloj para el PLL---------------
 	//Registro: PLLCFGR
@@ -143,45 +143,45 @@ uint8_t getClockAPB1(void)
 }
 
 //Funcion que selecciona la señal de reloj saliente del pin MCO1
-void configMCO1(uint8_t value)
+void configMCO2(uint8_t value)
 {
-	RCC->CFGR &= ~(0b11<<RCC_CFGR_MCO1_Pos);
-	RCC->CFGR |= (value<<RCC_CFGR_MCO1_Pos);
+	RCC->CFGR &= ~(0b11<<RCC_CFGR_MCO2_Pos);
+	RCC->CFGR |= (value<<RCC_CFGR_MCO2_Pos);
 }
 
 //Funcion que selecciona la señal de reloj saliente del pin MCO1
-void configMCO1PRE(uint8_t value)
+void configMCO2PRE(uint8_t value)
 {
 	//Selecionamos el prescaler de acuerdo al valor definido
 	switch (value){
 		case 1:
 		{
-			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO1PRE_Pos);
-			RCC->CFGR |= (0b000<<RCC_CFGR_MCO1PRE_Pos);
+			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO2PRE_Pos);
+			RCC->CFGR |= (0b000<<RCC_CFGR_MCO2PRE_Pos);
 			break;
 		}
 		case 2:
 		{
-			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO1PRE_Pos);
-			RCC->CFGR |= (0b100<<RCC_CFGR_MCO1PRE_Pos);
+			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO2PRE_Pos);
+			RCC->CFGR |= (0b100<<RCC_CFGR_MCO2PRE_Pos);
 			break;
 		}
 		case 3:
 		{
-			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO1PRE_Pos);
-			RCC->CFGR |= (0b101<<RCC_CFGR_MCO1PRE_Pos);
+			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO2PRE_Pos);
+			RCC->CFGR |= (0b101<<RCC_CFGR_MCO2PRE_Pos);
 			break;
 		}
 		case 4:
 		{
-			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO1PRE_Pos);
-			RCC->CFGR |= (0b110<<RCC_CFGR_MCO1PRE_Pos);
+			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO2PRE_Pos);
+			RCC->CFGR |= (0b110<<RCC_CFGR_MCO2PRE_Pos);
 			break;
 		}
 		case 5:
 		{
-			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO1PRE_Pos);
-			RCC->CFGR |= (0b111<<RCC_CFGR_MCO1PRE_Pos);
+			RCC->CFGR &= ~(0b111<<RCC_CFGR_MCO2PRE_Pos);
+			RCC->CFGR |= (0b111<<RCC_CFGR_MCO2PRE_Pos);
 			break;
 		}
 		default:

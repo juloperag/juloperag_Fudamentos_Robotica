@@ -68,6 +68,7 @@ uint8_t estado = 0;
 void recepcionCommand(void);             //Funcion que recibe los caracteres del comando recibido
 void runCommand(char *prtcommand);       //Funcion que ejecuta el comando ingresando
 void status_study(uint8_t status);
+void change_dutty(void);
 //-----Variables study encoder---
 GPIO_Handler_t *handler_GPIO_Motor_EN_Test ={0}; //Handler que se refiere a los motores para el test
 GPIO_Handler_t *handler_GPIO_Motor_IN_Test ={0};
@@ -78,7 +79,14 @@ uint8_t index_count = 0;                  //
 uint8_t index_fre = 0;                    //Indice del arreglo de las frecuencias
 uint16_t count_for_dutty[3][21]={0};      //Definimos una matriz para almacenar conteos por valor de dutty
 uint16_t count_foto = 0;                  //Variable que almacena las interrupciones de la forocompuerata
-uint8_t value_dutty = 0;                  //Porcentaje del dutty del pwm
+uint16_t count_foto_R = 0;
+uint16_t count_foto_L = 0;
+uint8_t value_dutty = 0;                  //Porcentaje del dutty del pwm en el test del encoder
+uint8_t value_dutty_estatico = 50;        //Valor de dutty que se utiliza en la prueba estatica
+uint16_t value_frequency_estatico = 4000;  //Valor de frecuencia que se utiuliza en la prueba estatica
+uint8_t flag_dir = 1;                      //Variable para configurar la direccion de los motores
+uint8_t flag_dir_M1 = 1;				  //Variable que guarda del motor
+uint8_t flag_dir_M2 = 1;				  //Variable que guarda del motor
 
 //-----Variables de la recepcion de comandos----
 uint8_t commandComplete = 1;           //Bandera que indica si el comando esta completo
@@ -93,9 +101,13 @@ int main(void)
 	//Configuracion inicial Motor
 	GPIO_writePin (&handler_GPIO_MotorR_IN, SET);
 	GPIO_writePin (&handler_GPIO_MotorL_IN, SET);
+	GPIO_writePin (&handler_GPIO_MotorR_EN, SET);
+	GPIO_writePin (&handler_GPIO_MotorL_EN, SET);
 	//Definimos el motor derecho como el que se movera
 	handler_GPIO_Motor_EN_Test = &handler_GPIO_MotorR_EN;
 	handler_PWM_Motor_Test = &handler_PWM_MotorR;
+	handler_GPIO_Motor_IN_Test = &handler_GPIO_MotorR_IN;
+	flag_dir  = flag_dir_M1;
 
 	while(1)
 	{
@@ -249,6 +261,7 @@ void int_Hardware(void)
 	 * ||| LOW, MEDIUM, FAST, HIGH ||| NOTHING, PULLUP, PULLDOWN, RESERVED |||  AFx, 0-15 |||*/
 	//Cargamos la configuracion del PIN especifico
 	GPIO_Config(&handler_GPIO_MotorL_EN);
+
 
 
 	//-------------------Fin de Configuracion GPIOx-----------------------
@@ -425,8 +438,17 @@ void BasicUSART2_Callback(void)
 {
 	//Guardamos el caracter recibido
 	charRead = getRxData();
-	//Funcion que almacena los caracteres del comando recibido
-	recepcionCommand();
+	//Verificar
+	if(charRead=='-' || charRead=='+')
+	{
+		//Cambiar dutty de a uno
+		change_dutty();
+	}
+	else
+	{
+		//Funcion que almacena los caracteres del comando recibido
+		recepcionCommand();
+	}
 }
 
 
@@ -434,11 +456,11 @@ void BasicUSART2_Callback(void)
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el EXTI13 y EXTI13
 void callback_extInt1(void)
 {
-	count_foto++;
+	count_foto_R++;
 }
 void callback_extInt3(void)
 {
-	count_foto++;
+	count_foto_L++;
 }
 
 //----------------------------Fin de la definicion de las funciones ISR----------------------------------------
@@ -487,18 +509,23 @@ void runCommand(char *prtcommand)
 	{
 		writeMsgForTXE(&handler_USART_USB, "Help Menu: \n");
 		writeMsgForTXE(&handler_USART_USB, "1) help  ---Imprime lista de comandos. \n");
-		writeMsgForTXE(&handler_USART_USB, "2) frequency # # # ---Definir los 3 valores de las frecuencias para el study en Hz. \n");
-		writeMsgForTXE(&handler_USART_USB, "3) motor # ---Elige el tipo de motor para el test, 1:Derecho, 2:Izquierdo \n");
-		writeMsgForTXE(&handler_USART_USB, "4) on --- Enciende el motor seleccionado \n");
-		writeMsgForTXE(&handler_USART_USB, "5) off --- Apaga el motor seleccionado \n");
-		writeMsgForTXE(&handler_USART_USB, "6) start ---Inicializa el estudio \n");
-		writeMsgForTXE(&handler_USART_USB, "7) stop ---Para el estudio en medio de la ejecucion \n");
-		writeMsgForTXE(&handler_USART_USB, "8) print ---Imprime los valores del conteo de interrupciones en el estudio \n");
+		writeMsgForTXE(&handler_USART_USB, "2) Frequency # # # ---Definir los 3 valores de las frecuencias para el study en Hz. \n");
+		writeMsgForTXE(&handler_USART_USB, "3) Motor # ---Elige el tipo de motor para el test, 1:Derecho, 2:Izquierdo \n");
+		writeMsgForTXE(&handler_USART_USB, "4) sON --- Enciende el motor seleccionado en la prueba estatica \n");
+		writeMsgForTXE(&handler_USART_USB, "5) sOFF --- Apaga el motor seleccionado prueba estatica \n");
+		writeMsgForTXE(&handler_USART_USB, "6) sDireccion --- Cambiar la direccion en la prueba estatica \n");
+		writeMsgForTXE(&handler_USART_USB, "7) sDutty # --- Cambiar el valor del dutty en la prueba estatica #/0-100 \n");
+		writeMsgForTXE(&handler_USART_USB, "8) sFrequency # --- cambiar el valor de la frecuenciea en la prueba estatica en HZ \n");
+		writeMsgForTXE(&handler_USART_USB, "9) sCount --- Mostrar el numero de cuentas \n");
+		writeMsgForTXE(&handler_USART_USB, "10) sCountInit--- Iniciar el numero de cuentas \n");
+		writeMsgForTXE(&handler_USART_USB, "11) Start ---Inicializa el estudio \n");
+		writeMsgForTXE(&handler_USART_USB, "12) Stop ---Para el estudio en medio de la ejecucion \n");
+		writeMsgForTXE(&handler_USART_USB, "13) Print ---Imprime los valores del conteo de interrupciones en el estudio \n");
 	}
 
 
 	//Definimos el valor de las frecuencias para el study
-	else if (strcmp(cmd, "frequency") == 0)
+	else if (strcmp(cmd, "Frequency") == 0)
 	{
 
 		frequency[0] = 100000/firtsParameter;
@@ -506,18 +533,26 @@ void runCommand(char *prtcommand)
 		frequency[2] = 100000/thirdParameter;
 	}
 	//Defino el tipo de motor a usar para la prueba
-	else if (strcmp(cmd, "motor") == 0)
+	else if (strcmp(cmd, "Motor") == 0)
 	{
 		//Guardamos el handler de forma global
 		if(firtsParameter==1)
 		{
 			handler_GPIO_Motor_EN_Test = &handler_GPIO_MotorR_EN;
 			handler_PWM_Motor_Test = &handler_PWM_MotorR;
+			handler_GPIO_Motor_IN_Test = &handler_GPIO_MotorR_IN;
+			flag_dir  = flag_dir_M1;
+			//Imprimimos mensaje
+			writeMsgForTXE(&handler_USART_USB, "Motor 1 seleccionado \n");
 		}
 		else if(firtsParameter==2)
 		{
 			handler_GPIO_Motor_EN_Test = &handler_GPIO_MotorL_EN;
 			handler_PWM_Motor_Test = &handler_PWM_MotorL;
+			handler_GPIO_Motor_IN_Test = &handler_GPIO_MotorL_IN;
+			flag_dir  = flag_dir_M2;
+			//Imprimimos mensaje
+			writeMsgForTXE(&handler_USART_USB, "Motor 2 seleccionado \n");
 		}
 		else
 		{
@@ -526,26 +561,97 @@ void runCommand(char *prtcommand)
 		}
 	}
 	//Encendemos el motor
-	else if (strcmp(cmd, "on") == 0)
+	else if (strcmp(cmd, "sON") == 0)
 	{
 		//Actualizamos el valor del dutty y frecuencia
-		updateDuttyCyclePercentage(handler_PWM_Motor_Test, 95);
-		updateFrequencyTimer(&handler_TIMER_Motor, 4000);
+		updateDuttyCyclePercentage(handler_PWM_Motor_Test, value_dutty_estatico);
+		updateFrequencyTimer(&handler_TIMER_Motor, value_frequency_estatico);
 		//Activamos el motor
 		GPIO_writePin (handler_GPIO_Motor_EN_Test, RESET);
 		//Imprimimos mensaje
 		writeMsgForTXE(&handler_USART_USB, "Motor Encendido \n");
 	}
 	//Apagamos el motor
-	else if (strcmp(cmd, "off") == 0)
+	else if (strcmp(cmd, "sOFF") == 0)
 	{
 		//Desactivamos el motor
 		GPIO_writePin (handler_GPIO_Motor_EN_Test, SET);
 		//Imprimimos mensaje
 		writeMsgForTXE(&handler_USART_USB, "Motor Apagado \n");
 	}
+	//Cambiar direccion
+	else if (strcmp(cmd, "sDireccion") == 0)
+	{
+		if(handler_GPIO_Motor_IN_Test==&handler_GPIO_MotorR_IN)
+		{
+			//Cambiamos el valor de la bandera
+			flag_dir_M1 = (~flag_dir_M1)&(0x01);
+			//Guardamos el valor
+			flag_dir = flag_dir_M1;
+		}
+		else
+		{
+			//Cambiamos el valor de la bandera
+			flag_dir_M2 = (~flag_dir_M2)&(0x01);
+			//Guardamos el valor
+			flag_dir = flag_dir_M2;
+		}
+
+		//Cambiamos la direccion del motor
+		GPIO_writePin(handler_GPIO_Motor_IN_Test, flag_dir&SET);
+		statusPolarityPWM(handler_PWM_Motor_Test, flag_dir&SET);
+	}
+	//Cambiar dutty en prueba estatica
+	else if (strcmp(cmd, "sDutty") == 0)
+	{
+		//Guardamos valor
+		value_dutty_estatico = firtsParameter;
+		//Actualizamos el valor del dutty
+		updateDuttyCyclePercentage(handler_PWM_Motor_Test, value_dutty_estatico);
+		//Imprimimos mensaje
+		writeMsgForTXE(&handler_USART_USB, "Dutty Actualizado \n");
+	}
+	//Cambiar frecuencia en prueba estatica
+	else if (strcmp(cmd, "sFrequency") == 0)
+	{
+		//Guardamos valor
+		value_frequency_estatico = 100000/firtsParameter;
+		//Actualizamos el valor del dutty y de la frecuencia
+		updateFrequencyTimer(&handler_TIMER_Motor, value_frequency_estatico);
+		updateDuttyCyclePercentage(handler_PWM_Motor_Test, value_dutty_estatico);
+		//Imprimimos mensaje
+		writeMsgForTXE(&handler_USART_USB, "Frecuencia Actualizado \n");
+	}
+	//Imprimimos count
+	else if (strcmp(cmd, "sCount") == 0)
+	{
+		sprintf(bufferMsg,"Cuentas_R: %u \n", count_foto_R);
+		//imprimimos mensajes
+		writeMsg(&handler_USART_USB, bufferMsg);
+		sprintf(bufferMsg,"Cuentas_L: %u \n", count_foto_L);
+		//imprimimos mensajes
+		writeMsg(&handler_USART_USB, bufferMsg);
+	}
+	//Inicializamos count
+	else if (strcmp(cmd, "sCountInit") == 0)
+	{
+		if(flag_study==0)
+		{
+			//Inicializamos conteo
+			count_foto_L = 0;
+			count_foto_R = 0;
+			//Imprimimos mensaje
+			writeMsgForTXE(&handler_USART_USB, "Reinicio exitoso. \n");
+
+		}
+		else
+		{
+			//Imprimimos mensaje
+			writeMsgForTXE(&handler_USART_USB, "Prueba de encoder en curso, no es posible. \n");
+		}
+	}
 	//Inicializa el study
-	else if (strcmp(cmd, "start") == 0)
+	else if (strcmp(cmd, "Start") == 0)
 	{
 		//Establecemos valores iniciales
 		index_count=0;
@@ -558,18 +664,18 @@ void runCommand(char *prtcommand)
 		//Imprimimos mensaje
 		writeMsgForTXE(&handler_USART_USB, "Inicio del estudio... \n");
 		//Iniciamos el study
-		status_study(SET);
+		status_study(flag_dir&SET);
 	}
 	//para el study en ejecucion
-	else if (strcmp(cmd, "stop") == 0)
+	else if (strcmp(cmd, "Stop") == 0)
 	{
 		//Paramos el study
-		status_study(RESET);
+		status_study(flag_dir&RESET);
 		//Imprimimos mensaje
 		writeMsgForTXE(&handler_USART_USB, "Estudio finalizado... \n");
 	}
 	//imprime los valores del study
-	else if (strcmp(cmd, "print") == 0)
+	else if (strcmp(cmd, "Print") == 0)
 	{
 		if(flag_study==0)
 		{
@@ -621,7 +727,7 @@ void status_study(uint8_t status)
 		//Activamos la interrupcion
 		statusiInterruptionTimer(&handler_TIMER_study, INTERRUPTION_ENABLE);
 		//Activamos el motor
-		GPIO_writePin (handler_GPIO_Motor_EN_Test, RESET);
+		GPIO_writePin (handler_GPIO_Motor_EN_Test, flag_dir&RESET);
 		//levantamos Bandera
 		flag_study = 1;
 	}
@@ -632,9 +738,46 @@ void status_study(uint8_t status)
 		//Desactivamos interrupcion
 		statusiInterruptionTimer(&handler_TIMER_study, INTERRUPTION_DISABLE);
 		//Desactivamos el motor
-		GPIO_writePin (handler_GPIO_Motor_EN_Test, SET);
+		GPIO_writePin (handler_GPIO_Motor_EN_Test, flag_dir&SET);
 		//Reiniciamos Bandera
 		flag_study = 0;
+	}
+}
+
+void change_dutty(void)
+{
+	//Variable que guarda texto
+	char bufferMsg[64]= {0};
+	//Verificamos el caracter
+	if(charRead=='+')
+	{
+		if(value_dutty_estatico<100)
+		{
+			value_dutty_estatico++;
+		}
+		//Actualizamos el valor del dutty y frecuencia
+		updateDuttyCyclePercentage(handler_PWM_Motor_Test, value_dutty_estatico);
+		//Convertimos texto
+		sprintf(bufferMsg,"Valor dutty : %u \n", value_dutty_estatico);
+		//imprimimos mensaje
+		writeMsg(&handler_USART_USB, bufferMsg);
+	}
+	else if(charRead=='-')
+	{
+		if(value_dutty_estatico>0)
+		{
+			value_dutty_estatico--;
+		}
+		//Actualizamos el valor del dutty y frecuencia
+		updateDuttyCyclePercentage(handler_PWM_Motor_Test, value_dutty_estatico);
+		//Convertimos texto
+		sprintf(bufferMsg,"Valor dutty : %u \n", value_dutty_estatico);
+		//imprimimos mensaje
+		writeMsg(&handler_USART_USB, bufferMsg);
+	}
+	else
+	{
+		__NOP();
 	}
 }
 

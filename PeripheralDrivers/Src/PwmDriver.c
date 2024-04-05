@@ -352,3 +352,12 @@ void updateDuttyCyclePercentage(PWM_Handler_t *prtPwmHandler, uint8_t newDuttyPe
 	//Cargamos la nueva configuracion
 	setDuttyCycle(prtPwmHandler);
 }
+
+//Actualizacion del Dutty con porcentaje decimal
+void updateDuttyCyclePercentageFloat(PWM_Handler_t *prtPwmHandler, float newDuttyPercentage)
+{
+	//Establecemos el nuevo valor del duttycicle en la configuracion del PWM
+	prtPwmHandler->config.duttyCicle = (uint16_t) ((prtPwmHandler->ptrTIMx->ARR)/100)*(newDuttyPercentage);
+	//Cargamos la nueva configuracion
+	setDuttyCycle(prtPwmHandler);
+}
