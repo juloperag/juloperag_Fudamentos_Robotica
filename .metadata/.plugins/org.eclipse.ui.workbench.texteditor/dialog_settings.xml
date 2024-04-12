@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="value_period"/>
+		<item key="selection" value="handler_TIMER_study"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="handler_TIMER_study"/>
+			<item value="flag_motor"/>
 			<item value="value_perido"/>
 			<item value="frequency_TIMER_Count"/>
-			<item value="handler_TIMER_study"/>
 			<item value="frequency"/>
 			<item value="config_study"/>
 			<item value="flag_study"/>
@@ -22,7 +23,6 @@
 			<item value="handler_PWM_Motor_Test"/>
 			<item value="handler_GPIO_Motor_IN_Test"/>
 			<item value="handler_GPIO_Motor_EN_Test"/>
-			<item value="handler_GIOP_BlinkyPin"/>
 		</list>
 		<list key="replacehistory">
 			<item value="value_period"/>
@@ -43,8 +43,8 @@
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="752"/>
-		<item key="DIALOG_Y_ORIGIN" value="93"/>
+		<item key="DIALOG_X_ORIGIN" value="782"/>
+		<item key="DIALOG_Y_ORIGIN" value="141"/>
 		<item key="DIALOG_WIDTH" value="545"/>
 		<item key="DIALOG_HEIGHT" value="326"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

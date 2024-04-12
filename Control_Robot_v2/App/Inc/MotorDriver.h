@@ -12,20 +12,31 @@
 #include <PwmDriver.h>
 #include <BasicTimer.h>
 
+//Estructura que contiene los parametros del motor, tanto de las cuentas, como del PID
+typedef struct
+{
+	float u,u_1;           					 //Acción de Control now y back
+	float e,e_1,e_2;   						 //Errores anteriores de errores
+	float q0,q1,q2; 					 	//Costantes del PID
+	uint16_t count;                 		 //Numero de cuentas del motor
+	uint16_t backCount;                 	//Numero de cuentas del motor
+	uint32_t timeCount;              		 //Tiempo entre 1 sola cuenta
+	uint32_t countCotinuous;                 //Conteo continuo
+}Parameters_Motor_t;
+
 //Estructura que contiene la configuracion del motor
 typedef struct
 {
 	uint16_t *frecuency;             //frecuencia del timer
 	float dutty;                   //dutty de pwm del motor
 	uint8_t dir;                    //indica el tipo de giro
-	uint16_t count;                  //Numero de cuentas del motor
-	uint32_t timeCount;              //Tiempo entre 1 sola cuenta
 
 }Config_Motor_t;
 
 //Estrutura que contienes la configuracion del motor como los handler para los diferentes perifericos para el uso del robot
 typedef struct
 {
+	Parameters_Motor_t parametersMotor;    //Parametros del motor
 	Config_Motor_t configMotor;            //Configuracion del motor
 	GPIO_Handler_t *phandlerGPIOIN;        //Handler para el el pin del IN del driver del motor
 	GPIO_Handler_t *phandlerGPIOEN;        //Handler para el el pin del EN del driver del motor

@@ -99,7 +99,7 @@ uint8_t flag_turn = 0;                              //Bandera que indica la dire
 #define DL 5170
 #define DR 5145
 #define Ce 72
-#define duttymax  40                               //Limites de dutty
+#define duttymax  100                               //Limites de dutty
 #define duttymin  8
 uint16_t count_for_dutty_R[duttymax-duttymin+1]={0};    //Definimos una matriz para almacenar conteos por valor de dutty
 uint16_t count_for_dutty_L[duttymax-duttymin+1]={0};
@@ -190,7 +190,7 @@ void int_Hardware(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_USB_TX.pGPIOx = GPIOA;
 	//Definimos el pin a utilizar
-	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_2; 						//PIN_x, 0-15
+	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_9; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_USB_TX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -204,7 +204,7 @@ void int_Hardware(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_USB_RX.pGPIOx = GPIOA;
 	//Definimos el pin a utiliza
-	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_3; 						//PIN_x, 0-15
+	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_10; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_USB_RX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -305,7 +305,7 @@ void int_Hardware(void)
 
 	//---------------USART1----------------
 	//Definimos el periferico USARTx a utilizar
-	handler_USART_USB.ptrUSARTx = USART2;
+	handler_USART_USB.ptrUSARTx = USART1;
 	//Definimos la configuracion del USART seleccionado
 	handler_USART_USB.USART_Config.USART_mode = USART_MODE_RXTX ;           //USART_MODE_x  x-> TX, RX, RXTX, DISABLE
 	handler_USART_USB.USART_Config.USART_baudrate = USART_BAUDRATE_19200;  //USART_BAUDRATE_x  x->9600, 19200, 115200
@@ -337,7 +337,7 @@ void int_Hardware(void)
 	//Definimos la configuracion del TIMER seleccionado
 	handler_TIMER_study.TIMx_Config.TIMx_periodcnt = BTIMER_PCNT_1ms; //BTIMER_PCNT_xus x->10,100/ BTIMER_PCNT_1ms
 	handler_TIMER_study.TIMx_Config.TIMx_mode = BTIMER_MODE_UP; // BTIMER_MODE_x x->UP, DOWN
-	handler_TIMER_study.TIMx_Config.TIMX_period = 2000;//Al definir 10us,100us el valor un multiplo de ellos, si es 1ms el valor es en ms
+	handler_TIMER_study.TIMx_Config.TIMX_period = 1000;//Al definir 10us,100us el valor un multiplo de ellos, si es 1ms el valor es en ms
 	handler_TIMER_study.TIMx_Config.TIMx_interruptEnable = INTERRUPTION_DISABLE; //INTERRUPTION_x  x->DISABLE, ENABLE
 	//Cargamos la configuracion del TIMER especifico
 	BasicTimer_Config(&handler_TIMER_study);
@@ -542,7 +542,7 @@ void BasicTimer3_Callback(void)
 
 //-------------------------USARTRX--------------------------------
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el USART2
-void BasicUSART2_Callback(void)
+void BasicUSART1_Callback(void)
 {
 	//Guardamos el caracter recibido
 	charRead = getRxData();

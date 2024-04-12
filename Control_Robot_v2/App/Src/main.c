@@ -21,6 +21,7 @@
 #include <SysTickDriver.h>
 //------CMSIS------
 #include <arm_math.h>
+#include <math.h>
 //-----Proyecto-------
 #include <MotorDriver.h>
 
@@ -76,36 +77,32 @@ uint16_t value_period = 4000;                 //Valor del periodo del timer, que
 
 //------------------Definiciones generales----------------------------------
 //-----Cabeceras de funciones----
-void int_MCO2(void);                                                                  //Funcion para la configuracion inicail del MCO1
-void recepcionCommand(void);                                                          //Funcion que recibe los caracteres del comando recibido
-void runCommand(char *prtcommand);                                                    //Funcion que ejecuta el comando ingresando
-void status_motor(uint8_t status);                                                    //Funcion para definir el estado del motor
-void int_Config_Motor(void);                                                    	  //Funcion que carga la configuracion inicail de los motores
-void config_motor(uint8_t status, int firth, float second, float third, int forth) ;  //Funcion para configurar el estudio
-void change_study(void);                                                        	  //Reiniciamos los parametros
+void int_MCO2(void);                                                                  		 //Funcion para la configuracion inicail del MCO1
+void recepcionCommand(void);                                                          		 //Funcion que recibe los caracteres del comando recibido
+void runCommand(char *prtcommand);                                                    		 //Funcion que ejecuta el comando ingresando
+void status_motor(uint8_t status);                                                   		 //Funcion para definir el estado del motor
+void int_Config_Motor(void);                                                    	  		 //Funcion que carga la configuracion inicail de los motores
+void config_motor(uint8_t status, int firth, float second, float third, int forth); 		 //Funcion para configurar el estudio
+void constains_calculator(Motor_Handler_t *ptrMotorhandler,float k, float tau, float theta); //Funcion para el calculo de las onstantes
+void PID(Motor_Handler_t *ptrMotorHandler, float measure);                    			     //Funcion para la implementacion del PID
 //-----Variables PID-----------
-//Variables Globales
 uint16_t distance = 0;                 //Variable que guarda la distancia a recorrer
-float32_t setpoint = 0;                //Variable que define el setpoint
-float32_t T1,aux;                       //Temperatura del Heater 1
-float32_t r1=40.0;                      //Referencia del Heater 1
-#define Ts  8                           //Periodo de muestreo
-//Parámetros del PID
-volatile float32_t u=0.0,u_1=0.0;        //Acción de Control
-volatile float e=0.0,e_1=0.0,e_2=0.0;    //Errores
-float32_t kp,ti,td;
-float32_t q0,q1,q2;
-float32_t k=1.04,tau=160,theta=10+Ts/2;   //Parámetros del Modelo del sistema
+float setpoint = 0;               		//Variable que define el setpoint ---> Dutty
+float Ts = 200;                        //Periodo de muestreo [ms]
 //-----Variables Del Conteo---
 Motor_Handler_t *handler_Motor_Execute = {0};     //Handler que se refiere a uno de los motores
 uint8_t flag_motor = 0;                           //Bandera que indica el tipo de ejecucion del motor
 uint8_t flag_turn = 0;                            //Bandera que indica la direccion del giro
 uint16_t periodo_TIMER_Count = 1000;              //Frecuencia del timer contador
-uint16_t frequency_PWM_Motor = 20;                //Frecuencia del timer del PWM
+uint16_t frequency_PWM_Motor = 30;                //Frecuencia del timer del PWM
 uint16_t count_time = 0;                          //Variable para contar el tiempo trascurrido
 uint16_t limit_count_turn = 0;                    //Limite de cuentas del giro
 volatile float32_t velocity_L =  0.0;			  //Velocidad de la rueda Izquierda      [m/s]
 volatile float32_t velocity_R =  0.0;             //Velocidad de la rueda Derecha        [m/s]
+float porVel_L = 0;
+float porVel_R = 0;
+float m = 591.9159;
+float bl = 36.5313;
 float32_t cm_L = 0;                               //Factor de conversion rueda Izquierda [mm/cuentas]
 float32_t cm_R = 0;                               //Factor de conversion rueda Derecha   [mm/cuentas]
 uint64_t timeBackL = 1;                           //Variable para guardar el tiempo de la interrupcion pasada del encoder Izquierdo
@@ -115,9 +112,6 @@ uint64_t timeBackR = 1;                           //Variable para guardar el tie
 #define DL 5170
 #define DR 5145
 #define Ce 72
-#define duttymax  40                               //Limites de dutty
-#define duttymin  8
-
 
 //-----Variables de la recepcion de comandos----
 uint8_t commandComplete = 1;           //Bandera que indica si el comando esta completo
@@ -133,19 +127,19 @@ int main(void)
 	//Realizamos la configuracuion inicial
 	int_Hardware();
 	//Activamos el SysTick
-	config_SysTick_us();
+	//config_SysTick_us();
 	//Activamos el punto flotante por medio del registro especifico
 	SCB->CPACR |= 0xF <<20;
 	//Definimos la configuracion inicail del MCO1
-	 int_MCO2();
+	int_MCO2();
 
 	//-----------------------Configuracion inicial de los Motores---------------------------------
 	//Cargar configuracion de los motores
-	int_Config_Motor();
 	GPIO_writePin (&handler_GPIO_MotorR_IN, SET);
 	GPIO_writePin (&handler_GPIO_MotorL_IN, SET);
 	GPIO_writePin (&handler_GPIO_MotorR_EN, SET);
 	GPIO_writePin (&handler_GPIO_MotorL_EN, SET);
+	int_Config_Motor();
 	//Definimos el motor derecho para ser ejecutado
 	handler_Motor_Execute = &handler_Motor_R;
 	//Calculo inicial de parametro
@@ -212,7 +206,7 @@ void int_Hardware(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_USB_TX.pGPIOx = GPIOA;
 	//Definimos el pin a utilizar
-	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_2; 						//PIN_x, 0-15
+	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_9; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_USB_TX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -226,7 +220,7 @@ void int_Hardware(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_USB_RX.pGPIOx = GPIOA;
 	//Definimos el pin a utiliza
-	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_3; 						//PIN_x, 0-15
+	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_10; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_USB_RX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -327,9 +321,9 @@ void int_Hardware(void)
 
 	//---------------USART1----------------
 	//Definimos el periferico USARTx a utilizar
-	handler_USART_USB.ptrUSARTx = USART2;
+	handler_USART_USB.ptrUSARTx = USART1;
 	//Definimos la configuracion del USART seleccionado
-	handler_USART_USB.USART_Config.USART_mode = USART_MODE_RXTX ;           //USART_MODE_x  x-> TX, RX, RXTX, DISABLE
+	handler_USART_USB.USART_Config.USART_mode = USART_MODE_RXTX;           //USART_MODE_x  x-> TX, RX, RXTX, DISABLE
 	handler_USART_USB.USART_Config.USART_baudrate = USART_BAUDRATE_19200;  //USART_BAUDRATE_x  x->9600, 19200, 115200
 	handler_USART_USB.USART_Config.USART_parity= USART_PARITY_NONE;       //USART_PARITY_x   x->NONE, ODD, EVEN
 	handler_USART_USB.USART_Config.USART_stopbits=USART_STOPBIT_1;         //USART_STOPBIT_x  x->1, 0_5, 2, 1_5
@@ -462,8 +456,14 @@ void int_Config_Motor(void)
 	handler_Motor_R.phandlerGPIOEN = &handler_GPIO_MotorR_EN;
 	handler_Motor_R.phandlerGPIOIN = &handler_GPIO_MotorR_IN;
 	handler_Motor_R.phandlerPWM = &handler_PWM_MotorR;
-	//Tiempo de conteo
-	handler_Motor_R.configMotor.timeCount = 1;
+	//definicion de parametros
+	handler_Motor_R.parametersMotor.timeCount = 1;
+	handler_Motor_R.parametersMotor.backCount = 0;
+	handler_Motor_R.parametersMotor.e = handler_Motor_R.parametersMotor.e_1 = handler_Motor_R.parametersMotor.e_2 = 0;
+	handler_Motor_R.parametersMotor.u = handler_Motor_R.parametersMotor.u_1 = 0;
+	//Calculo de Constantes PID
+	float theta=25+Ts/2;
+	constains_calculator(&handler_Motor_R, 2.2, 50, theta);   //k,tau,theta
 
 	//---------------Motor Izquierdo----------------
 	//Parametro de la señal del dutty
@@ -474,8 +474,13 @@ void int_Config_Motor(void)
 	handler_Motor_L.phandlerGPIOEN = &handler_GPIO_MotorL_EN;
 	handler_Motor_L.phandlerGPIOIN = &handler_GPIO_MotorL_IN;
 	handler_Motor_L.phandlerPWM = &handler_PWM_MotorL;
-	//Tiempo de conteo
-	handler_Motor_L.configMotor.timeCount = 1;
+	//definicion de parametros
+	handler_Motor_L.parametersMotor.timeCount = 1;
+	handler_Motor_L.parametersMotor.backCount = 0;
+	handler_Motor_L.parametersMotor.e = handler_Motor_L.parametersMotor.e_1 = handler_Motor_L.parametersMotor.e_2 = 0;
+	handler_Motor_L.parametersMotor.u = handler_Motor_L.parametersMotor.u_1 = 0;
+	//Calculo de Constantes PID
+	constains_calculator(&handler_Motor_L, 2.2, 50, theta);   //k,tau,theta
 
 };
 
@@ -500,48 +505,60 @@ void BasicTimer3_Callback(void)
 	if(flag_motor==1)
 	{
 		//Calculamos la velocidad
-		velocity_L = (cm_L*1000)/handler_Motor_L.configMotor.timeCount;   //[m/s]
-		velocity_R = (cm_R*1000)/handler_Motor_R.configMotor.timeCount;   //[m/s]
+		//velocity_L = (cm_L*1000)/handler_Motor_L.parametersMotor.timeCount;   //[m/s]
+		//velocity_R = (cm_R*1000)/handler_Motor_R.parametersMotor.timeCount;   //[m/s]
+		velocity_L = (cm_L*handler_Motor_L.parametersMotor.count)/periodo_TIMER_Count;   //[m/s]
+		velocity_R = (cm_R*handler_Motor_R.parametersMotor.count)/periodo_TIMER_Count;   //[m/s]
+		//Convertirmos los valores de velocidad a porcentaje
+		//Falla porVel_L = 546.4481*velocity_L-36.5573;
+		//Regular porVel_R = 563*velocity_R + -26;
+		//Estable porVel_R = 591.9159*velocity_R-36.5313;
+		//porVel_L = 17.8 + -185*(velocity_L) + 3973*pow(velocity_L,2) + -6556*pow(velocity_L,3);
+		porVel_L = 600*velocity_L - 36.53;
+		porVel_R = 600*velocity_R - 36.53;
 		//Aumentamos el contador de tiempo
-		count_time = count_time + periodo_TIMER_Count;       //Tiempo en ms
+		count_time++;    			   //Tiempo en xperiodo_TIMER_Count ms
 		//Convertimos el valor y imprimemos
-		sprintf(bufferMsg,"%u\t%#.4f\t%#.4f\n", count_time, velocity_L , velocity_R);
+		sprintf(bufferMsg,"%u\t%#.4f\t%#.3f\n", count_time, velocity_L , velocity_R);
 		writeMsgForTXE(&handler_USART_USB, bufferMsg);
 		//Reiniciamos el numero de conteos
-		handler_Motor_R.configMotor.count = 0;
-		handler_Motor_L.configMotor.count = 0;
+		handler_Motor_R.parametersMotor.count = 0;
+		handler_Motor_L.parametersMotor.count = 0;
+		//Aplicamos el PID
+		PID(&handler_Motor_L, porVel_L);
+		PID(&handler_Motor_R, porVel_R);
 	}
 	else if(flag_motor==3)
 	{
 		//Aumentamos el contador de tiempo
 		count_time = count_time + periodo_TIMER_Count;       //Tiempo en ms
 		//Convertimos el valor y imprimemos
-		sprintf(bufferMsg,"%u\t%u\t%u\n", count_time,(handler_Motor_R.configMotor.count), (handler_Motor_L.configMotor.count));
+		sprintf(bufferMsg,"%u\t%u\t%u\n", count_time,(handler_Motor_R.parametersMotor.count), (handler_Motor_L.parametersMotor.count));
 		writeMsgForTXE(&handler_USART_USB, bufferMsg);
 		//Reiniciamos el numero de conteos
-		handler_Motor_R.configMotor.count = 0;
-		handler_Motor_L.configMotor.count = 0;
+		handler_Motor_R.parametersMotor.count = 0;
+		handler_Motor_L.parametersMotor.count = 0;
 	}
 	else if(flag_motor==4)
 	{
 		//Calculamos la velocidad
-		velocity_L = (cm_L*1000)/handler_Motor_L.configMotor.timeCount;   //[m/s]
-		velocity_R = (cm_R*1000)/handler_Motor_R.configMotor.timeCount;   //[m/s]
+		velocity_L = (cm_L*handler_Motor_L.parametersMotor.count)/periodo_TIMER_Count;   //[m/s]
+		velocity_R = (cm_R*handler_Motor_R.parametersMotor.count)/periodo_TIMER_Count;   //[m/s]
 		//Aumentamos el contador de tiempo
 		count_time = count_time + periodo_TIMER_Count;       //Tiempo en ms
 		//Convertimos el valor y imprimemos
 		sprintf(bufferMsg,"%u\t%#.4f\t%#.4f\n", count_time, velocity_L , velocity_R);
 		writeMsgForTXE(&handler_USART_USB, bufferMsg);
 		//Reiniciamos el numero de conteos
-		handler_Motor_R.configMotor.count = 0;
-		handler_Motor_L.configMotor.count = 0;
+		handler_Motor_R.parametersMotor.count = 0;
+		handler_Motor_L.parametersMotor.count = 0;
 	}
 
 }
 
 //-------------------------USARTRX--------------------------------
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el USART2
-void BasicUSART2_Callback(void)
+void BasicUSART1_Callback(void)
 {
 	//Guardamos el caracter recibido
 	charRead = getRxData();
@@ -554,35 +571,47 @@ void BasicUSART2_Callback(void)
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el EXTI13 y EXTI13
 void callback_extInt1(void)
 {
-	handler_Motor_R.configMotor.count++;
+	handler_Motor_R.parametersMotor.count++;
+	handler_Motor_R.parametersMotor.countCotinuous++;
 	//calculo del tiempo entre interrupcion
-	uint64_t timeNow = getTicksUs();
-	handler_Motor_R.configMotor.timeCount = timeNow-timeBackR;
-	timeBackR = timeNow;
+//	uint64_t timeNow = getTicksUs();
+//	handler_Motor_R.parametersMotor.timeCount = timeNow-timeBackR;
+//	timeBackR = timeNow;
 	//Verificamos que la bandera este arriba
-	if(flag_motor==1 && flag_turn==1 && (limit_count_turn-2)<(handler_Motor_R.configMotor.count))
+	if(flag_motor==2 && flag_turn==1 && (limit_count_turn)<(handler_Motor_R.parametersMotor.count))
 	{
 		//Desactivamos los motores
 		status_motor(RESET);
 		//Actualizamos la direccion del motor
 		updateDirMotor(handler_Motor_Execute);
 	}
+	else if(flag_motor==1 && distance<(cm_R*handler_Motor_R.parametersMotor.countCotinuous))
+	{
+		//Desactivamos los motores
+		status_motor(RESET);
+	}
 
 }
 void callback_extInt3(void)
 {
-	handler_Motor_L.configMotor.count++;
+	handler_Motor_L.parametersMotor.count++;
+	handler_Motor_L.parametersMotor.countCotinuous++;
 	//calculo del tiempo entre interrupcion
-	uint64_t timeNow = getTicksUs();
-	handler_Motor_L.configMotor.timeCount = timeNow-timeBackL;
-	timeBackL = timeNow;
+//	uint64_t timeNow = getTicksUs();
+//	handler_Motor_L.parametersMotor.timeCount = timeNow-timeBackL;
+//	timeBackL = timeNow;
 	//Verificamos que la bandera este arriba
-	if(flag_motor==1 && flag_turn==2 && (limit_count_turn-2)<(handler_Motor_L.configMotor.count))
+	if(flag_motor==2 && flag_turn==2 && (limit_count_turn)<(handler_Motor_L.parametersMotor.count))
 	{
 		//Desactivamos los motores
 		status_motor(RESET);
 		//Actualizamos la direccion del motor
 		updateDirMotor(handler_Motor_Execute);
+	}
+	else if(flag_motor==1 && distance<(cm_L*handler_Motor_L.parametersMotor.countCotinuous))
+	{
+		//Desactivamos los motores
+		status_motor(RESET);
 	}
 }
 
@@ -634,12 +663,13 @@ void runCommand(char *prtcommand)
 		writeMsgForTXE(&handler_USART_USB, "Help Menu: \n");
 		writeMsgForTXE(&handler_USART_USB, "1) help  ---Imprime lista de comandos. \n");
 		writeMsgForTXE(&handler_USART_USB, "2) frequency # --- Cambiar el valor de la frecuenencia de las pruebas, [HZ] \n");
-		writeMsgForTXE(&handler_USART_USB, "3) line # # ---Inicia Linea recta, #: dist [mm], #: vel [m/s] tal forma: 10.23-->1023 \n");
-		writeMsgForTXE(&handler_USART_USB, "4) turn # # # # ---Iniciamos el giro del robot #: ang #:dir #:dutty_L #:dutty_R \n");
+		writeMsgForTXE(&handler_USART_USB, "3) line # # ---Inicia Linea recta, #: dist [mm], #: dutty de estabilidad \n");
+		writeMsgForTXE(&handler_USART_USB, "4) turn # # # # ---Iniciamos el giro del robot #: ang #:dir #:dutty_R \n");
 		writeMsgForTXE(&handler_USART_USB, "5) start # # # # ---Inicia movimiento, #: perTC [ms], #: dutty_L, #dutty_R, #: freqTP [Hz] \n");
 		writeMsgForTXE(&handler_USART_USB, "6) reaction # # # ---Inicia Curva de reaccion,#: perTC [ms], #: dutty_L y dutty_R, #: freqTP [Hz] \n");
 		writeMsgForTXE(&handler_USART_USB, "7) stop ---Para el estudio en medio de la ejecucion \n");
-
+		writeMsgForTXE(&handler_USART_USB, "0) const # # # ---Constantes del PID #: L,k,tau \n");
+		writeMsgForTXE(&handler_USART_USB, "0) equation # #  ---Constantes de la ecuacion lineal #: m,b  591.91-->59191 \n");
 	}
 
 	//----------------------Operacion de movimiento--------------------
@@ -651,14 +681,30 @@ void runCommand(char *prtcommand)
 	else if (strcmp(cmd, "line") == 0)
 	{
 		//Definimos la frecuencia del Timer contador
-		periodo_TIMER_Count = 200;
+		periodo_TIMER_Count = Ts;
 		//Defimos la distancia a recorrer
 		distance = firtsParameter;
 		//Definimos la Setpoint de la velocidad
-		setpoint = secondParameter/100;
+		setpoint = secondParameter;
+		//Reiniciamos los valores
+		handler_Motor_L.parametersMotor.e = handler_Motor_L.parametersMotor.e_1 = handler_Motor_L.parametersMotor.e_2 = 0;
+		handler_Motor_R.parametersMotor.e = handler_Motor_R.parametersMotor.e_1 = handler_Motor_R.parametersMotor.e_2 = 0;
 		//Cargamos la configuracion
-		config_motor(1, periodo_TIMER_Count,  30, 30, 30);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
+		config_motor(1, periodo_TIMER_Count,  setpoint, setpoint, frequency_PWM_Motor);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
 	}
+//	else if (strcmp(cmd, "const") == 0)
+//	{
+//			//Cargamos la configuracion
+//			float theta=firtsParameter+Ts/2;
+//			constains_calculator(&handler_Motor_L, secondParameter, thirdParameter, theta);   //k,tau,theta
+//			constains_calculator(&handler_Motor_R, secondParameter, thirdParameter, theta);   //k,tau,theta
+//	}
+//	else if (strcmp(cmd, "equation") == 0)
+//	{
+//			//Cargamos la configuracion
+//			m = ((float) firtsParameter)/100;
+//			bl = ((float) secondParameter)/100;
+//	}
 	else if (strcmp(cmd, "turn") == 0)
 	{
 		//Guardamos la direccion del giro
@@ -683,7 +729,7 @@ void runCommand(char *prtcommand)
 			updateDirMotor(handler_Motor_Execute);
 		}
 		//Cargamos configuracion
-		config_motor(2, periodo_TIMER_Count, (thirdParameter/100), (forthParameter/100), frequency_PWM_Motor);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
+		config_motor(2, periodo_TIMER_Count, 0.9234*((float) thirdParameter)-3, thirdParameter, frequency_PWM_Motor);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
 	}
 	//------------------------------test--------------------------------
 	//Inicializa el estudio de la velocidad
@@ -694,7 +740,7 @@ void runCommand(char *prtcommand)
 		//Cargamos la configuracion
 		config_motor(3, periodo_TIMER_Count,  (secondParameter/100), (thirdParameter/100), forthParameter);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
 		//Imprimimos mensaje
-		writeMsg(&handler_USART_USB, "Inicio conteo... \n");
+		writeMsgForTXE(&handler_USART_USB, "Inicio conteo... \n");
 	}
 	//Inicia el estudio de la curva de reaccion
 	else if (strcmp(cmd, "reaction") == 0)
@@ -704,7 +750,7 @@ void runCommand(char *prtcommand)
 		//Cargamos la configuracion
 		config_motor(4, periodo_TIMER_Count, (secondParameter/100), (secondParameter/100), thirdParameter);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
 		//Imprimimos mensaje
-		writeMsg(&handler_USART_USB, "Inicio conteo... \n");
+		writeMsgForTXE(&handler_USART_USB, "Inicio conteo... \n");
 	}
 	//para el study en ejecucion
 	else if (strcmp(cmd, "stop") == 0)
@@ -734,41 +780,43 @@ void runCommand(char *prtcommand)
 
 
 //--------------------PID----------------------
-void PID(Motor_Handler_t *ptrMotorHandler)
+void PID(Motor_Handler_t *ptrMotorHandler, float measure)
 {
-    e=(r1-T1);
+	//Calculo del error
+	ptrMotorHandler->parametersMotor.e = setpoint-measure;
     // Controle PID
-    u = u_1 + q0*e + q1*e_1 + q2*e_2;        //Ley del controlador PID discreto
+	float p0 =  ptrMotorHandler->parametersMotor.q0*ptrMotorHandler->parametersMotor.e;
+	float p1 =  ptrMotorHandler->parametersMotor.q1*ptrMotorHandler->parametersMotor.e_1;
+	float p2 =  ptrMotorHandler->parametersMotor.q2*ptrMotorHandler->parametersMotor.e_2;
+	ptrMotorHandler->parametersMotor.u = ptrMotorHandler->parametersMotor.u_1 + p0 + p1 + p2;        //Ley del controlador PID discreto
     //Saturo la accion de control 'uT' en un tope maximo y minimo
-    if (u >= 100.0)
+    if (ptrMotorHandler->parametersMotor.u >= 100.0)
     {
-    	 u = 100.0;
+    	ptrMotorHandler->parametersMotor.u = 100.0;
     }
-    else if(u <= 0.0)
+    else if(ptrMotorHandler->parametersMotor.u <= 0.0)
     {
-    	u = 0.0;
+    	ptrMotorHandler->parametersMotor.u = 0.0;
     }
     else
     {
     	__NOP();
     }
      //Retorno a los valores reales
-     e_2=e_1;
-     e_1=e;
-     u_1=u;
-     //Actualizamoe el valor del dutty
-     updateDuttyMotor(ptrMotorHandler, u);
+    ptrMotorHandler->parametersMotor.e_2 = ptrMotorHandler->parametersMotor.e_1;
+    ptrMotorHandler->parametersMotor.e_1 = ptrMotorHandler->parametersMotor.e;
+    ptrMotorHandler->parametersMotor.u_1 = ptrMotorHandler->parametersMotor.u;
+    //Actualizamoe el valor del dutty
+    if(ptrMotorHandler->parametersMotor.u>(setpoint-5))
+    {
+    	updateDuttyMotor(ptrMotorHandler, ptrMotorHandler->parametersMotor.u);
+    }
 }
 
 void status_motor(uint8_t status)
 {
 	if(status == 1)
 	{
-		//Activamos la interrupcion
-		if(flag_motor==3 || flag_motor==4)
-		{
-			statusiInterruptionTimer(&handler_TIMER_Count, INTERRUPTION_ENABLE);
-		}
 		//Activamos el motor
 		statusInOutPWM(handler_Motor_L.phandlerPWM, CHANNEL_ENABLE);
 		statusInOutPWM(handler_Motor_R.phandlerPWM, CHANNEL_ENABLE);
@@ -776,11 +824,16 @@ void status_motor(uint8_t status)
 		GPIO_writePin(handler_Motor_R.phandlerGPIOIN, (handler_Motor_R.configMotor.dir)&SET);
 		GPIO_writePin(handler_Motor_L.phandlerGPIOEN, RESET);
 		GPIO_writePin(handler_Motor_R.phandlerGPIOEN, RESET);
+		//Activamos la interrupcion
+		if(flag_motor!=2)
+		{
+			statusiInterruptionTimer(&handler_TIMER_Count, INTERRUPTION_ENABLE);
+		}
 	}
 	else
 	{
 		//Desactivamos interrupcion
-		if(flag_motor==3 || flag_motor==4)
+		if(flag_motor!=2)
 		{
 			statusiInterruptionTimer(&handler_TIMER_Count, INTERRUPTION_DISABLE);
 		}
@@ -802,13 +855,16 @@ void config_motor(uint8_t status, int firth, float second, float third, int fort
 	//Actualizacion de la frecuencia del timer
 	updateFrequencyTimer(&handler_TIMER_Count, firth);
 	//Establecer valores
-	handler_Motor_R.configMotor.count=0;
-	handler_Motor_L.configMotor.count=0;
+	handler_Motor_R.parametersMotor.count = 0;
+	handler_Motor_L.parametersMotor.count = 0;
+	handler_Motor_R.parametersMotor.countCotinuous = 0;
+	handler_Motor_L.parametersMotor.countCotinuous = 0;
 	//Establecemos valroes iniciales
-	timeBackR = timeBackL = getTicksUs();
+	//timeBackR = timeBackL = getTicksUs();
 	count_time = 0;
 	//Actualizamos el valor del dutty y frecuencia
-	updateFrequencyTimer(&handler_TIMER_Motor, 100000/forth);
+	value_period = 100000/forth;
+	updateFrequencyTimer(&handler_TIMER_Motor, value_period);
 	updateDuttyMotor(&handler_Motor_R, third);
 	updateDuttyMotor(&handler_Motor_L, second);
 	//Cambio valor bandera
@@ -818,13 +874,16 @@ void config_motor(uint8_t status, int firth, float second, float third, int fort
 }
 
 
-void change_study(void)
+void constains_calculator(Motor_Handler_t *ptrMotorhandler,float k, float tau, float theta)   //k,tau,theta
 {
-	handler_Motor_R.configMotor.count=0;
-	handler_Motor_L.configMotor.count=0;
-	//Actualizamos el valor del dutty y frecuencia
-//	updateDuttyMotor(&handler_Motor_R, value_dutty);
-//	updateDuttyMotor(&handler_Motor_L, value_dutty);
+	   //Calculo de constantes de porcentaje, integracion y derivacion por metodo de Ziegler y Nichols
+	   float kp=(1.2*tau)/(k*theta);
+	   float ti=2.0*theta;
+	   float td=0.5*theta;
+	  //Calculo do controle PID digital
+	   ptrMotorhandler->parametersMotor.q0 = kp*(1+Ts/(2.0*ti)+td/Ts);
+	   ptrMotorhandler->parametersMotor.q1 = -kp*(1-Ts/(2.0*ti)+(2.0*td)/Ts);
+	   ptrMotorhandler->parametersMotor.q2 = (kp*td)/Ts;
 }
 
 

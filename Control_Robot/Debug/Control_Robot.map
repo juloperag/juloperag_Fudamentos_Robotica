@@ -886,7 +886,7 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
  .text.writeCharForTXE
                 0x0000000000000000       0x44 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
- .text.BasicUSART2_Callback
+ .text.BasicUSART1_Callback
                 0x0000000000000000       0x10 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
  .debug_macro   0x0000000000000000      0xa8a B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
  .debug_macro   0x0000000000000000       0x22 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
@@ -1437,9 +1437,9 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .text.BasicTimer3_Callback
                 0x0000000008001594      0x194 ./App/Src/main.o
                 0x0000000008001594                BasicTimer3_Callback
- .text.BasicUSART2_Callback
+ .text.BasicUSART1_Callback
                 0x0000000008001728       0x1c ./App/Src/main.o
-                0x0000000008001728                BasicUSART2_Callback
+                0x0000000008001728                BasicUSART1_Callback
  .text.callback_extInt1
                 0x0000000008001744       0x58 ./App/Src/main.o
                 0x0000000008001744                callback_extInt1
@@ -1700,9 +1700,9 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .text.interruptionTX
                 0x000000000800478c       0x44 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
                 0x000000000800478c                interruptionTX
- .text.BasicUSART1_Callback
+ .text.BasicUSART2_Callback
                 0x00000000080047d0       0x10 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x00000000080047d0                BasicUSART1_Callback
+                0x00000000080047d0                BasicUSART2_Callback
  .text.BasicUSART6_Callback
                 0x00000000080047e0       0x10 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
                 0x00000000080047e0                BasicUSART6_Callback
@@ -2215,7 +2215,7 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .igot.plt      0x00000000200001e0        0x0 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
                 0x00000000200001e0                . = ALIGN (0x4)
 
-.bss            0x00000000200001e0      0xac0 load address 0x000000000800a9e4
+.bss            0x00000000200001e0      0xbb0 load address 0x000000000800a9e4
                 0x00000000200001e0                _sbss = .
                 0x00000000200001e0                __bss_start__ = _sbss
  *(.bss)
@@ -2314,101 +2314,101 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
                 0x0000000020000364                flag_turn
  *fill*         0x0000000020000365        0x3 
  .bss.count_for_dutty_R
-                0x0000000020000368       0x42 ./App/Src/main.o
+                0x0000000020000368       0xba ./App/Src/main.o
                 0x0000000020000368                count_for_dutty_R
- *fill*         0x00000000200003aa        0x2 
+ *fill*         0x0000000020000422        0x2 
  .bss.count_for_dutty_L
-                0x00000000200003ac       0x42 ./App/Src/main.o
-                0x00000000200003ac                count_for_dutty_L
+                0x0000000020000424       0xba ./App/Src/main.o
+                0x0000000020000424                count_for_dutty_L
  .bss.counterRecepcion
-                0x00000000200003ee        0x1 ./App/Src/main.o
-                0x00000000200003ee                counterRecepcion
- *fill*         0x00000000200003ef        0x1 
+                0x00000000200004de        0x1 ./App/Src/main.o
+                0x00000000200004de                counterRecepcion
+ *fill*         0x00000000200004df        0x1 
  .bss.bufferRecepcion
-                0x00000000200003f0       0x40 ./App/Src/main.o
-                0x00000000200003f0                bufferRecepcion
+                0x00000000200004e0       0x40 ./App/Src/main.o
+                0x00000000200004e0                bufferRecepcion
  .bss.__sbrk_heap_end
-                0x0000000020000430        0x4 ./Core/sysmem.o
+                0x0000000020000520        0x4 ./Core/sysmem.o
  .bss.ptrTimer2Used
-                0x0000000020000434        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
-                0x0000000020000434                ptrTimer2Used
+                0x0000000020000524        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
+                0x0000000020000524                ptrTimer2Used
  .bss.ptrTimer3Used
-                0x0000000020000438        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
-                0x0000000020000438                ptrTimer3Used
+                0x0000000020000528        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
+                0x0000000020000528                ptrTimer3Used
  .bss.ptrTimer4Used
-                0x000000002000043c        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
-                0x000000002000043c                ptrTimer4Used
+                0x000000002000052c        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
+                0x000000002000052c                ptrTimer4Used
  .bss.ptrTimer5Used
-                0x0000000020000440        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
-                0x0000000020000440                ptrTimer5Used
- .bss.auxValue  0x0000000020000444        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PLLDriver.o)
-                0x0000000020000444                auxValue
- *fill*         0x0000000020000445        0x3 
+                0x0000000020000530        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
+                0x0000000020000530                ptrTimer5Used
+ .bss.auxValue  0x0000000020000534        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PLLDriver.o)
+                0x0000000020000534                auxValue
+ *fill*         0x0000000020000535        0x3 
  .bss.ptrUSART1Used
-                0x0000000020000448        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000448                ptrUSART1Used
+                0x0000000020000538        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000538                ptrUSART1Used
  .bss.ptrUSART2Used
-                0x000000002000044c        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x000000002000044c                ptrUSART2Used
+                0x000000002000053c        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x000000002000053c                ptrUSART2Used
  .bss.ptrUSART6Used
-                0x0000000020000450        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000450                ptrUSART6Used
+                0x0000000020000540        0x4 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000540                ptrUSART6Used
  .bss.auxRxData
-                0x0000000020000454        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000454                auxRxData
+                0x0000000020000544        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000544                auxRxData
  .bss.datatoSendForTXE
-                0x0000000020000455        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000455                datatoSendForTXE
- *fill*         0x0000000020000456        0x2 
+                0x0000000020000545        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000545                datatoSendForTXE
+ *fill*         0x0000000020000546        0x2 
  .bss.bufferMsgForTXE
-                0x0000000020000458       0x64 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000458                bufferMsgForTXE
+                0x0000000020000548       0x64 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000548                bufferMsgForTXE
  .bss.bufferMsgForTXE_inLine
-                0x00000000200004bc      0x7d0 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x00000000200004bc                bufferMsgForTXE_inLine
- .bss.inLine    0x0000000020000c8c        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000c8c                inLine
+                0x00000000200005ac      0x7d0 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x00000000200005ac                bufferMsgForTXE_inLine
+ .bss.inLine    0x0000000020000d7c        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000d7c                inLine
  .bss.inLineTxe
-                0x0000000020000c8d        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000c8d                inLineTxe
- .bss.posChar   0x0000000020000c8e        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000c8e                posChar
+                0x0000000020000d7d        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000d7d                inLineTxe
+ .bss.posChar   0x0000000020000d7e        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000d7e                posChar
  .bss.typeWriteTXE
-                0x0000000020000c8f        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x0000000020000c8f                typeWriteTXE
+                0x0000000020000d7f        0x1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+                0x0000000020000d7f                typeWriteTXE
  .bss.__malloc_free_list
-                0x0000000020000c90        0x4 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-nano-mallocr.o)
-                0x0000000020000c90                __malloc_free_list
+                0x0000000020000d80        0x4 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-nano-mallocr.o)
+                0x0000000020000d80                __malloc_free_list
  .bss.__malloc_sbrk_start
-                0x0000000020000c94        0x4 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-nano-mallocr.o)
-                0x0000000020000c94                __malloc_sbrk_start
- .bss.errno     0x0000000020000c98        0x4 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-reent.o)
-                0x0000000020000c98                errno
+                0x0000000020000d84        0x4 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-nano-mallocr.o)
+                0x0000000020000d84                __malloc_sbrk_start
+ .bss.errno     0x0000000020000d88        0x4 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-reent.o)
+                0x0000000020000d88                errno
  .bss.__lock___malloc_recursive_mutex
-                0x0000000020000c9c        0x1 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-lock.o)
-                0x0000000020000c9c                __lock___malloc_recursive_mutex
+                0x0000000020000d8c        0x1 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-lock.o)
+                0x0000000020000d8c                __lock___malloc_recursive_mutex
  .bss.__lock___sfp_recursive_mutex
-                0x0000000020000c9d        0x1 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-lock.o)
-                0x0000000020000c9d                __lock___sfp_recursive_mutex
+                0x0000000020000d8d        0x1 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-lock.o)
+                0x0000000020000d8d                __lock___sfp_recursive_mutex
  .bss.__lock___sinit_recursive_mutex
-                0x0000000020000c9e        0x1 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-lock.o)
-                0x0000000020000c9e                __lock___sinit_recursive_mutex
+                0x0000000020000d8e        0x1 c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-lock.o)
+                0x0000000020000d8e                __lock___sinit_recursive_mutex
  *(COMMON)
-                0x0000000020000ca0                . = ALIGN (0x4)
- *fill*         0x0000000020000c9f        0x1 
-                0x0000000020000ca0                _ebss = .
-                0x0000000020000ca0                __bss_end__ = _ebss
+                0x0000000020000d90                . = ALIGN (0x4)
+ *fill*         0x0000000020000d8f        0x1 
+                0x0000000020000d90                _ebss = .
+                0x0000000020000d90                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x0000000020000ca0      0x600 load address 0x000000000800a9e4
-                0x0000000020000ca0                . = ALIGN (0x8)
+                0x0000000020000d90      0x600 load address 0x000000000800a9e4
+                0x0000000020000d90                . = ALIGN (0x8)
                 [!provide]                        PROVIDE (end = .)
-                0x0000000020000ca0                PROVIDE (_end = .)
-                0x0000000020000ea0                . = (. + _Min_Heap_Size)
- *fill*         0x0000000020000ca0      0x200 
-                0x00000000200012a0                . = (. + _Min_Stack_Size)
- *fill*         0x0000000020000ea0      0x400 
-                0x00000000200012a0                . = ALIGN (0x8)
+                0x0000000020000d90                PROVIDE (_end = .)
+                0x0000000020000f90                . = (. + _Min_Heap_Size)
+ *fill*         0x0000000020000d90      0x200 
+                0x0000000020001390                . = (. + _Min_Stack_Size)
+ *fill*         0x0000000020000f90      0x400 
+                0x0000000020001390                . = ALIGN (0x8)
 
 /DISCARD/
  libc.a(*)
@@ -2780,28 +2780,28 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_line    0x0000000000004ea8      0xb96 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PwmDriver.o)
  .debug_line    0x0000000000005a3e      0xe00 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
 
-.debug_str      0x0000000000000000    0x585e5
+.debug_str      0x0000000000000000    0x585e6
  .debug_str     0x0000000000000000    0x53f8a ./App/Src/MotorDriver.o
                                       0x5419d (size before relaxing)
- .debug_str     0x0000000000053f8a     0x2327 ./App/Src/main.o
-                                      0x5656d (size before relaxing)
- .debug_str     0x00000000000562b1       0x36 ./Core/Startup/startup_stm32f411retx.o
+ .debug_str     0x0000000000053f8a     0x2328 ./App/Src/main.o
+                                      0x5656e (size before relaxing)
+ .debug_str     0x00000000000562b2       0x36 ./Core/Startup/startup_stm32f411retx.o
                                          0x98 (size before relaxing)
- .debug_str     0x00000000000562e7     0x174f ./Core/syscalls.o
+ .debug_str     0x00000000000562e8     0x174f ./Core/syscalls.o
                                        0x8ab7 (size before relaxing)
- .debug_str     0x0000000000057a36       0x67 ./Core/sysmem.o
+ .debug_str     0x0000000000057a37       0x67 ./Core/sysmem.o
                                        0x5df3 (size before relaxing)
- .debug_str     0x0000000000057a9d      0x648 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
+ .debug_str     0x0000000000057a9e      0x648 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
                                       0x50279 (size before relaxing)
- .debug_str     0x00000000000580e5      0x1d9 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(ExtiDriver.o)
+ .debug_str     0x00000000000580e6      0x1d9 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(ExtiDriver.o)
                                       0x50520 (size before relaxing)
- .debug_str     0x00000000000582be       0x78 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(GPIOxDriver.o)
+ .debug_str     0x00000000000582bf       0x78 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(GPIOxDriver.o)
                                       0x4ff11 (size before relaxing)
- .debug_str     0x0000000000058336       0x71 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PLLDriver.o)
+ .debug_str     0x0000000000058337       0x71 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PLLDriver.o)
                                       0x4fc2e (size before relaxing)
- .debug_str     0x00000000000583a7       0x7c B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PwmDriver.o)
+ .debug_str     0x00000000000583a8       0x7c B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PwmDriver.o)
                                       0x53e3b (size before relaxing)
- .debug_str     0x0000000000058423      0x1c2 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+ .debug_str     0x0000000000058424      0x1c2 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
                                       0x544bf (size before relaxing)
 
 .comment        0x0000000000000000       0x50
