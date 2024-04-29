@@ -1,0 +1,6 @@
+"./App/Src/MotorDriver.o"
+"./App/Src/main.o"
+"./Core/Startup/startup_stm32f411retx.o"
+"./Core/syscalls.o"
+"./Core/sysmem.o"
+"./DSP/Source/BasicMathFunctions/arm_abs_f32.o"

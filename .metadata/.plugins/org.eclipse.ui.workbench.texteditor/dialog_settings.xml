@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="handler_TIMER_study"/>
+		<item key="selection" value="dutty"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="dutty"/>
+			<item value="parameter_PID_distance"/>
+			<item value="correction_w_angular_c "/>
+			<item value="parameter_PID_phi"/>
 			<item value="handler_TIMER_study"/>
 			<item value="flag_motor"/>
 			<item value="value_perido"/>
@@ -19,12 +23,11 @@
 			<item value="vTaskTwo"/>
 			<item value="xHandleTaskBL"/>
 			<item value="vTask_blink_led"/>
-			<item value="xHandleTask1"/>
-			<item value="handler_PWM_Motor_Test"/>
-			<item value="handler_GPIO_Motor_IN_Test"/>
-			<item value="handler_GPIO_Motor_EN_Test"/>
 		</list>
 		<list key="replacehistory">
+			<item value="parameter_PID_phi"/>
+			<item value="correction_velocity_c"/>
+			<item value="parameter_PID_distance"/>
 			<item value="value_period"/>
 			<item value="periodo_TIMER_Count"/>
 			<item value="handler_TIMER_Count"/>
@@ -37,9 +40,6 @@
 			<item value="xHandleTaskSL"/>
 			<item value="vTask_Status_Led"/>
 			<item value="xHandleTaskBL"/>
-			<item value="handler_PWM_Motor_Execute"/>
-			<item value="handler_GPIO_Motor_IN_Execute"/>
-			<item value="handler_GPIO_Motor_EN_Execute"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

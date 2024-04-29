@@ -1,0 +1,10 @@
+19:43:13 **** Incremental Build of configuration Debug for project Control_Robot_v3.6_Control_Jaco ****
+make -j4 all 
+arm-none-eabi-size   Control_Robot_v3.6_Control_Jaco.elf 
+   text	   data	    bss	    dec	    hex	filename
+  52044	    504	   4448	  56996	   dea4	Control_Robot_v3.6_Control_Jaco.elf
+Finished building: default.size.stdout
+ 
+
+19:43:14 Build Finished. 0 errors, 0 warnings. (took 301ms)
+

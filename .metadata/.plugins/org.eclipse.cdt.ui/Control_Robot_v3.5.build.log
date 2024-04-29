@@ -1,0 +1,17 @@
+19:38:29 **** Incremental Build of configuration Debug for project Control_Robot_v3.5 ****
+make -j4 all 
+arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.5/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.5/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.5/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.5/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
+arm-none-eabi-gcc -o "Control_Robot_v3.5.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot_v3.5\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot_v3.5.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Control_Robot_v3.5.elf
+ 
+arm-none-eabi-size   Control_Robot_v3.5.elf 
+arm-none-eabi-objdump -h -S  Control_Robot_v3.5.elf  > "Control_Robot_v3.5.list"
+   text	   data	    bss	    dec	    hex	filename
+  52380	    500	   4444	  57324	   dfec	Control_Robot_v3.5.elf
+Finished building: default.size.stdout
+ 
+Finished building: Control_Robot_v3.5.list
+ 
+
+19:38:31 Build Finished. 0 errors, 0 warnings. (took 1s.464ms)
+

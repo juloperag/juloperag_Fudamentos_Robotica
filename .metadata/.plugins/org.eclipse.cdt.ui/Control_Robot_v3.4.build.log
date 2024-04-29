@@ -1,0 +1,10 @@
+17:59:01 **** Incremental Build of configuration Debug for project Control_Robot_v3.4 ****
+make -j4 all 
+arm-none-eabi-size   Control_Robot_v3.4.elf 
+   text	   data	    bss	    dec	    hex	filename
+  50636	    492	   4396	  55524	   d8e4	Control_Robot_v3.4.elf
+Finished building: default.size.stdout
+ 
+
+17:59:01 Build Finished. 0 errors, 0 warnings. (took 339ms)
+

@@ -89,6 +89,15 @@ void PID(Motor_Handler_t *ptrMotorHandler, float measure);                    		
 uint16_t distance = 0;                 //Variable que guarda la distancia a recorrer
 float setpoint = 0;               		//Variable que define el setpoint ---> Dutty
 float Ts = 200;                        //Periodo de muestreo [ms]
+//-------Odometria-------------
+float32_t cm_L = 0;                               //Factor de conversion rueda Izquierda [mm/cuentas]
+float32_t cm_R = 0;                               //Factor de conversion rueda Derecha   [mm/cuentas]
+float phi = 0;                                    //Angulo medido indirectamente [rad]
+float distance_c = 0;                             //Distancia recorrida medida indirectamente [mm]
+volatile float32_t velocity_L =  0.0;			  //Velocidad de la rueda Izquierda      [m/s]
+volatile float32_t velocity_R =  0.0;             //Velocidad de la rueda Derecha        [m/s]
+float x_position = 0;                             //Posicion en x medida indirectamente [mm]
+float y_position = 0;                             //Posicion en y medida indirectamente [mm]
 //-----Variables Del Conteo---
 Motor_Handler_t *handler_Motor_Execute = {0};     //Handler que se refiere a uno de los motores
 uint8_t flag_motor = 0;                           //Bandera que indica el tipo de ejecucion del motor
@@ -97,21 +106,17 @@ uint16_t periodo_TIMER_Count = 1000;              //Frecuencia del timer contado
 uint16_t frequency_PWM_Motor = 30;                //Frecuencia del timer del PWM
 uint16_t count_time = 0;                          //Variable para contar el tiempo trascurrido
 uint16_t limit_count_turn = 0;                    //Limite de cuentas del giro
-volatile float32_t velocity_L =  0.0;			  //Velocidad de la rueda Izquierda      [m/s]
-volatile float32_t velocity_R =  0.0;             //Velocidad de la rueda Derecha        [m/s]
 float porVel_L = 0;
 float porVel_R = 0;
 float m = 591.9159;
 float bl = 36.5313;
-float32_t cm_L = 0;                               //Factor de conversion rueda Izquierda [mm/cuentas]
-float32_t cm_R = 0;                               //Factor de conversion rueda Derecha   [mm/cuentas]
 uint64_t timeBackL = 1;                           //Variable para guardar el tiempo de la interrupcion pasada del encoder Izquierdo
 uint64_t timeBackR = 1;                           //Variable para guardar el tiempo de la interrupcion pasada del encoder Derecho
 #define PI 3.14159265358979323846
 #define b  10430
 #define DL 5170
 #define DR 5145
-#define Ce 72
+#define Ce 120
 
 //-----Variables de la recepcion de comandos----
 uint8_t commandComplete = 1;           //Bandera que indica si el comando esta completo
@@ -457,13 +462,11 @@ void int_Config_Motor(void)
 	handler_Motor_R.phandlerGPIOIN = &handler_GPIO_MotorR_IN;
 	handler_Motor_R.phandlerPWM = &handler_PWM_MotorR;
 	//definicion de parametros
-	handler_Motor_R.parametersMotor.timeCount = 1;
-	handler_Motor_R.parametersMotor.backCount = 0;
 	handler_Motor_R.parametersMotor.e = handler_Motor_R.parametersMotor.e_1 = handler_Motor_R.parametersMotor.e_2 = 0;
 	handler_Motor_R.parametersMotor.u = handler_Motor_R.parametersMotor.u_1 = 0;
 	//Calculo de Constantes PID
-	float theta=25+Ts/2;
-	constains_calculator(&handler_Motor_R, 2.2, 50, theta);   //k,tau,theta
+	float theta=2+Ts/2;
+	constains_calculator(&handler_Motor_R, 2.2,120, theta);   //k,tau,theta
 
 	//---------------Motor Izquierdo----------------
 	//Parametro de la señal del dutty
@@ -475,12 +478,10 @@ void int_Config_Motor(void)
 	handler_Motor_L.phandlerGPIOIN = &handler_GPIO_MotorL_IN;
 	handler_Motor_L.phandlerPWM = &handler_PWM_MotorL;
 	//definicion de parametros
-	handler_Motor_L.parametersMotor.timeCount = 1;
-	handler_Motor_L.parametersMotor.backCount = 0;
 	handler_Motor_L.parametersMotor.e = handler_Motor_L.parametersMotor.e_1 = handler_Motor_L.parametersMotor.e_2 = 0;
 	handler_Motor_L.parametersMotor.u = handler_Motor_L.parametersMotor.u_1 = 0;
 	//Calculo de Constantes PID
-	constains_calculator(&handler_Motor_L, 2.2, 50, theta);   //k,tau,theta
+	constains_calculator(&handler_Motor_L, 2.2, 120, theta);   //k,tau,theta
 
 };
 
@@ -507,8 +508,10 @@ void BasicTimer3_Callback(void)
 		//Calculamos la velocidad
 		//velocity_L = (cm_L*1000)/handler_Motor_L.parametersMotor.timeCount;   //[m/s]
 		//velocity_R = (cm_R*1000)/handler_Motor_R.parametersMotor.timeCount;   //[m/s]
-		velocity_L = (cm_L*handler_Motor_L.parametersMotor.count)/periodo_TIMER_Count;   //[m/s]
-		velocity_R = (cm_R*handler_Motor_R.parametersMotor.count)/periodo_TIMER_Count;   //[m/s]
+		handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
+		handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
+		velocity_L = (handler_Motor_L.parametersMotor.distance)/periodo_TIMER_Count;   //[m/s]
+		velocity_R = (handler_Motor_R.parametersMotor.distance)/periodo_TIMER_Count;   //[m/s]
 		//Convertirmos los valores de velocidad a porcentaje
 		//Falla porVel_L = 546.4481*velocity_L-36.5573;
 		//Regular porVel_R = 563*velocity_R + -26;
@@ -516,10 +519,14 @@ void BasicTimer3_Callback(void)
 		//porVel_L = 17.8 + -185*(velocity_L) + 3973*pow(velocity_L,2) + -6556*pow(velocity_L,3);
 		porVel_L = 600*velocity_L - 36.53;
 		porVel_R = 600*velocity_R - 36.53;
-		//Aumentamos el contador de tiempo
-		count_time++;    			   //Tiempo en xperiodo_TIMER_Count ms
+		//Calculo odometria
+		distance_c = (handler_Motor_R.parametersMotor.distance+handler_Motor_L.parametersMotor.distance)/2;  	   //[mm]
+		x_position = x_position + (distance_c*(cos(phi)));        //[m]
+		y_position = y_position + (distance_c*(sin(phi)));        //[m]
+		phi = phi + ((handler_Motor_R.parametersMotor.distance-handler_Motor_L.parametersMotor.distance)*100)/b;   //[rad]
+		phi = atan2(sin(phi),cos(phi));
 		//Convertimos el valor y imprimemos
-		sprintf(bufferMsg,"%u\t%#.4f\t%#.3f\n", count_time, velocity_L , velocity_R);
+		sprintf(bufferMsg,"%#.4f\t%#.4f\n", x_position , y_position);
 		writeMsgForTXE(&handler_USART_USB, bufferMsg);
 		//Reiniciamos el numero de conteos
 		handler_Motor_R.parametersMotor.count = 0;
