@@ -1,3 +1,0 @@
-../App/Src/MotorDriver.c:12:6:updateDuttyMotor	16	static
-../App/Src/MotorDriver.c:21:6:updateFrequencyMotor	24	static
-../App/Src/MotorDriver.c:30:6:updateDirMotor	16	static
