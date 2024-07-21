@@ -886,7 +886,7 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
  .text.writeCharForTXE
                 0x0000000000000000       0x44 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
- .text.BasicUSART1_Callback
+ .text.BasicUSART2_Callback
                 0x0000000000000000       0x10 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
  .debug_macro   0x0000000000000000      0xa8a B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
  .debug_macro   0x0000000000000000       0x22 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
@@ -1437,9 +1437,9 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .text.BasicTimer3_Callback
                 0x0000000008001594      0x194 ./App/Src/main.o
                 0x0000000008001594                BasicTimer3_Callback
- .text.BasicUSART1_Callback
+ .text.BasicUSART2_Callback
                 0x0000000008001728       0x1c ./App/Src/main.o
-                0x0000000008001728                BasicUSART1_Callback
+                0x0000000008001728                BasicUSART2_Callback
  .text.callback_extInt1
                 0x0000000008001744       0x58 ./App/Src/main.o
                 0x0000000008001744                callback_extInt1
@@ -1700,9 +1700,9 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .text.interruptionTX
                 0x000000000800478c       0x44 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
                 0x000000000800478c                interruptionTX
- .text.BasicUSART2_Callback
+ .text.BasicUSART1_Callback
                 0x00000000080047d0       0x10 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
-                0x00000000080047d0                BasicUSART2_Callback
+                0x00000000080047d0                BasicUSART1_Callback
  .text.BasicUSART6_Callback
                 0x00000000080047e0       0x10 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
                 0x00000000080047e0                BasicUSART6_Callback

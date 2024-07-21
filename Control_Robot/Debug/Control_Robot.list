@@ -1663,9 +1663,9 @@ void int_Hardware(void)
  8001228:	4a9a      	ldr	r2, [pc, #616]	; (8001494 <int_Hardware+0x2c0>)
  800122a:	609a      	str	r2, [r3, #8]
 	//Definimos el pin a utilizar
-	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_9; 						//PIN_x, 0-15
+	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_2; 						//PIN_x, 0-15
  800122c:	4b9a      	ldr	r3, [pc, #616]	; (8001498 <int_Hardware+0x2c4>)
- 800122e:	2209      	movs	r2, #9
+ 800122e:	2202      	movs	r2, #2
  8001230:	701a      	strb	r2, [r3, #0]
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
@@ -1694,9 +1694,9 @@ void int_Hardware(void)
  800124e:	4a91      	ldr	r2, [pc, #580]	; (8001494 <int_Hardware+0x2c0>)
  8001250:	609a      	str	r2, [r3, #8]
 	//Definimos el pin a utiliza
-	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_10; 						//PIN_x, 0-15
+	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_3; 						//PIN_x, 0-15
  8001252:	4b92      	ldr	r3, [pc, #584]	; (800149c <int_Hardware+0x2c8>)
- 8001254:	220a      	movs	r2, #10
+ 8001254:	2203      	movs	r2, #3
  8001256:	701a      	strb	r2, [r3, #0]
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
@@ -1905,7 +1905,7 @@ void int_Hardware(void)
 
 	//---------------USART1----------------
 	//Definimos el periferico USARTx a utilizar
-	handler_USART_USB.ptrUSARTx = USART1;
+	handler_USART_USB.ptrUSARTx = USART2;
  8001356:	4b59      	ldr	r3, [pc, #356]	; (80014bc <int_Hardware+0x2e8>)
  8001358:	4a59      	ldr	r2, [pc, #356]	; (80014c0 <int_Hardware+0x2ec>)
  800135a:	609a      	str	r2, [r3, #8]
@@ -2160,7 +2160,7 @@ void int_Hardware(void)
  80014b4:	40020c00 	.word	0x40020c00
  80014b8:	2000030c 	.word	0x2000030c
  80014bc:	20000264 	.word	0x20000264
- 80014c0:	40011000 	.word	0x40011000
+ 80014c0:	40004400 	.word	0x40004400
  80014c4:	20000208 	.word	0x20000208
  80014c8:	20000348 	.word	0x20000348
  80014cc:	40000400 	.word	0x40000400
@@ -2517,11 +2517,11 @@ void BasicTimer3_Callback(void)
  8001720:	08009ce4 	.word	0x08009ce4
  8001724:	20000360 	.word	0x20000360
 
-08001728 <BasicUSART1_Callback>:
+08001728 <BasicUSART2_Callback>:
 
 //-------------------------USARTRX--------------------------------
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el USART2
-void BasicUSART1_Callback(void)
+void BasicUSART2_Callback(void)
 {
  8001728:	b580      	push	{r7, lr}
  800172a:	af00      	add	r7, sp, #0
@@ -2530,7 +2530,7 @@ void BasicUSART1_Callback(void)
  800172c:	f003 f822 	bl	8004774 <getRxData>
  8001730:	4603      	mov	r3, r0
  8001732:	461a      	mov	r2, r3
- 8001734:	4b02      	ldr	r3, [pc, #8]	; (8001740 <BasicUSART1_Callback+0x18>)
+ 8001734:	4b02      	ldr	r3, [pc, #8]	; (8001740 <BasicUSART2_Callback+0x18>)
  8001736:	701a      	strb	r2, [r3, #0]
 	//Funcion que almacena los caracteres del comando recibido
 	recepcionCommand();
@@ -10630,12 +10630,11 @@ void interruptionTX(USART_TypeDef *ptrUSARTxUsed, uint8_t interrupEnable)
  80047ca:	f85d 7b04 	ldr.w	r7, [sp], #4
  80047ce:	4770      	bx	lr
 
-080047d0 <BasicUSART2_Callback>:
-	__NOP();
-}
+080047d0 <BasicUSART1_Callback>:
 
 
-__attribute__((weak)) void BasicUSART2_Callback()
+//Definimos las funciones para cuando se genera una interrupcion del USART1-2 y 6
+__attribute__((weak)) void BasicUSART1_Callback()
 {
  80047d0:	b480      	push	{r7}
  80047d2:	af00      	add	r7, sp, #0
@@ -10648,6 +10647,8 @@ __attribute__((weak)) void BasicUSART2_Callback()
  80047de:	4770      	bx	lr
 
 080047e0 <BasicUSART6_Callback>:
+	__NOP();
+}
 
 
 __attribute__((weak)) void BasicUSART6_Callback()
@@ -10690,7 +10691,7 @@ void USART1_IRQHandler(void)
  800480c:	701a      	strb	r2, [r3, #0]
 		//Llamanos a la funcion de interrupcion
 		BasicUSART1_Callback();
- 800480e:	f7fc ff8b 	bl	8001728 <BasicUSART1_Callback>
+ 800480e:	f7ff ffdf 	bl	80047d0 <BasicUSART1_Callback>
 	}
 	else
 	{
@@ -10846,7 +10847,7 @@ void USART2_IRQHandler(void)
  8004914:	701a      	strb	r2, [r3, #0]
 		//Llamanos a la funcion de interrupcion
 		BasicUSART2_Callback();
- 8004916:	f7ff ff5b 	bl	80047d0 <BasicUSART2_Callback>
+ 8004916:	f7fc ff07 	bl	8001728 <BasicUSART2_Callback>
 	}
 	else
 	{

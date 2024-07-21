@@ -1,21 +1,7 @@
-19:42:53 **** Incremental Build of configuration Debug for project Control_Robot_v3.6_Control_Jaco ****
+19:45:46 **** Incremental Build of configuration Debug for project Prog_A_Start_Base ****
 make -j4 all 
-arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.6_Control_Jaco/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.6_Control_Jaco/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.6_Control_Jaco/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.6_Control_Jaco/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
-arm-none-eabi-gcc -o "Control_Robot_v3.6_Control_Jaco.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot_v3.6_Control_Jaco\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot_v3.6_Control_Jaco.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Control_Robot_v3.6_Control_Jaco.elf
- 
-arm-none-eabi-size   Control_Robot_v3.6_Control_Jaco.elf 
-arm-none-eabi-objdump -h -S  Control_Robot_v3.6_Control_Jaco.elf  > "Control_Robot_v3.6_Control_Jaco.list"
+arm-none-eabi-size   Prog_A_Start_Base.elf 
    text	   data	    bss	    dec	    hex	filename
-  52044	    504	   4448	  56996	   dea4	Control_Robot_v3.6_Control_Jaco.elf
-Finished building: default.size.stdout
- 
-Finished building: Control_Robot_v3.6_Control_Jaco.list
- 
-19:43:13 **** Incremental Build of configuration Debug for project Control_Robot_v3.6_Control_Jaco ****
-make -j4 all 
-arm-none-eabi-size   Control_Robot_v3.6_Control_Jaco.elf 
-   text	   data	    bss	    dec	    hex	filename
-  52044	    504	   4448	  56996	   dea4	Control_Robot_v3.6_Control_Jaco.elf
+  36096	    496	   4272	  40864	   9fa0	Prog_A_Start_Base.elf
 Finished building: default.size.stdout
  

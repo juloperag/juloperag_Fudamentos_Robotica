@@ -4,7 +4,7 @@
 ../App/Src/main.c:432:6:int_Config_Motor	4	static
 ../App/Src/main.c:465:6:BasicTimer2_Callback	8	static
 ../App/Src/main.c:472:6:BasicTimer3_Callback	16	static
-../App/Src/main.c:545:6:BasicUSART1_Callback	8	static
+../App/Src/main.c:545:6:BasicUSART2_Callback	8	static
 ../App/Src/main.c:556:6:callback_extInt1	8	static
 ../App/Src/main.c:570:6:callback_extInt3	8	static
 ../App/Src/main.c:588:6:recepcionCommand	4	static

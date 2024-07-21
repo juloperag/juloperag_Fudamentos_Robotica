@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Button, Frame, Entry, messagebox, Text, Scrollbar, Radiobutton, IntVar
+from tkinter import Tk, Label, Button, Frame, Entry, messagebox, Text, Scrollbar, Radiobutton, IntVar, StringVar
 from tkinter.ttk import Combobox
 import serial
 import time
@@ -27,6 +27,7 @@ class MainFrame(Frame):
         self.value_row = IntVar()
         self.value_cols = IntVar()
         self.value_separation = IntVar()
+        self.value_send = StringVar()
         #Creacion de widgets
         self.creat_widgets()
         #Inicializacion hilo 1
@@ -121,20 +122,35 @@ class MainFrame(Frame):
         else:
             print("Numero maximo de filas o columnas superado en la definicion")
 
+    def sendGridMapCommunicationSerial(self):
+        #Guardar valor de variables
+        row = self.value_row.get()
+        cols = self.value_cols.get()
+        #Construir string a enviar con la informacion del grid map
+        msg = str(row)+";"+str(cols)+";"+str(self.value_separation.get())+";"
+        for i in range(row):
+            for j in range(cols):
+                msg = msg + (self.buttons[i][j])["text"]
+            msg = msg + ":"
+        msg = msg + " @"
+        #Enviar string
+        self.CommunicationSerial.write(msg.encode('ascii'))
+
     def sendCommunicationSerial(self):
-        cad = "help @"
-        self.CommunicationSerial.write(cad.encode('ascii'))
+        msg = self.value_send.get()
+        self.CommunicationSerial.write(msg.encode('ascii'))
 
     def receiveCommunicationSerial(self):
-        mesg = self.CommunicationSerial.readline().decode('ascii').strip()
-        if mesg:
-            #Habilitar escritura
-            self.txt.config(state="normal")
-            #Escribir caracteres
-            self.txt.insert("end", mesg)  
-            self.txt.see("end") 
-            #Desactivar escritura
-            self.txt.config(state="disabled")
+        while self.isRun:
+            mesg = self.CommunicationSerial.readline().decode('ascii')
+            if mesg:
+                #Habilitar escritura
+                self.txt.config(state="normal")
+                #Escribir caracteres
+                self.txt.insert("end", mesg)
+                self.txt.see("end")
+                #Desactivar escritura
+                self.txt.config(state="disabled")
 
     def changeGridMap(self):
         b = 0
@@ -162,18 +178,22 @@ class MainFrame(Frame):
         self.cmbox.place(x=590,y=290)
         self.cmbox.current(0) 
         #Envio o cambio del grid map
-        self.Button_Send = Button(self, text= "Send", command= self.sendCommunicationSerial, state= "disabled")
-        self.Button_Send.place(x=610,y=400)
+        self.Button_Send = Button(self, text= "Send Grid Map", command= self.sendGridMapCommunicationSerial, state= "disabled")
+        self.Button_Send.place(x=580,y=400)
         self.Button_Change = Button(self, text= "Change", command = self.changeGridMap, state= "disabled")
-        self.Button_Change.place(x=520,y=400)
+        self.Button_Change.place(x=500,y=400)
         #Visualizacion de comentarios
         self.frame_comments = Frame(self)
         self.frame_comments.place(x=20,y = 460)
         scroll = Scrollbar(self.frame_comments)
-        self.txt = Text(self.frame_comments,width="80",height="5",yscrollcommand= scroll.set, state="disabled")
+        self.txt = Text(self.frame_comments,wrap='word',width="80",height="5",yscrollcommand= scroll.set, state="disabled")
         scroll.config(command=self.txt.yview)
         self.txt.pack(side="left")
         scroll.pack(side="right", fill = "y")
+        #Envio de comandos
+        Entry(self, textvariable = self.value_send, width=90).place(x=20, y=560)
+        Button(self, text= "Send", command = self.sendCommunicationSerial).place(x=580,y=560)
+
 
 
 def main():

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="dutty"/>
+		<item key="selection" value="save_char_Parameter_Grid_Map"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="save_char_Grid_Map"/>
+			<item value="bufferStringGM"/>
+			<item value="bufferParameterStringGM"/>
+			<item value="status_String_GM"/>
 			<item value="dutty"/>
 			<item value="parameter_PID_distance"/>
 			<item value="correction_w_angular_c "/>
@@ -19,12 +23,12 @@
 			<item value="frequency"/>
 			<item value="config_study"/>
 			<item value="flag_study"/>
-			<item value="status_study"/>
-			<item value="vTaskTwo"/>
-			<item value="xHandleTaskBL"/>
-			<item value="vTask_blink_led"/>
 		</list>
 		<list key="replacehistory">
+			<item value="save_char_Parameter_Grid_Map"/>
+			<item value="bufferParameterStringGM"/>
+			<item value=""/>
+			<item value="status_A_Star"/>
 			<item value="parameter_PID_phi"/>
 			<item value="correction_velocity_c"/>
 			<item value="parameter_PID_distance"/>
@@ -36,10 +40,6 @@
 			<item value="config_motor"/>
 			<item value="flag_motor"/>
 			<item value="status_motor"/>
-			<item value="vTaskButton"/>
-			<item value="xHandleTaskSL"/>
-			<item value="vTask_Status_Led"/>
-			<item value="xHandleTaskBL"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

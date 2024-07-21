@@ -190,7 +190,7 @@ void int_Hardware(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_USB_TX.pGPIOx = GPIOA;
 	//Definimos el pin a utilizar
-	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_9; 						//PIN_x, 0-15
+	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_2; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_USB_TX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -204,7 +204,7 @@ void int_Hardware(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_USB_RX.pGPIOx = GPIOA;
 	//Definimos el pin a utiliza
-	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_10; 						//PIN_x, 0-15
+	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_3; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_USB_RX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -305,7 +305,7 @@ void int_Hardware(void)
 
 	//---------------USART1----------------
 	//Definimos el periferico USARTx a utilizar
-	handler_USART_USB.ptrUSARTx = USART1;
+	handler_USART_USB.ptrUSARTx = USART2;
 	//Definimos la configuracion del USART seleccionado
 	handler_USART_USB.USART_Config.USART_mode = USART_MODE_RXTX ;           //USART_MODE_x  x-> TX, RX, RXTX, DISABLE
 	handler_USART_USB.USART_Config.USART_baudrate = USART_BAUDRATE_19200;  //USART_BAUDRATE_x  x->9600, 19200, 115200
@@ -542,7 +542,7 @@ void BasicTimer3_Callback(void)
 
 //-------------------------USARTRX--------------------------------
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el USART2
-void BasicUSART1_Callback(void)
+void BasicUSART2_Callback(void)
 {
 	//Guardamos el caracter recibido
 	charRead = getRxData();
