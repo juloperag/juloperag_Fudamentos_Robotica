@@ -227,7 +227,6 @@ uint8_t i2c_ReadSingleRegister(I2C_Handler_t *ptrHandlerI2C, uint8_t regToRead)
 	i2c_SendSlaveAddressRW(ptrHandlerI2C, ptrHandlerI2C->slaveAddress, I2C_WRITE_DATA);
 	//3. Enviamos la direccion de memoria que deseamos leer
 	i2c_SendMemoryAddress(ptrHandlerI2C, regToRead);
-
 	//4. Creamos una condicion de re start
 	i2c_ReStartTrasaction(ptrHandlerI2C);
 	//5. Enviamos la direccion del Sclavo e indicamos que se desea leer el Sclave

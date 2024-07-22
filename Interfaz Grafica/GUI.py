@@ -18,6 +18,7 @@ class MainFrame(Frame):
         self.CommunicationSerial = serial.Serial("COM5",19200,timeout=1.0)
         time.sleep(1)
         #Definicion Variables
+        self.flag_A_Star = False
         self.creategrip_flag = False
         self.flagStart = False
         self.cellStart = [0,0]
@@ -44,7 +45,7 @@ class MainFrame(Frame):
         self.master.destroy()
         print("*** finalizando...")
 
-    #-------Funciones de Eventos-----------
+    #-------Funciones de modificacion del grid map----------
     def attriute_cell(self, i, j):
         #Verificamos el modo seleccionado
         if self.cmbox.current() == 0:
@@ -99,11 +100,10 @@ class MainFrame(Frame):
                 self.frame_grid_map.columnconfigure(j, weight=0)
 
         #----------Creacion de nuevos botones en el grid map--------------
-
         rows = self.value_row.get()
         cols = self.value_cols.get()
         #verificacion de valores maximos permitidos
-        if rows<21 and cols<21:
+        if rows>1 and cols>1 and rows<21 and cols<21:
             self.buttons = [[None for _ in range(cols)] for _ in range(rows)]
             #Creacion y Configuracion del grid map dentro del frame
             for i in range(rows):
@@ -113,28 +113,37 @@ class MainFrame(Frame):
             #Creacion de los botones asociados a las celdas del grid map
             for i in range(rows):
                 for j in range(cols):
-                    self.buttons[i][j] = Button(self.frame_grid_map, text=".", command=lambda i=i, j=j: self.attriute_cell(i, j))
+                    self.buttons[i][j] = Button(self.frame_grid_map, text=".",bg ="#FAFAFA" , command=lambda i=i, j=j: self.attriute_cell(i, j))
                     self.buttons[i][j].grid(row=i, column=j,sticky="nsew")
             #Levantamos bandera
             self.creategrip_flag = True
             #Cambiamos estado del boton de envio
             self.Button_Send["state"] = "active"
         else:
-            print("Numero maximo de filas o columnas superado en la definicion")
+            #Escribir mensaje en la bandeja de texto
+            self.writeText("Uno o ambos valores no validos. \n")
 
+    #-------Funciones de envio y recepcion----------
     def sendGridMapCommunicationSerial(self):
         #Guardar valor de variables
         row = self.value_row.get()
         cols = self.value_cols.get()
-        #Construir string a enviar con la informacion del grid map
-        msg = str(row)+";"+str(cols)+";"+str(self.value_separation.get())+";"
-        for i in range(row):
-            for j in range(cols):
-                msg = msg + (self.buttons[i][j])["text"]
-            msg = msg + ":"
-        msg = msg + " @"
-        #Enviar string
-        self.CommunicationSerial.write(msg.encode('ascii'))
+        sepa = self.value_separation.get()
+        if sepa>0 and self.flagStart == True and self.flagGoal == True:
+            #Construir string a enviar con la informacion del grid map
+            msg = "$"+str(row)+":"+str(cols)+":"+str(sepa)+":"
+            for i in range(row):
+                for j in range(cols):
+                    msg = msg + (self.buttons[i][j])["text"]
+                msg = msg + ";"
+            msg = msg + "$"
+            #Enviar string
+            self.CommunicationSerial.write(msg.encode('ascii'))
+            #Levantamos bandera
+            self.flag_A_Star = True
+        else:
+            #Escribir mensaje en la bandeja de texto
+            self.writeText("Uno o varios Parametros del Grid Map no especificados. \n")
 
     def sendCommunicationSerial(self):
         msg = self.value_send.get()
@@ -142,18 +151,62 @@ class MainFrame(Frame):
 
     def receiveCommunicationSerial(self):
         while self.isRun:
+            #mesg = self.CommunicationSerial.readline().decode('ascii', errors='replace')
             mesg = self.CommunicationSerial.readline().decode('ascii')
             if mesg:
-                #Habilitar escritura
-                self.txt.config(state="normal")
-                #Escribir caracteres
-                self.txt.insert("end", mesg)
-                self.txt.see("end")
-                #Desactivar escritura
-                self.txt.config(state="disabled")
+                #Escribir mensaje en la bandeja de texto
+                self.writeText(mesg+'\n')
+                #Si se ejecuto A star se cambia el grid map de la interfaz grafica
+                if self.flag_A_Star:
+                    self.recieveAStarGridMap(mesg)
 
+    #----Funciones de modificacion del grid map despues de ejecutar A star----------
+    def recieveAStarGridMap(self, mesg):
+        #Se define variables
+        row = self.value_row.get()
+        cols = self.value_cols.get()
+        charmesg  = "."
+        #Se recorre las celdas y el mensaje recibido 
+        for i in range(row):
+            for j in range(cols):
+                #Se bloque el boton
+                self.buttons[i][j].config(state= "disabled")
+                #Se obtiene el caracter del mensaje
+                charmesg = mesg[(i*(cols+1)+j)]
+                #Se cambia el color de la celda deacuerdo al caracter
+                if(charmesg=="+"):
+                    self.buttons[i][j].config(bg= "#0080FF")
+                elif(charmesg=="S"):
+                    self.buttons[i][j].config(bg= "#01DF3A")    
+                elif(charmesg=="G"):
+                    self.buttons[i][j].config(bg= "#FFBF00")
+        #Modificacion de los estados de los botones
+        self.Button_Send.config(state="disabled")
+        self.Button_Change.config(state="active") 
+              
     def changeGridMap(self):
-        b = 0
+        #Se define variables
+        row = self.value_row.get()
+        cols = self.value_cols.get()
+        #Se modifica las celdas del grid map
+        for i in range(row):
+            for j in range(cols):
+                #Se cambia el color de la celda y se desbloquea el boton
+                self.buttons[i][j].config(bg ="#FAFAFA")
+                self.buttons[i][j].config(state = "active")
+        #Modificacion de los estados de los botones
+        self.Button_Send.config(state = "active")
+        self.Button_Change.config(state = "disabled") 
+
+    #-----Funcion auxiliares------------
+    def writeText(self, megg):
+        #Habilitar escritura
+        self.txt.config(state="normal")
+        #Escribir caracteres
+        self.txt.insert("end", megg)
+        self.txt.see("end")
+        #Desactivar escritura
+        self.txt.config(state="disabled")
 
     #-----------Crear Widgets--------------
     def creat_widgets(self):

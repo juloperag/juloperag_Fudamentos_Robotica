@@ -9,5 +9,5 @@
 ../Src/I2CDriver.c:206:6:i2c_SendAck	16	static
 ../Src/I2CDriver.c:213:6:i2c_StopTrasaction	16	static
 ../Src/I2CDriver.c:220:9:i2c_ReadSingleRegister	24	static
-../Src/I2CDriver.c:245:6:i2c_WriteSingleRegister	16	static
-../Src/I2CDriver.c:259:6:i2c_WriteSingle	16	static
+../Src/I2CDriver.c:244:6:i2c_WriteSingleRegister	16	static
+../Src/I2CDriver.c:258:6:i2c_WriteSingle	16	static

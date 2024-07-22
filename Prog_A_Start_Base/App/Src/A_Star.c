@@ -60,6 +60,7 @@ file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, f
             file_Open[index_file_Open]->ptrCell_parent[u] = ptrFile->ptrCell_parent[u];
           }
           file_Open[index_file_Open]->ptrCell_parent[ptrFile->num_parent] = ptrFile->ptrCell_file;
+          file_Open[index_file_Open]->ptrCell_parent[(ptrFile->num_parent+1)] = NULL;
           file_Open[index_file_Open]->num_parent = ptrFile->num_parent+1;
           file_Open[index_file_Open]->cost_g = ptrFile->ptrCell_file->neighbors.distance_neigh[k]+ptrFile->cost_g;
           file_Open[index_file_Open]->function_F = file_Open[index_file_Open]->cost_g + ptrFile->ptrCell_file->neighbors.ptrCellMap[k]->h;

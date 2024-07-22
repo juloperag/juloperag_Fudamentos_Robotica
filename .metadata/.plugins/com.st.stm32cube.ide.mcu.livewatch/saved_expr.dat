@@ -18,3 +18,9 @@ parameter_PID_phi
 parameter_PID_distace
 line_center
 flag_line_center
+bufferParameterStringGM
+charRead
+start_x
+start_y
+goal_x
+goal_y

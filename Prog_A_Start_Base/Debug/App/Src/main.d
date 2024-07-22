@@ -11,6 +11,7 @@ App/Src/main.o: ../App/Src/main.c \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Prog_A_Start_Base/Core/Device/ST/STM32F4xx/Include/stm32f411xe.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/BasicTimer.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/USARTxDriver.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/PLLDriver.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Prog_A_Start_Base/App/Inc/A_Star.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Prog_A_Start_Base/App/Inc/grid_map.h
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Prog_A_Start_Base/Core/Device/ST/STM32F4xx/Include/stm32f411xe.h:
@@ -25,5 +26,6 @@ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Prog_A_Start_Base/Core/Device/ST/STM32F4xx/Include/stm32f411xe.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/BasicTimer.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/USARTxDriver.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/PLLDriver.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Prog_A_Start_Base/App/Inc/A_Star.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Prog_A_Start_Base/App/Inc/grid_map.h:

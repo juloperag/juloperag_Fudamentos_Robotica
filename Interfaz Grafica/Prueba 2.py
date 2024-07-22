@@ -1,21 +1,22 @@
 import tkinter as tk
 
-# Tu string con caracteres "\n" para saltos de línea
-help_menu = "Help Menu: \n 1) help  ---Imprime lista de comandos. \n 2) frequency #  ---Definir los 3 valores de las frecuencias para el study en Hz. \n 3) motor # ---Elige el tipo de motor para el test, 1:Derecho, 2:Izquierdo \n 4) on --- Enciende el motor seleccionado en la prueba estatica \n"
+# Función para restablecer el color de fondo al valor predeterminado
+def reset_background():
+    button.config(background=default_bg)
 
-# Crear una ventana de Tkinter
+# Crear la ventana principal
 root = tk.Tk()
-root.title("Help Menu")
 
-# Crear un widget de Text
-text_widget = tk.Text(root, wrap='word')
-text_widget.pack(expand=True, fill='both')
+# Crear un botón y almacenar su color de fondo predeterminado
+button = tk.Button(root, text="Botón")
+default_bg = button.cget("background")
+button.pack()
 
-# Insertar el string en el widget de Text
-text_widget.insert(tk.END, help_menu)
+# Cambiar el color de fondo del botón a rojo
+button.config(background="red")
 
-# Desactivar la edición del widget de Text
-text_widget.config(state=tk.DISABLED)
+# Crear un botón para restablecer el color de fondo al valor predeterminado
+reset_button = tk.Button(root, text="Restablecer color", command=reset_background)
+reset_button.pack()
 
-# Iniciar el bucle principal de la interfaz gráfica
 root.mainloop()

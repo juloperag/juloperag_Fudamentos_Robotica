@@ -1,4 +1,4 @@
 ../App/Src/A_Star.c:6:14:aplicattion_A_Star	384	static
-../App/Src/A_Star.c:119:9:search_position_file_Open	64	static
-../App/Src/A_Star.c:162:6:heuristic_cell_map	48	static
-../App/Src/A_Star.c:187:7:heuristic_single_cell	160	static
+../App/Src/A_Star.c:120:9:search_position_file_Open	64	static
+../App/Src/A_Star.c:163:6:heuristic_cell_map	48	static
+../App/Src/A_Star.c:188:7:heuristic_single_cell	160	static

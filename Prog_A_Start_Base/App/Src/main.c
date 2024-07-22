@@ -13,6 +13,8 @@
 #include <GPIOxDriver.h>
 #include <BasicTimer.h>
 #include <USARTxDriver.h>
+#include <PLLDriver.h>
+
 #include "A_Star.h"
 
 //-----------------------------------Fin de definicion de librerias------------------------------------------
@@ -32,14 +34,13 @@ GPIO_Handler_t handler_GPIO_USB_TX = {0};       //Definimos un elemento del tipo
 GPIO_Handler_t handler_GPIO_USB_RX = {0};
 USART_Handler_t handler_USART_USB = {0};
 char charRead = 'w';                        //Variable que almacena el caracter leido
-char sendMg[] = "Boton presionado \n";       //Definimos string
 char bufferMsg[64] = {0};
 
 //------------------Definiciones generales----------------------------------
 //-----Cabeceras de funciones----
 void save_char_Parameter_Grid_Map(char newchar);                         //Funcion para recolectar los caracteres provenientes e la interfaz grafica
 char** separate_Parameters(char *parameter_string);						 //Funcion para separar los parametros presentes en el string
-void show_path(file_cell_t *file_cell, char **map_String, uint8_t row);  //Funcion para imprimir la ruta encontrada
+void send_path(file_cell_t *file_cell, char **map_String, uint8_t row);  //Funcion para imprimir la ruta encontrada
 
 //---Recepcion de string del grid map----
 uint8_t	status_A_Star = 0;              	//Variable que indica el estado de la recoleccion de caracteres
@@ -60,8 +61,14 @@ void acelerometro_I2C(void);                       //Cabecera para la comunicaci
 
 int main(void)
 {
+	//-----------------------Configuracion inicial del sistema---------------------------------
+	//Incrementamos la velocidad de reloj del sistema
+	uint8_t clock = CLOCK_SPEED_100MHZ;    //Velocidad de reloj entre 25 o 100 MHz
+	configPLL(clock);
 	//Realizamos la configuracuion inicial
 	int_Hardware();
+	//Activamos el punto flotante por medio del registro especifico
+	SCB->CPACR |= 0xF <<20;
 
 	while(1)
 	{
@@ -75,8 +82,13 @@ int main(void)
 		  heuristic_cell_map(grid_map, array_grid_map_string, grid_map_row, grid_map_colum, goal_x, goal_y);
 		  //------------------Aplicacion del algoritmo A star------------------
 		  file_cell_t *file_path = aplicattion_A_Star(grid_map, grid_map_row, grid_map_colum, start_x, start_y, goal_x, goal_y);
+		  //-----------------Impresion de la ruta encontrada--------------------
+		  send_path(file_path, array_grid_map_string, grid_map_row);
+
 		  //Reinicamos bandera
 		  status_A_Star = 0;
+		  //Reiniciamos index
+		  index_String_GM = 0;
 		}
 		else{  __NOP(); }
 	}
@@ -146,7 +158,7 @@ void int_Hardware(void)
 	handler_USART_USB.ptrUSARTx = USART2;
 	//Definimos la configuracion del USART seleccionado
 	handler_USART_USB.USART_Config.USART_mode = USART_MODE_RXTX ;           //USART_MODE_x  x-> TX, RX, RXTX, DISABLE
-	handler_USART_USB.USART_Config.USART_baudrate = USART_BAUDRATE_9600;  //USART_BAUDRATE_x  x->9600, 19200, 115200
+	handler_USART_USB.USART_Config.USART_baudrate = USART_BAUDRATE_19200;  //USART_BAUDRATE_x  x->9600, 19200, 115200
 	handler_USART_USB.USART_Config.USART_parity= USART_PARITY_NONE;       //USART_PARITY_x   x->NONE, ODD, EVEN
 	handler_USART_USB.USART_Config.USART_stopbits=USART_STOPBIT_1;         //USART_STOPBIT_x  x->1, 0_5, 2, 1_5
 	handler_USART_USB.USART_Config.USART_enableIntRX = USART_RX_INTERRUP_ENABLE;   //USART_RX_INTERRUP_x  x-> DISABLE, ENABLE
@@ -201,6 +213,7 @@ void BasicUSART2_Callback(void)
 		}
 		else
 		{
+			bufferParameterStringGM[index_String_GM]= '\0';
 			status_A_Star  = 2;
 		}
 	}
@@ -219,8 +232,12 @@ void BasicUSART2_Callback(void)
 //----------------------------Inicio de la definicion de las funciones-----------------------------------------
 void save_char_Parameter_Grid_Map(char newchar)
 {
-	bufferParameterStringGM[index_String_GM] = newchar;
-	index_String_GM++;
+	if(newchar!='$')
+	{
+		bufferParameterStringGM[index_String_GM] = newchar;
+		index_String_GM++;
+	}
+	else{ __NOP(); }
 }
 
 
@@ -297,7 +314,7 @@ char** separate_Parameters(char *parameter_string)
   //Separacion de cada caracter
   for (uint16_t i = index_init_Grid_map; parameter_string[i] != '\0'; i++)
   {
-    if (parameter_string[i] == '\n')
+    if (parameter_string[i] == ';')
     {
       //Se agrega un elemento nulo para indicar el fin de la fila
       array_string[index_row][index_col] = '\0';
@@ -313,6 +330,8 @@ char** separate_Parameters(char *parameter_string)
       index_col++;
     }
   }
+  //Se arregla un elemento nulo en la ultima fila y columna
+  array_string[index_row][index_col] = '\0';
   //---------------Definicion del start y del goal---------------
   //Recorremo el array creado para encontrar la posicion de los objetivos
   for(int i = 0; i < grid_map_row; i++)
@@ -339,7 +358,7 @@ char** separate_Parameters(char *parameter_string)
 }
 
 
-void show_path(file_cell_t *file_cell, char **map_String, uint8_t row)
+void send_path(file_cell_t *file_cell, char **map_String, uint8_t row)
 {
   //Variables
   uint8_t index = 0;
@@ -349,7 +368,7 @@ void show_path(file_cell_t *file_cell, char **map_String, uint8_t row)
   {
     if(file_cell->ptrCell_parent[index] != NULL)
     {
-      map_String[file_cell->ptrCell_parent[index]->index_row][file_cell->ptrCell_parent[index]->index_col] = '*';
+      map_String[file_cell->ptrCell_parent[index]->index_row][file_cell->ptrCell_parent[index]->index_col] = '+';
       index++;
     }
     else
@@ -357,14 +376,14 @@ void show_path(file_cell_t *file_cell, char **map_String, uint8_t row)
       break;
     }
   }
-  //Cambiamos los caracteres de la malla de strings para indicar el inicio y final de la trayectoria
+  //Cambiamos los caracteres de la malla de strings para indicar el inicio de la trayectoria
   map_String[file_cell->ptrCell_parent[0]->index_row][file_cell->ptrCell_parent[0]->index_col] = 'S';
-  map_String[file_cell->ptrCell_file->index_row][file_cell->ptrCell_file->index_col] = 'F';
 
   //Imprimir la malla modificada
   for(int i=0;i<row;i++)
   {
-    printf("%s\n", map_String[i]);
+	sprintf(bufferMsg, "%s;", map_String[i]);
+	writeMsg(&handler_USART_USB, bufferMsg);
   }
 }
 

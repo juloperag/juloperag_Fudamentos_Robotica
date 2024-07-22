@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete 3 resources" deleteContents="false" description="Delete 3 resources" element1="/Control_Robot_v3.7_Imp_Giroscopio/Debug" element2="/Control_Robot_v3.7_Imp_Giroscopio/Release" element3="/Control_Robot_v3.7_Imp_Giroscopio/Control_Robot_v3.5 Debug.launch" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="3" stamp="1721659153062"/>
+</session>
