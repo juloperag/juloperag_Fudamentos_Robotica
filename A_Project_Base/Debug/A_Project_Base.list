@@ -1907,7 +1907,7 @@ void int_Hardware(void)
  8001356:	715a      	strb	r2, [r3, #5]
 	handler_I2C_Acelerometro.slaveAddress = ACCEL_ADDRESSS;       //Direccion del Sclave
  8001358:	4b21      	ldr	r3, [pc, #132]	; (80013e0 <int_Hardware+0x240>)
- 800135a:	2269      	movs	r2, #105	; 0x69
+ 800135a:	2268      	movs	r2, #104	; 0x68
  800135c:	711a      	strb	r2, [r3, #4]
 	//Cargamos la configuracion
 	i2c_Config(&handler_I2C_Acelerometro);
@@ -8417,7 +8417,6 @@ uint8_t i2c_ReadSingleRegister(I2C_Handler_t *ptrHandlerI2C, uint8_t regToRead)
  800386a:	4619      	mov	r1, r3
  800386c:	6878      	ldr	r0, [r7, #4]
  800386e:	f7ff ff76 	bl	800375e <i2c_SendMemoryAddress>
-
 	//4. Creamos una condicion de re start
 	i2c_ReStartTrasaction(ptrHandlerI2C);
  8003872:	6878      	ldr	r0, [r7, #4]

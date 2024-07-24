@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="save_char_Parameter_Grid_Map"/>
+		<item key="selection" value=""/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="AF"/>
+			<item value="MPUAccel_Handler_t"/>
+			<item value="MPUAccel_Config"/>
+			<item value="handler_I2C_Acelerometro"/>
+			<item value="handler_GPIO_SDA_Acelerometro"/>
+			<item value="handler_GPIO_SCL_Acelerometro"/>
 			<item value="save_char_Grid_Map"/>
 			<item value="bufferStringGM"/>
 			<item value="bufferParameterStringGM"/>
@@ -17,14 +23,12 @@
 			<item value="correction_w_angular_c "/>
 			<item value="parameter_PID_phi"/>
 			<item value="handler_TIMER_study"/>
-			<item value="flag_motor"/>
-			<item value="value_perido"/>
-			<item value="frequency_TIMER_Count"/>
-			<item value="frequency"/>
-			<item value="config_study"/>
-			<item value="flag_study"/>
 		</list>
 		<list key="replacehistory">
+			<item value="MPUAccel_Handler_t"/>
+			<item value="handler_I2C_MPU6050"/>
+			<item value="handler_GPIO_SDA_MPU6050"/>
+			<item value="handler_GPIO_SCL_MPU6050"/>
 			<item value="save_char_Parameter_Grid_Map"/>
 			<item value="bufferParameterStringGM"/>
 			<item value=""/>
@@ -36,10 +40,6 @@
 			<item value="periodo_TIMER_Count"/>
 			<item value="handler_TIMER_Count"/>
 			<item value="Period_PWM_Motor"/>
-			<item value="Periodo"/>
-			<item value="config_motor"/>
-			<item value="flag_motor"/>
-			<item value="status_motor"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

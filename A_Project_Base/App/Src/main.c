@@ -60,7 +60,7 @@ GPIO_Handler_t handler_GPIO_SCL_Acelerometro = {0};   //Definimos un elemento de
 GPIO_Handler_t handler_GPIO_SDA_Acelerometro = {0};
 I2C_Handler_t handler_I2C_Acelerometro = {0};
 //-------Acelerometro
-#define ACCEL_ADDRESSS  0b1101001;                   //Definicion de la direccion del Sclave
+#define ACCEL_ADDRESSS  0b1101000;                   //Definicion de la direccion del Sclave
 #define ACCEL_XOUT_H  0x3B                           //Definicion de la direccion de los registros del Sclave a usar
 #define ACCEL_XOUT_L  0x3C
 #define ACCEL_YOUT_H  0x3D

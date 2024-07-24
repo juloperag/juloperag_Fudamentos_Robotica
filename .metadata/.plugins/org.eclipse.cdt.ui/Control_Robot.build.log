@@ -1,10 +1,16 @@
-21:58:08 **** Incremental Build of configuration Debug for project Control_Robot ****
+16:50:28 **** Build of configuration Debug for project Control_Robot ****
 make -j4 all 
+arm-none-eabi-gcc -o "Control_Robot.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Control_Robot.elf
+ 
 arm-none-eabi-size   Control_Robot.elf 
+arm-none-eabi-objdump -h -S  Control_Robot.elf  > "Control_Robot.list"
    text	   data	    bss	    dec	    hex	filename
   42992	    488	   4528	  48008	   bb88	Control_Robot.elf
 Finished building: default.size.stdout
  
+Finished building: Control_Robot.list
+ 
 
-21:58:08 Build Finished. 0 errors, 0 warnings. (took 657ms)
+16:50:29 Build Finished. 0 errors, 0 warnings. (took 979ms)
 

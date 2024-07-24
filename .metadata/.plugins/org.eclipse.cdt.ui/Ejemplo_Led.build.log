@@ -1,10 +1,16 @@
-17:39:43 **** Incremental Build of configuration Debug for project Ejemplo_Led ****
+16:50:35 **** Build of configuration Debug for project Ejemplo_Led ****
 make -j4 all 
+arm-none-eabi-gcc -o "Ejemplo_Led.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Ejemplo_Led\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Ejemplo_Led.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Ejemplo_Led.elf
+ 
 arm-none-eabi-size   Ejemplo_Led.elf 
+arm-none-eabi-objdump -h -S  Ejemplo_Led.elf  > "Ejemplo_Led.list"
    text	   data	    bss	    dec	    hex	filename
   23036	     28	  84596	 107660	  1a48c	Ejemplo_Led.elf
 Finished building: default.size.stdout
  
+Finished building: Ejemplo_Led.list
+ 
 
-17:39:43 Build Finished. 0 errors, 0 warnings. (took 525ms)
+16:50:36 Build Finished. 0 errors, 0 warnings. (took 1s.18ms)
 
