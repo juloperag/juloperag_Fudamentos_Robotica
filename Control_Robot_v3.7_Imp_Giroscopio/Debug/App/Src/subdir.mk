@@ -5,14 +5,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../App/Src/MPUaccel.c \
 ../App/Src/MotorDriver.c \
 ../App/Src/main.c 
 
 OBJS += \
+./App/Src/MPUaccel.o \
 ./App/Src/MotorDriver.o \
 ./App/Src/main.o 
 
 C_DEPS += \
+./App/Src/MPUaccel.d \
 ./App/Src/MotorDriver.d \
 ./App/Src/main.d 
 
@@ -24,7 +27,7 @@ App/Src/%.o App/Src/%.su: ../App/Src/%.c App/Src/subdir.mk
 clean: clean-App-2f-Src
 
 clean-App-2f-Src:
-	-$(RM) ./App/Src/MotorDriver.d ./App/Src/MotorDriver.o ./App/Src/MotorDriver.su ./App/Src/main.d ./App/Src/main.o ./App/Src/main.su
+	-$(RM) ./App/Src/MPUaccel.d ./App/Src/MPUaccel.o ./App/Src/MPUaccel.su ./App/Src/MotorDriver.d ./App/Src/MotorDriver.o ./App/Src/MotorDriver.su ./App/Src/main.d ./App/Src/main.o ./App/Src/main.su
 
 .PHONY: clean-App-2f-Src
 

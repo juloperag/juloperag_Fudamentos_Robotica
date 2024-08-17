@@ -48,6 +48,22 @@
 #define USART_TX_INTERRUP_DISABLE	0
 #define USART_TX_INTERRUP_ENABLE	1
 
+//Macros que definen la prioridad del USART
+enum
+{
+	e_USART_PRIOPITY_6 = 6,
+	e_USART_PRIOPITY_7,
+	e_USART_PRIOPITY_8,
+	e_USART_PRIOPITY_9,
+	e_USART_PRIOPITY_10,
+	e_USART_PRIOPITY_11,
+	e_USART_PRIOPITY_12,
+	e_USART_PRIOPITY_13,
+	e_USART_PRIOPITY_14,
+	e_USART_PRIOPITY_15
+};
+
+
 /*Estructura que contiene la configuracion minima para el uso del protocolo de comunicacion
  * Velocidad(baudrate)
  * Tamaño de los datos
@@ -86,6 +102,7 @@ typedef struct
 
 //Definicion de las cabeceras de las funciones para el uso del USART
 void USART_Config(USART_Handler_t *ptrUsartHandler);
+void usart_Config_Init_Priority(USART_Handler_t *ptrUsartHandler, uint8_t newPriority);
 uint16_t getValueBaudRate(uint8_t fck, uint32_t baudRate);
 void writeChar(USART_Handler_t *ptrUsartHandlerWrite, uint8_t datatoSend);
 void writeMsg(USART_Handler_t *ptrUsartHandlerString, char *MsgtoSend);

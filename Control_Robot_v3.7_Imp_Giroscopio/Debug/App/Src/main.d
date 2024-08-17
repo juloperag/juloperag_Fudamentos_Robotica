@@ -26,7 +26,9 @@ App/Src/main.o: ../App/Src/main.c \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/DSP/Include/arm_math_memory.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/DSP/Include/dsp/none.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/DSP/Include/dsp/utils.h \
- B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/App/Inc/MotorDriver.h
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/App/Inc/MotorDriver.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/App/Inc/MPUAccel.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/I2CDriver.h
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/Core/Device/ST/STM32F4xx/Include/stm32f411xe.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/Core/Include/core_cm4.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/Core/Include/cmsis_version.h:
@@ -55,3 +57,5 @@ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/DSP/Include/dsp/none.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/DSP/Include/dsp/utils.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/App/Inc/MotorDriver.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_v3.7_Imp_Giroscopio/App/Inc/MPUAccel.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/I2CDriver.h:

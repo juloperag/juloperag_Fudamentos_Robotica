@@ -17,6 +17,7 @@
 #include <USARTxDriver.h>
 #include <I2CDriver.h>
 #include <SysTickDriver.h>
+#include <PLLDriver.h>
 //Proyecto
 #include "MPUAccel.h"
 
@@ -46,17 +47,26 @@ GPIO_Handler_t handler_GPIO_SCL_MPU6050 = {0};         //Definimos un elemento d
 GPIO_Handler_t handler_GPIO_SDA_MPU6050 = {0};
 I2C_Handler_t handler_I2C_MPU6050 = {0};
 MPUAccel_Handler_t handler_MPUAccel_MPU6050 = {0};     //Se crea un handler para guardar la configuracion
+BasicTimer_Handler_t handler_TIME_sampling = {0};
 
 //-------Cabeceras de funciones----
 void int_MPU(void);                             //Funcion para configurar el MPU
 //------Variables------
 float Velocidad_Angular = 0;                   //Variable para almacenar la velocidad angular
-float gyro_offset = 0;                         //Variable para guardad el offset de la calibracion
+float angulo = 0;                              //Variable para almacenar el angulo
+int16_t gyro_offset = 0;                         //Variable para guardad el offset de la calibracion
+uint8_t flag_ang = 0;                         //Bandera para ejecutar el calculo del angulo
+uint8_t counting_view = 0;                        //Cantador para visualizar los datos del angulo
+uint64_t time_preview = 0;
 #define ACCEL_ADDRESSS  0b1101000;             //Definicion de la direccion del Sclave
 
 
 int main(void)
 {
+
+	//Incrementamos la velocidad de reloj del sistema
+	uint8_t clock = CLOCK_SPEED_100MHZ;    //Velocidad de reloj entre 25 o 100 MHz
+	configPLL(clock);
 	//Realizamos la configuracuion inicial
 	int_Hardware();
 	//Activamos el Systick
@@ -70,30 +80,26 @@ int main(void)
 	//Calibracion del eje Z del giroscopio
 	gyro_offset = calibrationMPU(&handler_MPUAccel_MPU6050, CAL_GYRO_Z);
 
-	float accel = 0;
-	float accel_offset = calibrationMPU(&handler_MPUAccel_MPU6050, CAL_ACCEL_Z);
-
 	while(1)
 	{
-		if(charRead != '\0')
+		if(charRead != '\0' || flag_ang == 1)
 		{
-			//Lectura aceleracion X
-			accel = readMPU(&handler_MPUAccel_MPU6050, READ_ACCEL_Z);
-			accel -= accel_offset;
-			//ese tiempo lo volvemos un string
-			sprintf(bufferMsg,"Aceleracion: %#.2f m/s2 \n", accel);
-			//Enviamos por puerto serial dicho string
-			writeMsg(&handler_USART_USB, bufferMsg);
-
-			//Lectura velocidad angular Z
-			Velocidad_Angular = readMPU(&handler_MPUAccel_MPU6050, READ_GYRO_Z);
-			Velocidad_Angular -= gyro_offset;
-			//ese tiempo lo volvemos un string
-			sprintf(bufferMsg,"Velocidad Angular: %#.2f grados/s \n", Velocidad_Angular);
-			//Enviamos por puerto serial dicho string
-			writeMsg(&handler_USART_USB, bufferMsg);
+			//Obtener angulo
+			angulo = getAngle(&handler_MPUAccel_MPU6050, &time_preview, angulo, READ_GYRO_Z, gyro_offset);
+			//Contador para visualizar los datos en un tiempo dado
+			if(counting_view>50)
+			{
+				//ese tiempo lo volvemos un string
+				sprintf(bufferMsg,"Angulo: %#.2f grados \n", angulo);
+				//Enviamos por puerto serial dicho string
+				writeMsg(&handler_USART_USB, bufferMsg);
+				//Reiniciamos variable
+				counting_view = 0;
+			}
+			else{ counting_view++; }
 			//Reiniciamos variable
 			charRead = '\0';
+			flag_ang = 0;
 		}
 		else { __NOP(); }
 
@@ -215,6 +221,17 @@ void int_Hardware(void)
 	//Cargamos la configuracion del TIMER especifico
 	BasicTimer_Config(&handler_BlinkyTimer);
 
+	//---------------TIM3----------------
+	//Definimos el TIMx a usar
+	handler_TIME_sampling.ptrTIMx = TIM3;
+	//Definimos la configuracion del TIMER seleccionado
+	handler_TIME_sampling.TIMx_Config.TIMx_periodcnt = BTIMER_PCNT_1ms; //BTIMER_PCNT_xus x->10,100/ BTIMER_PCNT_1ms
+	handler_TIME_sampling.TIMx_Config.TIMx_mode = BTIMER_MODE_UP; // BTIMER_MODE_x x->UP, DOWN
+	handler_TIME_sampling.TIMx_Config.TIMX_period = 20;//Al definir 10us,100us el valor un multiplo de ellos, si es 1ms el valor es en ms
+	handler_TIME_sampling.TIMx_Config.TIMx_interruptEnable = INTERRUPTION_ENABLE; //INTERRUPTION_x  x->DISABLE, ENABLE
+	//Cargamos la configuracion del TIMER especifico
+	BasicTimer_Config(&handler_TIME_sampling);
+
 
 	//-------------------Fin de Configuracion TIMx-----------------------
 
@@ -262,6 +279,12 @@ void int_MPU(void)
 void BasicTimer2_Callback(void)
 {
 	GPIOxTooglePin(&handler_BlinkyPin);
+}
+
+//Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el TIM3
+void BasicTimer3_Callback(void)
+{
+	flag_ang = 1;
 }
 
 //-------------------------USARTRX--------------------------------

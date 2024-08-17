@@ -24,6 +24,7 @@
 #include <math.h>
 //-----Proyecto-------
 #include <MotorDriver.h>
+#include "MPUAccel.h"
 
 
 //-----------------------------------Fin de definicion de librerias------------------------------------------
@@ -46,6 +47,12 @@ EXTI_Config_t  handler_EXTI_FotoR ={0};
 //----------Izquierdo------------
 GPIO_Handler_t handler_GPIO_FotoL = {0};     //Definicion un elemento del tipo EXTI_Config_t y GPIO_Handler_t para el user boton
 EXTI_Config_t  handler_EXTI_FotoL ={0};
+
+//-------------------------MPU6050--------------------------
+GPIO_Handler_t handler_GPIO_SCL_MPU6050 = {0};         //Definimos un elemento del tipo GPIO_Handler_t (Struct) y I2C_Handler_t para la comunicacion I2C
+GPIO_Handler_t handler_GPIO_SDA_MPU6050 = {0};
+I2C_Handler_t handler_I2C_MPU6050 = {0};
+MPUAccel_Handler_t handler_MPUAccel_MPU6050 = {0};     //Se crea un handler para guardar la configuracion
 
 
 //--------------------------USART-------------------------------
@@ -71,21 +78,26 @@ PWM_Handler_t handler_PWM_MotorL = {0};
 Motor_Handler_t handler_Motor_L;
 //-----------General-------------------
 BasicTimer_Handler_t handler_TIMER_Motor = {0};
-BasicTimer_Handler_t handler_TIMER_Count = {0};   //Definimos un elementos de tipo BasicTimer_Handler_t para relizar el test
+BasicTimer_Handler_t handler_TIMER_Sampling = {0};   //Definimos un elementos de tipo BasicTimer_Handler_t para relizar el test
 uint16_t value_period = 4000;                 //Valor del periodo del timer, que sera luego se apuntada
 
 
 //------------------Definiciones generales----------------------------------
 //-----Cabeceras de funciones----
 void int_MCO2(void);                                                                  		 //Funcion para la configuracion inicail del MCO1
+void int_MPU(void);                                                                          //Funcion para configurar el MPU
 void recepcionCommand(void);                                                          		 //Funcion que recibe los caracteres del comando recibido
 void runCommand(char *prtcommand);                                                    		 //Funcion que ejecuta el comando ingresando
 void status_motor(uint8_t status);                                                   		 //Funcion para definir el estado del motor
 void int_Config_Motor(void);                                                    	  		 //Funcion que carga la configuracion inicail de los motores
 void config_motor(uint8_t status, int firth, float second, float third, int forth); 		 //Funcion para configurar el estudio
-void constains_calculator(Parameters_PID_t *ptrPIDHandler,float k, float tau, float theta);	  //Funcion para el calculo de las onstantes
-void PID(Parameters_PID_t *ptrPIDHandler, float setpoint, float measure);           		  //Funcion para la implementacion del PID
+void constains_calculator(Parameters_PID_t *ptrPIDHandler,float k, float tau, float theta);	 //Funcion para el calculo de las onstantes
+void PID(Parameters_PID_t *ptrPIDHandler, float setpoint, float measure);           		 //Funcion para la implementacion del PID
 void correction(Motor_Handler_t *ptrMotorHandler);                                           //Funcion para corregir el dutty
+//-----Variables del MPU
+float ang_Row = 0;                               //Variable para almacenar el angulo del eje Z
+int16_t gyro_offset = 0;                         //Variable para guardad el offset de la calibracion
+uint64_t time_preview = 0;                       //Variable para guardar el tiempo anterior medido
 //-----Variables PID-----------
 Parameters_PID_t parameter_PID_phi = {0}; 	//Estructura que almacena los elementos del PID para la distancia recta-punto
 Parameters_PID_t parameter_PID_distace = {0};
@@ -95,12 +107,11 @@ float Ts = 400;                        		//Periodo de muestreo [ms]
 uint8_t flag_PID = 0;                  		//Bandera para el uso del PID
 //-------Odometria-------------
 Parameters_Position_t parameter_Posicion_Robot = {0}; 	//Estructura que almacena la posicion del robot
+MPUTimerSample_t sample_Gyro = {0};                     //Estructura para almacenar los datos del muestreo
 float cos_cal = 0;
 float sin_cal = 0;
 float turn = 0;
 uint8_t flag_count_odometry = 0;
-float delta_distance_L = 0;
-float delta_distance_R = 0;
 float32_t cm_L = 0;                               //Factor de conversion rueda Izquierda [mm/cuentas]
 float32_t cm_R = 0;                               //Factor de conversion rueda Derecha   [mm/cuentas]
 float distance_c = 0;                             //Distancia recorrida medida indirectamente [mm]
@@ -113,7 +124,7 @@ Motor_Handler_t *handler_Motor_Execute = {0};     //Handler que se refiere a uno
 uint8_t flag_motor = 0;                           //Bandera que indica el tipo de ejecucion del motor
 uint8_t flag_turn = 0;                            //Bandera que indica la direccion del giro
 uint8_t flag_Modo_Control = 1;                    //Varibable para el modo de control en el modo line
-uint16_t periodo_TIMER_Count = 1000;              //Frecuencia del timer contador
+uint16_t timeAction_TIMER_Sampling = 400;               //Frecuencia del timer contador
 uint16_t frequency_PWM_Motor = 30;                //Frecuencia del timer del PWM
 uint16_t count_time = 0;                          //Variable para contar el tiempo trascurrido
 uint8_t count_equi = 0;							  //Variable para almacenar las cuentas que se esta en el equilibrio
@@ -136,6 +147,10 @@ uint16_t flag_line_center = 1;
 float correction_velocity_c = 0;
 float correction_dutty_c = 0;
 
+//--------Variables del timerSampling---------
+uint16_t time_accumulated = 0;
+uint16_t counting_action = 0;
+
 //-----Variables de la recepcion de comandos----
 uint8_t commandComplete = 1;           //Bandera que indica si el comando esta completo
 uint8_t counterRecepcion = 0;          //Variable para la posicion del arrelgo
@@ -150,8 +165,8 @@ int main(void)
 	configPLL(clock);
 	//Realizamos la configuracuion inicial
 	int_Hardware();
-	//Activamos el SysTick
-	//config_SysTick_us();
+	//Activamos el Systick
+	config_SysTick_ms();
 	//Activamos el punto flotante por medio del registro especifico
 	SCB->CPACR |= 0xF <<20;
 	//Definimos la configuracion inicail del MCO1
@@ -170,6 +185,13 @@ int main(void)
 	cm_L = ((PI*DL)/(100*Ce));  //[mm/cuentas]
 	cm_R =	((PI*DR)/(100*Ce));  //[mm/cuentas]
 
+	//--------------------------Configuramos inicia el MPU----------------------
+	//Configuracion MPU
+	int_MPU();
+	//Calibracion del eje Z del giroscopio
+	gyro_offset = calibrationMPU(&handler_MPUAccel_MPU6050, CAL_GYRO_Z);
+
+
 	while(1)
 	{
 		///Verificamos para ejecuta el comando ingresando
@@ -180,9 +202,40 @@ int main(void)
 			commandComplete=0;
 		}
 		else
+		{ __NOP(); }
+		//Calculo de odometry y aplicacion PID
+		if(flag_count_odometry == 1)
 		{
-			__NOP();
+			//Calculo odometria
+			distance_c = (handler_Motor_L.parametersMotor.distance+handler_Motor_L.parametersMotor.distance)/2;  	   //[mm]
+			//w_angular_c = ((handler_Motor_R.parametersMotor.velocity-handler_Motor_L.parametersMotor.velocity)*100000)/b; //[rad/s]
+			parameter_Posicion_Robot.xr_position = parameter_Posicion_Robot.xr_position + (distance_c*(cos(parameter_Posicion_Robot.phi_relativo)));        //[mm]
+			parameter_Posicion_Robot.yr_position  = parameter_Posicion_Robot.yr_position  + (distance_c*(sin(parameter_Posicion_Robot.phi_relativo)));       //[mm]
+			//Paso de c.relativa a c.globales
+			parameter_Posicion_Robot.xg_position = parameter_Posicion_Robot.xg_position_inicial + parameter_Posicion_Robot.xr_position*cos_cal + parameter_Posicion_Robot.xr_position*sin_cal;
+			parameter_Posicion_Robot.yg_position = parameter_Posicion_Robot.yg_position_inicial - parameter_Posicion_Robot.xr_position*sin_cal + parameter_Posicion_Robot.yr_position*cos_cal;
+			//Convertimos el valor y imprimemos
+			sprintf(bufferMsg,"%#.4f\t%#.4f\n", parameter_Posicion_Robot.xg_position , parameter_Posicion_Robot.yg_position);
+			writeMsgForTXE(&handler_USART_USB, bufferMsg);
+			//calculo a la distancia de la recta
+			distance_punto_recta = (parameter_Posicion_Robot.xr_position - parameter_Posicion_Robot.yr_position)/R2;
+
+			//Convertirmos los valores de velocidad a porcentaje
+			porVel_L = 590*(handler_Motor_L.parametersMotor.velocity) - 36.53;
+			porVel_R = 590*(handler_Motor_R.parametersMotor.velocity) - 36.53;
+			//Aplicamos el PID
+			PID(&handler_Motor_L.parametersMotor.parametersPID,setpoint_dutty,porVel_L);
+			PID(&handler_Motor_R.parametersMotor.parametersPID,setpoint_dutty,porVel_R);
+			//Correccion del dutty
+			correction(&handler_Motor_L);
+			correction(&handler_Motor_R);
+			//Restablecemos valores
+			flag_count_odometry = 0;
 		}
+		else
+		{ __NOP(); }
+
+
 	}
 
 	return 0;
@@ -337,7 +390,34 @@ void int_Hardware(void)
 	//Cargamos la configuracion del PIN especifico
 	GPIO_Config(&handler_GPIO_MotorL_EN);
 
+	//---------------------------I2C--------------------------------
+	//---------------PIN: PB8----------------
+	//------------AF4: I2C1_SCL----------------
+	//Definimos el periferico GPIOx a usar.
+	handler_GPIO_SCL_MPU6050.pGPIOx = GPIOB;
+	//Definimos el pin a utilizar
+	handler_GPIO_SCL_MPU6050.GPIO_PinConfig.GPIO_PinNumber = PIN_8; 						//PIN_x, 0-15
+	//Definimos la configuracion de los registro para el pin seleccionado
+	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
+	GPIO_PIN_Config(&handler_GPIO_SCL_MPU6050, GPIO_MODE_ALTFN, GPIO_OTYPER_OPENDRAIN, GPIO_OSPEEDR_FAST, GPIO_PUPDR_NOTHING, AF4);
+	/*Opciones: GPIO_Tipo_x, donde x--->||IN, OUT, ALTFN, ANALOG ||| PUSHPULL, OPENDRAIN |||
+	 * ||| LOW, MEDIUM, FAST, HIGH ||| NOTHING, PULLUP, PULLDOWN, RESERVED |||  AFx, 0-15 |||*/
+	//Cargamos la configuracion del PIN especifico
+	GPIO_Config(&handler_GPIO_SCL_MPU6050);
 
+	//---------------PIN: PB9----------------
+	//------------AF4: I2C1_SDA----------------
+	//Definimos el periferico GPIOx a usar.
+	handler_GPIO_SDA_MPU6050.pGPIOx = GPIOB;
+	//Definimos el pin a utilizar
+	handler_GPIO_SDA_MPU6050.GPIO_PinConfig.GPIO_PinNumber = PIN_9; 						//PIN_x, 0-15
+	//Definimos la configuracion de los registro para el pin seleccionado
+	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
+	GPIO_PIN_Config(&handler_GPIO_SDA_MPU6050, GPIO_MODE_ALTFN, GPIO_OTYPER_OPENDRAIN, GPIO_OSPEEDR_FAST, GPIO_PUPDR_NOTHING, AF4);
+	/*Opciones: GPIO_Tipo_x, donde x--->||IN, OUT, ALTFN, ANALOG ||| PUSHPULL, OPENDRAIN |||
+	 * ||| LOW, MEDIUM, FAST, HIGH ||| NOTHING, PULLUP, PULLDOWN, RESERVED |||  AFx, 0-15 |||*/
+	//Cargamos la configuracion del PIN especifico
+	GPIO_Config(&handler_GPIO_SDA_MPU6050);
 
 	//-------------------Fin de Configuracion GPIOx-----------------------
 
@@ -373,14 +453,14 @@ void int_Hardware(void)
 
 	//---------------TIM3----------------
 	//Definimos el TIMx a usar
-	handler_TIMER_Count.ptrTIMx = TIM3;
+	handler_TIMER_Sampling.ptrTIMx = TIM3;
 	//Definimos la configuracion del TIMER seleccionado
-	handler_TIMER_Count.TIMx_Config.TIMx_periodcnt = BTIMER_PCNT_1ms; //BTIMER_PCNT_xus x->10,100/ BTIMER_PCNT_1ms
-	handler_TIMER_Count.TIMx_Config.TIMx_mode = BTIMER_MODE_UP; // BTIMER_MODE_x x->UP, DOWN
-	handler_TIMER_Count.TIMx_Config.TIMX_period = 2000;//Al definir 10us,100us el valor un multiplo de ellos, si es 1ms el valor es en ms
-	handler_TIMER_Count.TIMx_Config.TIMx_interruptEnable = INTERRUPTION_DISABLE; //INTERRUPTION_x  x->DISABLE, ENABLE
+	handler_TIMER_Sampling.TIMx_Config.TIMx_periodcnt = BTIMER_PCNT_1ms; //BTIMER_PCNT_xus x->10,100/ BTIMER_PCNT_1ms
+	handler_TIMER_Sampling.TIMx_Config.TIMx_mode = BTIMER_MODE_UP; // BTIMER_MODE_x x->UP, DOWN
+	handler_TIMER_Sampling.TIMx_Config.TIMX_period = 20;   //Al definir 10us,100us el valor un multiplo de ellos, si es 1ms el valor es en ms
+	handler_TIMER_Sampling.TIMx_Config.TIMx_interruptEnable = INTERRUPTION_DISABLE; //INTERRUPTION_x  x->DISABLE, ENABLE
 	//Cargamos la configuracion del TIMER especifico
-	BasicTimer_Config(&handler_TIMER_Count);
+	BasicTimer_Config(&handler_TIMER_Sampling);
 
 	//---------------TIM5----------------
 	//Definimos el TIMx a usar
@@ -452,9 +532,24 @@ void int_Hardware(void)
 
 	//---------------------Fin de Configuracion PWM_Channelx-----------------------
 
+	//-------------------Inicio de Configuracion I2Cx----------------------
+
+	//---------------I2C1----------------
+	//Definimos el I2Cx a usar
+	handler_I2C_MPU6050.prtI2Cx = I2C1;
+	//Definimos la configuracion para el I2C
+	handler_I2C_MPU6050.modeI2C = I2C_MODE_FM;               //I2C_MODE_x  x->SM,FM
+	handler_I2C_MPU6050.slaveAddress = ADDRESS_DOWN;         //Direccion del Sclave
+	//Cargamos la configuracion
+	i2c_Config(&handler_I2C_MPU6050);
+
+	//---------------------Fin de Configuracion I2Cx----------------------
 
 }
 //------------------------------Fin Configuracion del microcontrolador------------------------------------------
+
+
+
 
 //-----------------------------Inicio configuracion MCO1------------------------------------------
 
@@ -466,6 +561,22 @@ void int_MCO2(void)
 	configMCO2PRE(4);
 }
 //------------------------------Fin configuracion MCO1------------------------------------------
+
+//------------------------------Inicio configuracion del MPU------------------------------------------
+void int_MPU(void)
+{
+	//Definimos la escala de las diferentes magnitudes fisicas
+	handler_MPUAccel_MPU6050.fullScaleACCEL = ACCEL_2G;
+	handler_MPUAccel_MPU6050.fullScaleGYRO = GYRO_250;
+	//Definimos el handler correspondiente al I2C
+	handler_MPUAccel_MPU6050.ptrI2Chandler = &handler_I2C_MPU6050;
+	//Cargamos configuracion
+	configMPUAccel(&handler_MPUAccel_MPU6050);
+
+}
+
+//------------------------------Fin configuracion del MPU------------------------------------------
+
 
 
 //------------------------------Inicio configuracion de lso motores------------------------------------------
@@ -518,7 +629,21 @@ void int_Config_Motor(void)
 
 };
 
-//------------------------------Fin configuracion de lso motores------------------------------------------
+
+void constains_calculator(Parameters_PID_t *ptrPIDHandler,float k, float tau, float theta)   //k,tau,theta
+{
+	   //Calculo de constantes de porcentaje, integracion y derivacion por metodo de Ziegler y Nichols
+	   float kp=(1.2*tau)/(k*theta);
+	   float ti=2.0*theta;
+	   float td=0.5*theta;
+	   //Calculo do controle PID digital
+	   ptrPIDHandler->q0 = kp*(1+Ts/(2.0*ti)+td/Ts);
+	   ptrPIDHandler->q1 = -kp*(1-Ts/(2.0*ti)+(2.0*td)/Ts);
+	   ptrPIDHandler->q2 = (kp*td)/Ts;
+}
+
+//------------------------------Fin configuracion de los motores------------------------------------------
+
 
 
 
@@ -536,137 +661,67 @@ void BasicTimer2_Callback(void)
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el TIM2
 void BasicTimer3_Callback(void)
 {
+	//----------------Accion a Realizar con el tiempo del TIMER--------------------
 	if(flag_motor==1)
 	{
-		//Calculamos la velocidad
-		handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
-		handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
-		handler_Motor_L.parametersMotor.velocity = handler_Motor_L.parametersMotor.distance/periodo_TIMER_Count;   //[m/s]
-		handler_Motor_R.parametersMotor.velocity = handler_Motor_R.parametersMotor.distance/periodo_TIMER_Count;   //[m/s]
-		//Reiniciamos el numero de conteos
-		handler_Motor_R.parametersMotor.count = 0;
-		handler_Motor_L.parametersMotor.count = 0;
-		//Calculo odometria
-		distance_c = (handler_Motor_L.parametersMotor.distance+handler_Motor_R.parametersMotor.distance)/2;  	   //[mm]
-		velocity_c = (handler_Motor_R.parametersMotor.velocity+handler_Motor_L.parametersMotor.velocity)/2;        //[m/s]
-		w_angular_c = ((handler_Motor_R.parametersMotor.velocity-handler_Motor_L.parametersMotor.velocity)*100000)/b; //[rad/s]
-		parameter_Posicion_Robot.xr_position = parameter_Posicion_Robot.xr_position + (distance_c*(cos(parameter_Posicion_Robot.phi_relativo)));        //[mm]
-		parameter_Posicion_Robot.yr_position  = parameter_Posicion_Robot.yr_position  + (distance_c*(sin(parameter_Posicion_Robot.phi_relativo)));        //[mm]
-		parameter_Posicion_Robot.phi_relativo = parameter_Posicion_Robot.phi_relativo + ((handler_Motor_R.parametersMotor.distance-handler_Motor_L.parametersMotor.distance)*100)/b;   //[rad]
+		//Calculamos el angulo
+		ang_Row = getAngle(&handler_MPUAccel_MPU6050, &sample_Gyro, ang_Row, READ_GYRO_Z, gyro_offset);
+		parameter_Posicion_Robot.phi_relativo = (ang_Row*PI)/180;          //[rad]
 		parameter_Posicion_Robot.phi_relativo = atan2(sin(parameter_Posicion_Robot.phi_relativo),cos(parameter_Posicion_Robot.phi_relativo));
-		//Paso de c.relativa a c.globales
-		parameter_Posicion_Robot.xg_position = parameter_Posicion_Robot.xg_position_inicial + parameter_Posicion_Robot.xr_position*cos_cal + parameter_Posicion_Robot.xr_position*sin_cal;
-		parameter_Posicion_Robot.yg_position = parameter_Posicion_Robot.yg_position_inicial - parameter_Posicion_Robot.xr_position*sin_cal + parameter_Posicion_Robot.yr_position*cos_cal;
-		//Convertimos el valor y imprimemos
-		sprintf(bufferMsg,"%#.4f\t%#.4f\n", parameter_Posicion_Robot.xg_position , parameter_Posicion_Robot.yg_position);
-		writeMsgForTXE(&handler_USART_USB, bufferMsg);
-		//Restablecemos valores
-		flag_count_odometry = 0;
-		delta_distance_L = 0;
-		delta_distance_R = 0;
-		//calculo la distancia de la recta
-		distance_punto_recta = (parameter_Posicion_Robot.xr_position - parameter_Posicion_Robot.yr_position)/R2;
-
-		if(flag_Modo_Control==1)
-		{
-			//Cambio de modo y establecimiento de line center
-			if(fabs(distance_punto_recta)>16)
-			{
-				flag_Modo_Control = 1;
-				line_center = distance_punto_recta/2;
-			}
-			//correccion
-			correction_dutty_c = 0;
-			//Convertirmos los valores de velocidad a porcentaje
-			porVel_L = 590*(handler_Motor_L.parametersMotor.velocity) - 36.53;
-			porVel_R = 590*(handler_Motor_R.parametersMotor.velocity) - 36.53;
-			//Aplicamos el PID
-			PID(&handler_Motor_L.parametersMotor.parametersPID,setpoint_dutty,porVel_L);
-			PID(&handler_Motor_R.parametersMotor.parametersPID,setpoint_dutty,porVel_R);
-			//Correccion del dutty
-			correction(&handler_Motor_L);
-			correction(&handler_Motor_R);
-
-		}
-		else
-		{
-			//sumar al contador
-			flag_line_center++;
-			//Calculamos variable auxiliar
-			float ang_measure = parameter_Posicion_Robot.phi_relativo-setpoint_phi;
-			//Cambio de line center
-			if(ang_measure<(0.05) && ang_measure>(-0.05) && flag_line_center>2)
-			{
-				line_center = distance_punto_recta/2;
-				//Cambiamos bandera
-				flag_line_center = 0;
-			}
-			//Varificamos la variacion del angulo
-			if(distance_punto_recta<(8) && distance_punto_recta>(-8))
-			{
-				//Sumamos al contador
-				count_equi++;
-				//cambiamos modo de control
-				if(count_equi==10)
-				{
-					flag_Modo_Control = 1;
-					count_equi = 0;
-				}
-			}
-			else
-			{
-				count_equi=0;
-			}
-			//Aplicamos PID
-			//PID(&parameter_PID_phi, parameter_Posicion_Robot.phi_relativo, setpoint_phi);
-			//PID(&parameter_PID_distace, distance_punto_recta*m*(parameter_Posicion_Robot.phi_relativo-setpoint_phi), 0);
-			//Correcion dutty
-			//correction_velocity_c = (distance_punto_recta/1000);
-			//correction_velocity_c = parameter_PID_phi.u*(((w_angular_c)*b)/20000);
-			//fabs(sin(ang_measure))
-			float auxDistance = distance_punto_recta - line_center;
-			float corr = 0;
-			if (auxDistance>0)
-			{
-
-				corr = 50*(1-exp(-auxDistance/10));
-			}
-			else
-			{
-				corr = -50*(1-exp(auxDistance/10));
-			}
-			correction_dutty_c = corr*m+bl;
-			//Correccion del dutty
-			correction(&handler_Motor_L);
-			correction(&handler_Motor_R);
-		}
-
+		//Se acumula el tiempo
+		time_accumulated += sample_Gyro.delta_timer;
 	}
-	else if(flag_motor==3)
+	else{ __NOP(); }
+
+	//----------------Accion a realizar con un tiempo especifico--------------------
+	if(counting_action>=timeAction_TIMER_Sampling)
 	{
-		//Aumentamos el contador de tiempo
-		count_time = count_time + periodo_TIMER_Count;       //Tiempo en ms
-		//Convertimos el valor y imprimemos
-		sprintf(bufferMsg,"%u\t%u\t%u\n", count_time,(handler_Motor_R.parametersMotor.count), (handler_Motor_L.parametersMotor.count));
-		writeMsgForTXE(&handler_USART_USB, bufferMsg);
-		//Reiniciamos el numero de conteos
-		handler_Motor_R.parametersMotor.count = 0;
-		handler_Motor_L.parametersMotor.count = 0;
+		if(flag_motor==1)
+		{
+
+			//Calculamos la velocidad
+			handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
+			handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
+			handler_Motor_L.parametersMotor.velocity = handler_Motor_L.parametersMotor.distance/time_accumulated;      //[m/s]
+			handler_Motor_R.parametersMotor.velocity = handler_Motor_R.parametersMotor.distance/time_accumulated;      //[m/s]
+			//Reiniciamos el numero de conteos
+			handler_Motor_R.parametersMotor.count = 0;
+			handler_Motor_L.parametersMotor.count = 0;
+			//Subimos Bandera
+			flag_count_odometry = 1;
+			//Reiniciamos tiempo
+			time_accumulated = 0;
+		}
+		else if(flag_motor==3)
+		{
+			//Aumentamos el contador de tiempo
+			count_time = count_time + timeAction_TIMER_Sampling;       //Tiempo en ms
+			//Convertimos el valor y imprimemos
+			sprintf(bufferMsg,"%u\t%u\t%u\n", count_time,(handler_Motor_R.parametersMotor.count), (handler_Motor_L.parametersMotor.count));
+			writeMsgForTXE(&handler_USART_USB, bufferMsg);
+			//Reiniciamos el numero de conteos
+			handler_Motor_R.parametersMotor.count = 0;
+			handler_Motor_L.parametersMotor.count = 0;
+		}
+		else if(flag_motor==4)
+		{
+			//Calculamos la velocidad
+			handler_Motor_L.parametersMotor.velocity = handler_Motor_L.parametersMotor.distance/timeAction_TIMER_Sampling;   //[m/s]
+			handler_Motor_R.parametersMotor.velocity = handler_Motor_R.parametersMotor.distance/timeAction_TIMER_Sampling;   //[m/s]
+			//Aumentamos el contador de tiempo
+			count_time = count_time + timeAction_TIMER_Sampling;       //Tiempo en ms
+			//Convertimos el valor y imprimemos
+			sprintf(bufferMsg,"%u\t%#.4f\t%#.4f\n", count_time, handler_Motor_L.parametersMotor.velocity , handler_Motor_R.parametersMotor.velocity);
+			writeMsgForTXE(&handler_USART_USB, bufferMsg);
+			//Reiniciamos el numero de conteos
+			handler_Motor_R.parametersMotor.count = 0;
+			handler_Motor_L.parametersMotor.count = 0;
+		}
+		//Reiniciamos el contador de accion
+		counting_action = 0;
+
 	}
-	else if(flag_motor==4)
-	{
-		//Calculamos la velocidad
-		handler_Motor_L.parametersMotor.velocity = handler_Motor_L.parametersMotor.distance/periodo_TIMER_Count;   //[m/s]
-		handler_Motor_R.parametersMotor.velocity = handler_Motor_R.parametersMotor.distance/periodo_TIMER_Count;   //[m/s]
-		//Aumentamos el contador de tiempo
-		count_time = count_time + periodo_TIMER_Count;       //Tiempo en ms
-		//Convertimos el valor y imprimemos
-		sprintf(bufferMsg,"%u\t%#.4f\t%#.4f\n", count_time, handler_Motor_L.parametersMotor.velocity , handler_Motor_R.parametersMotor.velocity);
-		writeMsgForTXE(&handler_USART_USB, bufferMsg);
-		//Reiniciamos el numero de conteos
-		handler_Motor_R.parametersMotor.count = 0;
-		handler_Motor_L.parametersMotor.count = 0;
-	}
+	else{ counting_action++; }
 
 }
 
@@ -687,10 +742,6 @@ void callback_extInt1(void)
 {
 	handler_Motor_R.parametersMotor.count++;
 	handler_Motor_R.parametersMotor.countCotinuous++;
-	//calculo del tiempo entre interrupcion
-//	uint64_t timeNow = getTicksUs();
-//	handler_Motor_R.parametersMotor.timeCount = timeNow-timeBackR;
-//	timeBackR = timeNow;
 	//Verificamos que la bandera este arriba
 	if(flag_motor==2 && flag_turn==1 && (limit_count_turn)<(handler_Motor_R.parametersMotor.count))
 	{
@@ -710,10 +761,6 @@ void callback_extInt3(void)
 {
 	handler_Motor_L.parametersMotor.count++;
 	handler_Motor_L.parametersMotor.countCotinuous++;
-	//calculo del tiempo entre interrupcion
-//	uint64_t timeNow = getTicksUs();
-//	handler_Motor_L.parametersMotor.timeCount = timeNow-timeBackL;
-//	timeBackL = timeNow;
 	//Verificamos que la bandera este arriba
 	if(flag_motor==2 && flag_turn==2 && (limit_count_turn)<(handler_Motor_L.parametersMotor.count))
 	{
@@ -730,6 +777,7 @@ void callback_extInt3(void)
 }
 
 //----------------------------Fin de la definicion de las funciones ISR----------------------------------------
+
 
 //----------------------------Inicio de la definicion de las funciones de los comandos----------------------------------------
 
@@ -779,9 +827,7 @@ void runCommand(char *prtcommand)
 		writeMsgForTXE(&handler_USART_USB, "2) frequency # --- Cambiar el valor de la frecuenencia de las pruebas, [HZ] \n");
 		writeMsgForTXE(&handler_USART_USB, "3) line # # #---Inicia Linea recta, #: dist [mm], #: dutty inicial , #: dutty estable \n");
 		writeMsgForTXE(&handler_USART_USB, "4) turn # # # # ---Iniciamos el giro del robot #: ang #:dir #:dutty_R \n");
-		writeMsgForTXE(&handler_USART_USB, "5) start # # # # ---Inicia movimiento, #: perTC [ms], #: dutty_L, #dutty_R, #: freqTP [Hz] \n");
-		writeMsgForTXE(&handler_USART_USB, "6) reaction # # # ---Inicia Curva de reaccion,#: perTC [ms], #: dutty_L y dutty_R, #: freqTP [Hz] \n");
-		writeMsgForTXE(&handler_USART_USB, "7) stop ---Para el estudio en medio de la ejecucion \n");
+		writeMsgForTXE(&handler_USART_USB, "6) stop ---Para el estudio en medio de la ejecucion \n");
 		writeMsgForTXE(&handler_USART_USB, "0) const # # # ---Constantes del PID #: L,k,tau \n");
 		writeMsgForTXE(&handler_USART_USB, "0) equation # #  ---Constantes de la ecuacion lineal #: m,b  591.91-->59191 \n");
 	}
@@ -792,39 +838,47 @@ void runCommand(char *prtcommand)
 	{
 		frequency_PWM_Motor = 100000/firtsParameter;
 	}
+
 	else if (strcmp(cmd, "line") == 0)
 	{
 		//---------Configuracion coordenadas---------
 		//Coordenadas Globales
-		parameter_Posicion_Robot.xg_position_inicial = parameter_Posicion_Robot.xg_position;
-		parameter_Posicion_Robot.yg_position_inicial = parameter_Posicion_Robot.yg_position;
+		//parameter_Posicion_Robot.xg_position_inicial = parameter_Posicion_Robot.xg_position;
+		//parameter_Posicion_Robot.yg_position_inicial = parameter_Posicion_Robot.yg_position;
+		parameter_Posicion_Robot.xg_position = 0;
+		parameter_Posicion_Robot.yg_position = 0;
 		parameter_Posicion_Robot.ang_Giro += turn;
 		//Coordenadas relativas
 		parameter_Posicion_Robot.xr_position = 0;
 		parameter_Posicion_Robot.yr_position = 0;
-		parameter_Posicion_Robot.phi_relativo = (PI/4);
+		ang_Row = 0;
 		//Calculos extra
-		cos_cal = cos((PI/4)+parameter_Posicion_Robot.ang_Giro);
-		sin_cal = sin((PI/4)+parameter_Posicion_Robot.ang_Giro);
+		cos_cal = cos(parameter_Posicion_Robot.ang_Giro);
+		sin_cal = sin(parameter_Posicion_Robot.ang_Giro);
 		//-------------Configruacion Modo-------------
-		//Definimos el modo de control y la line center
-		flag_Modo_Control = 1;
-		line_center = -10;
 		//Definimos la frecuencia del Timer contador
-		periodo_TIMER_Count = Ts;
+		timeAction_TIMER_Sampling = (Ts/20);
 		//Defimos la distancia a recorrer
 		distance = firtsParameter;
 		//Definimos el dutty inicial
 		duttyInicial = secondParameter;
 		//Definimos la Setpoint del dutty y del phi
 		setpoint_dutty = thirdParameter;
-		setpoint_phi = PI/4;
 		//Establecemos valores iniciales
 		//handler_Motor_L.parametersMotor.parametersPID.u_1 = handler_Motor_R.parametersMotor.parametersPID.u_1 = duttyInicial;
 		handler_Motor_L.parametersMotor.parametersPID.e = handler_Motor_L.parametersMotor.parametersPID.e_1 = handler_Motor_L.parametersMotor.parametersPID.e_2 = 0;
 		handler_Motor_R.parametersMotor.parametersPID.e = handler_Motor_R.parametersMotor.parametersPID.e_1 = handler_Motor_R.parametersMotor.parametersPID.e_2 = 0;
 		//Cargamos la configuracion
-		config_motor(1, periodo_TIMER_Count,  0.9234*(duttyInicial)-3, duttyInicial, frequency_PWM_Motor);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
+		config_motor(1, timeAction_TIMER_Sampling,  0.9234*(duttyInicial)-3, duttyInicial, frequency_PWM_Motor);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
+		//Iniciamos los motores
+		status_motor(SET);
+		//Medimos el tiempo inicial
+		sample_Gyro.timer_prev = getTicksMs();
+		//-----------------------------Variables a organizar--------------
+		flag_PID = 0;
+		time_accumulated = 0;
+		counting_action = 0;
+
 	}
 	else if (strcmp(cmd, "const") == 0)
 	{
@@ -863,28 +917,7 @@ void runCommand(char *prtcommand)
 			updateDirMotor(handler_Motor_Execute);
 		}
 		//Cargamos configuracion
-		config_motor(2, periodo_TIMER_Count, 0.9234*((float) thirdParameter)-3, thirdParameter, frequency_PWM_Motor);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
-	}
-	//------------------------------test--------------------------------
-	//Inicializa el estudio de la velocidad
-	else if (strcmp(cmd, "start") == 0)
-	{
-		//Definimos la frecuencia del timer contador
-		periodo_TIMER_Count = firtsParameter;
-		//Cargamos la configuracion
-		config_motor(3, periodo_TIMER_Count,  (secondParameter/100), (thirdParameter/100), forthParameter);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
-		//Imprimimos mensaje
-		writeMsgForTXE(&handler_USART_USB, "Inicio conteo... \n");
-	}
-	//Inicia el estudio de la curva de reaccion
-	else if (strcmp(cmd, "reaction") == 0)
-	{
-		//Definimos la frecuencia del timer contador
-		periodo_TIMER_Count = firtsParameter;
-		//Cargamos la configuracion
-		config_motor(4, periodo_TIMER_Count, (secondParameter/100), (secondParameter/100), thirdParameter);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
-		//Imprimimos mensaje
-		writeMsgForTXE(&handler_USART_USB, "Inicio conteo... \n");
+		config_motor(2, timeAction_TIMER_Sampling, 0.9234*((float) thirdParameter)-3, thirdParameter, frequency_PWM_Motor);//Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
 	}
 	//para el study en ejecucion
 	else if (strcmp(cmd, "stop") == 0)
@@ -939,14 +972,13 @@ void correction(Motor_Handler_t *ptrMotorHandler)
 	if(ptrMotorHandler == &handler_Motor_L)
 	{
 		//Conversion a dutty
-		//correction_velocity_c
-		port_dutty = ptrMotorHandler->parametersMotor.parametersPID.u - correction_dutty_c;
-		//port_dutty = ptrMotorHandler->parametersMotor.parametersPID.u;
+		//port_dutty = (0.9234*(ptrMotorHandler->parametersMotor.parametersPID.u) - 3) ;
+		port_dutty = ptrMotorHandler->parametersMotor.parametersPID.u ;
 	}
 	else
 	{
 		//Conversion a dutty
-		port_dutty = ptrMotorHandler->parametersMotor.parametersPID.u + correction_dutty_c;
+		port_dutty = ptrMotorHandler->parametersMotor.parametersPID.u ;
 	}
 
     //Saturo el porcentaje de dutty en un tope maximo y minimo
@@ -981,7 +1013,7 @@ void status_motor(uint8_t status)
 		//Activamos la interrupcion
 		if(flag_motor!=2)
 		{
-			statusiInterruptionTimer(&handler_TIMER_Count, INTERRUPTION_ENABLE);
+			statusiInterruptionTimer(&handler_TIMER_Sampling, INTERRUPTION_ENABLE);
 		}
 	}
 	else
@@ -989,7 +1021,7 @@ void status_motor(uint8_t status)
 		//Desactivamos interrupcion
 		if(flag_motor!=2)
 		{
-			statusiInterruptionTimer(&handler_TIMER_Count, INTERRUPTION_DISABLE);
+			statusiInterruptionTimer(&handler_TIMER_Sampling, INTERRUPTION_DISABLE);
 		}
 		//Desactivamos el motor
 		statusInOutPWM(handler_Motor_L.phandlerPWM, CHANNEL_DISABLE);
@@ -1007,7 +1039,7 @@ void status_motor(uint8_t status)
 void config_motor(uint8_t status, int firth, float second, float third, int forth)  //Tipo de Estudio, periodo [ms], por dutty L, por dutty R, fre pwm [hz]
 {
 	//Actualizacion de la frecuencia del timer
-	updateFrequencyTimer(&handler_TIMER_Count, firth);
+	//updateFrequencyTimer(&handler_TIMER_Sampling, firth);
 	//Establecer valores
 	handler_Motor_R.parametersMotor.count = 0;
 	handler_Motor_L.parametersMotor.count = 0;
@@ -1023,21 +1055,6 @@ void config_motor(uint8_t status, int firth, float second, float third, int fort
 	updateDuttyMotor(&handler_Motor_L, second);
 	//Cambio valor bandera
 	flag_motor=status;
-	//Iniciamos el study
-	status_motor(SET);
-}
-
-
-void constains_calculator(Parameters_PID_t *ptrPIDHandler,float k, float tau, float theta)   //k,tau,theta
-{
-	   //Calculo de constantes de porcentaje, integracion y derivacion por metodo de Ziegler y Nichols
-	   float kp=(1.2*tau)/(k*theta);
-	   float ti=2.0*theta;
-	   float td=0.5*theta;
-	   //Calculo do controle PID digital
-	   ptrPIDHandler->q0 = kp*(1+Ts/(2.0*ti)+td/Ts);
-	   ptrPIDHandler->q1 = -kp*(1-Ts/(2.0*ti)+(2.0*td)/Ts);
-	   ptrPIDHandler->q2 = (kp*td)/Ts;
 }
 
 

@@ -53,7 +53,7 @@ uint8_t WHOIAM (MPUAccel_Handler_t *ptrMPUAccel){
 
 
 //Funcion para la lectura de dos registros que compone uno de los ejes de acelerometro o del giroscopio
-float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
+float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead, int16_t offset)
 {
 	//Variable para guardar la  direccion de los dos registros a leer
 	uint8_t address_H = 0;
@@ -61,7 +61,8 @@ float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
 	//Creamos las variables donde almacenamos todos los datos
 	uint16_t aux_H = 0;
 	uint16_t aux_L = 0;
-	float    aux   = 0;
+	int16_t   aux  = 0;
+	float res  = 0;
 	//Seleccionamos la direccion de los registros a Leer
 	switch(elementRead)
 	{
@@ -77,7 +78,7 @@ float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
 	aux_H = i2c_ReadSingleRegister(ptrMPUAccel->ptrI2Chandler, address_H);
 	aux_L = i2c_ReadSingleRegister(ptrMPUAccel->ptrI2Chandler, address_L);
 	//Juntamos ambos bytes en un solo numero para tener la lectura completa
-	aux = (aux_H << 8) | (aux_L);
+	aux = ((int16_t) ((aux_H << 8) | (aux_L))) - offset;
 	//Realizamos la conversion de los bytes al valor de magnitud fisica en el respectivo eje
 	switch(elementRead)
 	{
@@ -88,10 +89,10 @@ float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
 		{	//Deacuerdo a la escala se realiza la conversion
 			switch (ptrMPUAccel->fullScaleACCEL)
 			{
-				case ACCEL_2G :{aux = (aux*9.77)/ACCEL_2G_SENS; break;}
-				case ACCEL_4G :{aux = (aux*9.77)/ACCEL_4G_SENS; break;}
-				case ACCEL_8G :{aux = (aux*9.77)/ACCEL_8G_SENS; break;}
-				case ACCEL_16G :{aux = (aux*9.77)/ACCEL_16G_SENS; break;}
+				case ACCEL_2G :{res = (aux*9.77)/ACCEL_2G_SENS; break;}
+				case ACCEL_4G :{res = (aux*9.77)/ACCEL_4G_SENS; break;}
+				case ACCEL_8G :{res = (aux*9.77)/ACCEL_8G_SENS; break;}
+				case ACCEL_16G :{res = (aux*9.77)/ACCEL_16G_SENS; break;}
 				default:{ break; }
 			}
 			break;
@@ -102,16 +103,48 @@ float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
 		{	//Deacuerdo a la escala se realiza la conversion
 			switch (ptrMPUAccel->fullScaleGYRO)
 			{
-				case GYRO_250 :{ aux /= GYRO_250_SENS; break;}
-				case GYRO_500 :{ aux /= GYRO_500_SENS; break;}
-				case GYRO_1000 :{ aux /= GYRO_1000_SENS; break;}
-				case GYRO_2000 :{ aux /= GYRO_2000_SENS; break;}
+				case GYRO_250 :{ res = aux/GYRO_250_SENS; break;}
+				case GYRO_500 :{ res = aux/GYRO_500_SENS; break;}
+				case GYRO_1000 :{ res = aux/GYRO_1000_SENS; break;}
+				case GYRO_2000 :{ res = aux/GYRO_2000_SENS; break;}
 				default:{ break; }
 			}
 			break;
 		}
 		default:{ break; }
 	}
+	//Retornamos valor
+	return res;
+}
+
+//Funcion para en el modo de calibracion para la lectura de dos registros que compone uno de los ejes de acelerometro o del giroscopio
+int16_t readCalibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
+{
+	//Variable para guardar la  direccion de los dos registros a leer
+	uint8_t address_H = 0;
+	uint8_t address_L = 0;
+	//Creamos las variables donde almacenamos todos los datos
+	uint16_t aux_H = 0;
+	uint16_t aux_L = 0;
+	int16_t   aux  = 0;
+	//Seleccionamos la direccion de los registros a Leer
+	switch(elementRead)
+	{
+		case READ_ACCEL_X:{address_H = ACCEL_XOUT_H, address_L = ACCEL_XOUT_L; break;}
+		case READ_ACCEL_Y:{address_H = ACCEL_YOUT_H, address_L = ACCEL_YOUT_L; break;}
+		case READ_ACCEL_Z:{address_H = ACCEL_ZOUT_H, address_L = ACCEL_ZOUT_L; break;}
+		case READ_GYRO_X:{address_H = GIRO_XOUT_H, address_L = GIRO_XOUT_L; break;}
+		case READ_GYRO_Y:{address_H = GIRO_YOUT_H, address_L = GIRO_YOUT_L; break;}
+		case READ_GYRO_Z:{address_H = GIRO_ZOUT_H, address_L = GIRO_ZOUT_L; break;}
+		default:{ break; }
+	}
+	//Realizamos la medicion de la magnitud fisica en el respectivo eje
+	aux_H = i2c_ReadSingleRegister(ptrMPUAccel->ptrI2Chandler, address_H);
+	aux_L = i2c_ReadSingleRegister(ptrMPUAccel->ptrI2Chandler, address_L);
+	//Juntamos ambos bytes en un solo numero para tener la lectura completa
+	aux = (int16_t) ((aux_H << 8) | (aux_L));
+	//Realizamos la conversion de los bytes al valor de magnitud fisica en el respectivo eje
+
 	//Retornamos valor
 	return aux;
 }
@@ -128,7 +161,7 @@ float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementCalibration
 	for (int i = 0; i < num_samples; i++)
 	{
 		//Lectura del registro respectivo y acumulacion
-		aux_sum += readMPU(ptrMPUAccel, elementCalibration);
+		aux_sum += readCalibrationMPU(ptrMPUAccel, elementCalibration);
 		//Pausa
 		delay_ms(1);
 	}
@@ -136,5 +169,21 @@ float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementCalibration
 	 offset = aux_sum/num_samples;
 	//Retornar valor
 	return offset;
+}
+
+
+//Funcion para calcular el nuevo angulo de uno de los ejes del girsocopio
+float getAngle(MPUAccel_Handler_t *ptrMPUAccel, uint64_t *time_pre, float ang_init, uint8_t axis, int16_t offset_Axis)
+{
+	//Lectura velocidad angular
+	float w_Angular= readMPU(ptrMPUAccel, axis, offset_Axis);
+	//Calculo del tiempo trascurrido tras el ultima leida
+	uint64_t time_now = getTicksMs();
+	uint16_t dt =  time_now - *time_pre;
+	*time_pre = time_now;
+	//Calculo angulo
+	float ang = ang_init + (w_Angular*dt)/1000;
+
+	return ang;
 }
 

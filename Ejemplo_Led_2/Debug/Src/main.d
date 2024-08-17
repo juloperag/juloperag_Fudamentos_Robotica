@@ -25,7 +25,9 @@ Src/main.o: ../Src/main.c \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/GPIOxDriver.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h \
- B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/PLLDriver.h
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/PLLDriver.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/ExtiDriver.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/USARTxDriver.h
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Ejemplo_Led_2/ThirdParty/FreeRTOS/include/FreeRTOS.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Ejemplo_Led_2/Inc/FreeRTOSConfig.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Ejemplo_Led_2/ThirdParty/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.h:
@@ -53,3 +55,5 @@ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/PLLDriver.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/ExtiDriver.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/USARTxDriver.h:

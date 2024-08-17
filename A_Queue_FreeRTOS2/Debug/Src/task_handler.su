@@ -1,0 +1,5 @@
+../Src/task_handler.c:24:6:vTask_Menu	40	static
+../Src/task_handler.c:100:6:vTask_Print	24	static
+../Src/task_handler.c:115:6:vTask_Commands	48	static
+../Src/task_handler.c:134:6:process_command	24	static,ignoring_inline_asm
+../Src/task_handler.c:158:5:extract_command	32	static

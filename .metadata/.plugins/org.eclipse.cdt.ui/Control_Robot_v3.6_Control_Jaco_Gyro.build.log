@@ -1,0 +1,10 @@
+11:22:35 **** Build of configuration Debug for project Control_Robot_v3.6_Control_Jaco_Gyro ****
+make -j4 all 
+arm-none-eabi-size   Control_Robot_v3.6_Control_Jaco_Gyro.elf 
+   text	   data	    bss	    dec	    hex	filename
+  53988	    500	   4472	  58960	   e650	Control_Robot_v3.6_Control_Jaco_Gyro.elf
+Finished building: default.size.stdout
+ 
+
+11:22:35 Build Finished. 0 errors, 0 warnings. (took 370ms)
+

@@ -1,0 +1,33 @@
+12:23:27 **** Incremental Build of configuration Debug for project A_Queue_Semafore_FreeRTOS ****
+make -j4 all 
+arm-none-eabi-gcc "../Src/task_handler.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/ThirdParty/FreeRTOS/include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/ThirdParty/SEGGER/Config" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/ThirdParty/SEGGER/OS" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/ThirdParty/SEGGER/SEGGER" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/task_handler.d" -MT"Src/task_handler.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/task_handler.o"
+In file included from B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/Inc/main.h:23,
+                 from ../Src/task_handler.c:9:
+../Src/task_handler.c: In function 'vTask_Test_counting':
+../Src/task_handler.c:29:25: error: 'xCountingSemaphore_Working' undeclared (first use in this function)
+   29 |      if (xSemaphoreTake(xCountingSemaphore_Working, xMaxExpectedBlockTime) == pdPASS) {
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/ThirdParty/FreeRTOS/include/semphr.h:296:76: note: in definition of macro 'xSemaphoreTake'
+  296 | #define xSemaphoreTake( xSemaphore, xBlockTime )    xQueueSemaphoreTake( ( xSemaphore ), ( xBlockTime ) )
+      |                                                                            ^~~~~~~~~~
+../Src/task_handler.c:29:25: note: each undeclared identifier is reported only once for each function it appears in
+   29 |      if (xSemaphoreTake(xCountingSemaphore_Working, xMaxExpectedBlockTime) == pdPASS) {
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/A_Queue_Semafore_FreeRTOS/ThirdParty/FreeRTOS/include/semphr.h:296:76: note: in definition of macro 'xSemaphoreTake'
+  296 | #define xSemaphoreTake( xSemaphore, xBlockTime )    xQueueSemaphoreTake( ( xSemaphore ), ( xBlockTime ) )
+      |                                                                            ^~~~~~~~~~
+../Src/task_handler.c:32:10: error: 'printOneTime' undeclared (first use in this function)
+   32 |       if(printOneTime == 1){
+      |          ^~~~~~~~~~~~
+../Src/task_handler.c:33:44: error: 'randomNumber' undeclared (first use in this function)
+   33 |        sprintf(auxMsg, "counter i = %d\n", randomNumber);
+      |                                            ^~~~~~~~~~~~
+../Src/task_handler.c: In function 'led_state_callback':
+../Src/task_handler.c:72:18: error: 'handler_GPIO_BlinkyPin' undeclared (first use in this function)
+   72 |  GPIOxTooglePin(&handler_GPIO_BlinkyPin);
+      |                  ^~~~~~~~~~~~~~~~~~~~~~
+make: *** [Src/subdir.mk:25: Src/task_handler.o] Error 1
+"make -j4 all" terminated with exit code 2. Build might be incomplete.
+
+12:23:28 Build Failed. 5 errors, 0 warnings. (took 746ms)
+

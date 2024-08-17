@@ -803,6 +803,63 @@ void extInt_Config(EXTI_Config_t *extiConfig) // *extiConfig = &handlerEXTI
 }
 
 
+void exti_Config_Int_Priority(EXTI_Config_t *extiConfig, uint8_t newPriority)
+{
+	//Desabilitamos las interrupciones globales
+	__disable_irq();
+	//Configuramos la nueva prioridad
+	switch(extiConfig->pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber)
+	{
+	case 0:
+	{
+		NVIC_SetPriority(EXTI0_IRQn, newPriority);
+		break;
+	}
+	case 1:
+	{
+		NVIC_SetPriority(EXTI1_IRQn, newPriority);
+		break;
+	}
+	case 2:
+	{
+		NVIC_SetPriority(EXTI2_IRQn, newPriority);
+		break;
+	}
+	case 3:
+	{
+		NVIC_SetPriority(EXTI3_IRQn, newPriority);
+		break;
+	}
+	case 4:
+	{
+		NVIC_SetPriority(EXTI4_IRQn, newPriority);
+		break;
+	}
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+	case 9:
+	{
+		NVIC_SetPriority(EXTI9_5_IRQn, newPriority);
+		break;
+	}
+	case 10:
+	case 11:
+	case 12:
+	case 13:
+	case 14:
+	case 15:
+	{
+		NVIC_SetPriority(EXTI15_10_IRQn, newPriority);
+		break;
+	}
+	default:{  break;  }
+	}
+	//Activamos las interrupciones globales
+	__enable_irq();
+}
+
 
 //Definimos las funciones para cuando se genera una interrupcion del EXTIx, 0-15
 __attribute__ ((weak)) void callback_extInt0(void){

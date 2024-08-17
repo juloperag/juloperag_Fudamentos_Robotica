@@ -1,0 +1,16 @@
+11:22:23 **** Build of configuration Debug for project A_Base_FreeRTOS ****
+make -j4 all 
+arm-none-eabi-gcc -o "A_Base_FreeRTOS.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\A_Base_FreeRTOS\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="A_Base_FreeRTOS.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: A_Base_FreeRTOS.elf
+ 
+arm-none-eabi-size   A_Base_FreeRTOS.elf 
+arm-none-eabi-objdump -h -S  A_Base_FreeRTOS.elf  > "A_Base_FreeRTOS.list"
+   text	   data	    bss	    dec	    hex	filename
+  29976	     28	  84604	 114608	  1bfb0	A_Base_FreeRTOS.elf
+Finished building: default.size.stdout
+ 
+Finished building: A_Base_FreeRTOS.list
+ 
+
+11:22:25 Build Finished. 0 errors, 0 warnings. (took 1s.536ms)
+

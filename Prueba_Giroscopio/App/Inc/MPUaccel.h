@@ -9,6 +9,8 @@
 #ifndef MPUACCEL_H_
 #define MPUACCEL_H_
 
+#include <stdint.h>
+#include <stdio.h>
 #include <stm32f4xx.h>
 #include <I2CDriver.h>
 
@@ -94,7 +96,10 @@ typedef struct
 //Cabeceras de las funciones la configuracion y adquisicion de datos del MPU
 void configMPUAccel(MPUAccel_Handler_t *ptrMPUAccel);
 float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementCalibration);
-float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead);
+int16_t readCalibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead);
+float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead, int16_t offset);
+
+float getAngle(MPUAccel_Handler_t *ptrMPUAccel, uint64_t *time_pre, float ang_init, uint8_t axis, int16_t offset_Axis);
 
 uint8_t WHOIAM (MPUAccel_Handler_t *ptrMPUAccel);
 

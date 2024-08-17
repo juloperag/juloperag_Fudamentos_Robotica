@@ -1,0 +1,3 @@
+../Src/task_handler.c:20:6:vTask_Test_counting	24	static
+../Src/task_handler.c:47:6:vTask_Print	24	static
+../Src/task_handler.c:69:6:led_state_callback	16	static

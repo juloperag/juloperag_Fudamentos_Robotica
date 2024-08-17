@@ -1,4 +1,4 @@
-16:50:27 **** Build of configuration Debug for project Base_FreeRTOS ****
+11:22:29 **** Build of configuration Debug for project Base_FreeRTOS ****
 make -j4 all 
 arm-none-eabi-size   Base_FreeRTOS.elf 
    text	   data	    bss	    dec	    hex	filename
@@ -6,5 +6,5 @@ arm-none-eabi-size   Base_FreeRTOS.elf
 Finished building: default.size.stdout
  
 
-16:50:28 Build Finished. 0 errors, 0 warnings. (took 503ms)
+11:22:30 Build Finished. 0 errors, 0 warnings. (took 517ms)
 

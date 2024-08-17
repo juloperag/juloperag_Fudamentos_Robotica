@@ -1,0 +1,10 @@
+19:44:57 **** Incremental Build of configuration Debug for project Control_Robot_v3.8_PID_Distance ****
+make -j4 all 
+arm-none-eabi-size   Control_Robot_v3.8_PID_Distance.elf 
+   text	   data	    bss	    dec	    hex	filename
+  55252	    496	   4560	  60308	   eb94	Control_Robot_v3.8_PID_Distance.elf
+Finished building: default.size.stdout
+ 
+
+19:44:57 Build Finished. 0 errors, 0 warnings. (took 232ms)
+

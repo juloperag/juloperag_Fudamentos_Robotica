@@ -18,6 +18,8 @@
 //PeripheralDrivers
 #include <GPIOxDriver.h>
 #include <PLLDriver.h>
+#include <ExtiDriver.h>
+#include <USARTxDriver.h>
 
 //---------------------------Inicio de definicion de funciones y variables base----------------------------------
 GPIO_Handler_t handler_GPIO_BlinkyPin = {0};    //Definimos un elemento del tipo GPIO_Handler_t (Struct) para el LED
@@ -29,7 +31,8 @@ GPIO_Handler_t handler_GPIO_MCO2 = {0};       //Definimos un elemento del tipo G
 void int_MCO2(void);                      //Funcion para la configuracion inicail del MCO2
 
 //-------------------------Button---------------------------
-GPIO_Handler_t handler_GPIO_Button = {0};    //Definimos un elemento del tipo GPIO_Handler_t (Struct) para el boton
+GPIO_Handler_t handler_GPIO_Button = {0};    //Definimos un elemento del tipo GPIO_Handler_t y EXTI_Config_t  para el boton
+EXTI_Config_t handler_EXTI_Button = {0};
 
 //-------------------------SEGGER-----------------------------------
 extern void SEGGER_UART_init(uint32_t);     //Le indicamos al sistema que hay una funcion para inicio de la comunicacion del SEGGER por UART
@@ -38,12 +41,12 @@ extern void SEGGER_UART_init(uint32_t);     //Le indicamos al sistema que hay un
 //Definicion de variables para la configuracion inicial del FreeRTOS
 uint32_t SystemCoreClock = 100E6;
 #define STACK_SIZE 200
-//Handler de las Tareas
-TaskHandle_t xHandleTaskSL = NULL;
-TaskHandle_t xHandleTask2 = NULL;
 //Handler de las funciones de las Tareas
-void vTask_Status_Led(void * pvParameters);
-void vTaskButton(void * pvParameters);
+void vTask_Led_Handler(void * pvParameters);
+void vTask_Button_Handler(void * pvParameters);
+//Handler de las Tareas
+TaskHandle_t xHandleTask_Led = NULL;
+TaskHandle_t xHandleTask_Button = NULL;
 //Variable para comprobar la creacion de la tarea
 BaseType_t xReturned;
 
@@ -61,6 +64,7 @@ int main(void)
 	//Activamos del contador de Ticks
 	DWT->CTRL    |= (1 << 0);
 
+
 	//---------------------Inicio de uso de funciones para el funcionamiento del SEGGER----------------------
 	//Necesaria para el SEGGER
 	vInitPrioGroupValue();
@@ -70,31 +74,34 @@ int main(void)
 	SEGGER_SYSVIEW_Conf();
 	//-----------------------Fin de uso de funciones para el funcionamiento del SEGGER----------------------
 
+
 	//-----------------------Inicio cofiguracion de los elemntos del kernel de FreeRTOS----------------------
 
 	//-------------------Configuracion tarea 1--------------
 	xReturned = xTaskCreate(
-						vTask_Status_Led,       /* Function that implements the task. */
-	                    "TaskSL",          /* Text name for the task. */
+						vTask_Led_Handler,       /* Function that implements the task. */
+	                    "Task_Led",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
-						"Blinky",    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
-	                    &xHandleTaskSL);      /* Used to pass out the created task's handle. */
+						"Blinky_Led",    /* Parameter passed into the task. */
+	                    3,/* Priority at which the task is created. */
+	                    &xHandleTask_Led);      /* Used to pass out the created task's handle. */
 
 	configASSERT(xReturned == pdPASS);
 
 	//-------------------Configuracion tarea 2--------------
-	xReturned = xTaskCreate(
-						vTaskButton,       /* Function that implements the task. */
-	                    "Task2",          /* Text name for the task. */
-	                    STACK_SIZE,      /* Stack size in words, not bytes. */
-						"Hola Mundo desde la tarea-2",    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
-	                    &xHandleTask2);      /* Used to pass out the created task's handle. */
-
-	configASSERT(xReturned == pdPASS);
+//	xReturned = xTaskCreate(
+//						vTask_Button_Handler,       /* Function that implements the task. */
+//	                    "Task2",          /* Text name for the task. */
+//	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+//						"Hola Mundo desde la tarea-2",    /* Parameter passed into the task. */
+//	                    2,/* Priority at which the task is created. */
+//	                    &xHandleTask_Button);      /* Used to pass out the created task's handle. */
+//
+//	configASSERT(xReturned == pdPASS);
 
 	//-------------------Inicializacion Scheduler--------------
+	SEGGER_SYSVIEW_PrintfTarget("Starting the scheduler");
+	//Inicia le Scheduler a funcionar
 	vTaskStartScheduler();
 
 	//-----------------------Fin cofiguracion de los elemntos del kernel de FreeRTOS----------------------
@@ -126,20 +133,6 @@ void initSystem(void)
 	//Cargamos la configuracion del PIN especifico
 	GPIO_Config(&handler_GPIO_BlinkyPin);
 
-	//---------------------------Button-------------------------------
-	//---------------PIN: PC13----------------
-	//Definimos el periferico GPIOx a usar.
-	handler_GPIO_Button.pGPIOx = GPIOC;
-	//Definimos el pin a utilizar
-	handler_GPIO_Button.GPIO_PinConfig.GPIO_PinNumber = PIN_13; 						//PIN_x, 0-15
-	//Definimos la configuracion de los registro para el pin seleccionado
-	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
-	GPIO_PIN_Config(&handler_GPIO_Button, GPIO_MODE_OUT, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF0);
-	/*Opciones: GPIO_Tipo_x, donde x--->||IN, OUT, ALTFN, ANALOG ||| PUSHPULL, OPENDRAIN |||
-	 * ||| LOW, MEDIUM, FAST, HIGH ||| NOTHING, PULLUP, PULLDOWN, RESERVED |||  AFx, 0-15 |||*/
-	//Cargamos la configuracion del PIN especifico
-	GPIO_Config(&handler_GPIO_Button);
-
 	//-------------------------PIN_MCO2--------------------------------
 	//---------------PIN: PC9----------------
 	//------------AF0: MCO_2----------------
@@ -157,9 +150,29 @@ void initSystem(void)
 
 	//---------------------------------Fin de Configuracion GPIOx---------------------------------
 
+
+	//-------------------Inicio de Configuracion EXTIx -----------------------
+
+	//---------------PIN: PC13----------------
+	//Definimos el periferico GPIOx a usar.
+	handler_GPIO_Button.pGPIOx = GPIOC;
+	//Definimos el pin a utilizar
+	handler_GPIO_Button.GPIO_PinConfig.GPIO_PinNumber = PIN_13;
+	//Definimos la posicion del elemento pGIOHandler.
+	handler_EXTI_Button.pGPIOHandler = &handler_GPIO_Button;
+	//Definimos el tipo de flanco
+	handler_EXTI_Button.edgeType = EXTERNAL_INTERRUPP_RISING_EDGE;
+	//Cargamos la configuracion del EXTIx
+	exti_Config_Int_Priority(&handler_EXTI_Button, e_EXTI_PRIOPITY_6);
+	extInt_Config(&handler_EXTI_Button);
+
+	//-------------------Fin de Configuracion EXTIx-----------------------
+
 }
 
 //------------------------------Fin Configuracion del microcontrolador------------------------------------------
+
+
 
 
 
@@ -177,62 +190,118 @@ void int_MCO2(void)
 
 
 
+//----------------------------Inicio de la definicion de las funciones ISR---------------------------------------
+
+//-------------------------UserButton--------------------------------
+//Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el EXTI13
+void callback_extInt13(void)
+{
+	//Se define variable para verificar si una tarea de mayor proridad esta lista para Running
+	BaseType_t pxHigherPriorityTaskWoken;
+	pxHigherPriorityTaskWoken = pdFALSE;
+
+	//Reconocimeinto de la interrupcion por parte del SEGGER
+	traceISR_ENTER();
+	//Notificamos a la funcion del LED;
+	xTaskNotifyFromISR(xHandleTask_Led, 0, eNoAction, &pxHigherPriorityTaskWoken);
+	//Realizamos un cambio de Contexto
+	portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+	//Salimos del reconicimento de la interrupcion
+	traceISR_EXIT();
+}
+
+//----------------------------Fin de la definicion de las funciones ISR----------------------------------------
+
+
+
+
+
 //------------------------------Inicio definicion de las funciones de las Taks-----------------------------------------
 
 //Funcion que gobierna la Task SL
-void vTask_Status_Led( void * pvParameters )
+void vTask_Led_Handler( void * pvParameters )
 {
 	//Definicion de variables
-	 BaseType_t notify_state = 0;
-	 uint8_t change_state = 0;
+	 BaseType_t notify_status = 0;
+	 uint8_t change_led = 0;
 
 	while(1)
 	{
-		//Si se recibe una notifiacion se cambia la variable
-		if(notify_state == pdTRUE)
-		{
-			change_state = !change_state;
-		}
 		//Deacuerdo al valor de la variable se cambia el valor del pin del LED
-		if(change_state == 1)
+		if(change_led)
 		{
+			//Envio mensaje por SEGGER_SYSVIEM
+			SEGGER_SYSVIEW_PrintfTarget("Blinky");
+			//Cambio estado opuesto Led
 			GPIOxTooglePin(&handler_GPIO_BlinkyPin);
 		}
 		else
 		{
+			//Envio mensaje por SEGGER_SYSVIEM
+			SEGGER_SYSVIEW_PrintfTarget("Stop");
+			//Cambio estado opuesto Led
 			GPIO_writePin(&handler_GPIO_BlinkyPin, RESET);
+
 		}
+
+
 		//Recepccion de notificacion, la tarea entra en estado de bloqueo esperando por una notificacion
-		notify_state = xTaskNotifyWait(0, 0, NULL, pdMS_TO_TICKS(250));
-	}
-}
+		notify_status = xTaskNotifyWait(0, 0, NULL, pdMS_TO_TICKS(250));
 
-/* Funcion que gobierna a la tarea 2*/
-void vTaskButton( void * pvParameters )
-{
-	//Definicion de variables
-	int8_t button_state = 0;
-	uint8_t prev_button_state = 0;
-
-	while(1)
-	{
-		//Lectura estado del pin
-		button_state =  GPIO_RedPin (&handler_GPIO_Button);
-		//Deacuerdo al valor del estado del boton se ejecuta una funcion
-		if(button_state==1)
+		//Deacuerdo el estado se cambia el valor de la variable
+		if(notify_status == pdTRUE)
 		{
-			if(!prev_button_state)
-			{
-				//Enviamos una notificacion a la TaskSL
-				xTaskNotify(xHandleTaskSL,0,eNoAction);
-			}
+			//Desactivar las interrupciones por un periodo corto de tiempo
+			portENTER_CRITICAL();
+			//Cambia de valor
+			change_led = !change_led;
+			//Se vuelven activar
+			portEXIT_CRITICAL();
+		}
+		else
+		{
+			__NOP();
 		}
 
-		//Guardamos el valor actual de boton
-		prev_button_state = button_state;
-		//la tarea entra en estado de bloqueo por 10 ms
-		vTaskDelay(pdMS_TO_TICKS(10));
 	}
 }
-//------------------------------Fin definicion de las funciones de las Taks-----------------------------------------
 
+
+//void vTask_Button_Handler( void * pvParameters )
+//{
+//
+//	while(1)
+//	{
+//		//Se realiza un bloqueo de la tarea
+//		vTaskDelay(pdMS_TO_TICKS(10));
+//	}
+//}
+
+///* Funcion que gobierna a la tarea 2*/
+//void vTask_Button_Handler( void * pvParameters )
+//{
+//	//Definicion de variables
+//	int8_t button_state = 0;
+//	uint8_t prev_button_state = 0;
+//
+//	while(1)
+//	{
+//		//Lectura estado del pin
+//		button_state =  GPIO_RedPin (&handler_GPIO_Button);
+//		//Deacuerdo al valor del estado del boton se ejecuta una funcion
+//		if(button_state==1)
+//		{
+//			if(!prev_button_state)
+//			{
+//				//Enviamos una notificacion a la TaskSL
+//				xTaskNotify(xHandleTask_Led,0,eNoAction);
+//			}
+//		}
+//
+//		//Guardamos el valor actual de boton
+//		prev_button_state = button_state;
+//		//la tarea entra en estado de bloqueo por 10 ms
+//		vTaskDelay(pdMS_TO_TICKS(10));
+//	}
+//}
+//------------------------------Fin definicion de las funciones de las Taks-----------------------------------------

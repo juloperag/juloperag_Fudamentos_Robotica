@@ -286,6 +286,36 @@ void USART_Config(USART_Handler_t *ptrUsartHandler)
 	}
 }
 
+//------------Funcion para configurar las interrupciones------------------
+void usart_Config_Init_Priority(USART_Handler_t *ptrUsartHandler, uint8_t newPriority)
+{
+	//Desactivamos las interupciones globales
+	__disable_irq();
+	//Verificamos si se selecciono alguna interrupcion
+		if(ptrUsartHandler->USART_Config.USART_enableIntRX ==  USART_RX_INTERRUP_ENABLE || ptrUsartHandler->USART_Config.USART_enableIntTX ==  USART_TX_INTERRUP_ENABLE)
+		{
+			//Matriculamos la interrupcion en el NVIC
+			if(ptrUsartHandler->ptrUSARTx == USART1)
+			{
+				NVIC_SetPriority(USART1_IRQn, newPriority);
+			}
+			else if(ptrUsartHandler->ptrUSARTx == USART2)
+			{
+				NVIC_SetPriority(USART2_IRQn, newPriority);
+			}
+			else if(ptrUsartHandler->ptrUSARTx == USART6)
+			{
+				NVIC_SetPriority(USART6_IRQn, newPriority);
+			}
+		}
+		else
+		{
+			__NOP();
+		}
+		//Activamos las interupciones globales
+		__enable_irq();
+}
+
 //---------------Funcion para calcular el valor correspondiente a ingresar en el BRR----------
 uint16_t getValueBaudRate(uint8_t fck, uint32_t baudRate)
 {

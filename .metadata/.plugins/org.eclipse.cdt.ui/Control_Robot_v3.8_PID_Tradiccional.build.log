@@ -1,0 +1,10 @@
+11:22:36 **** Incremental Build of configuration Debug for project Control_Robot_v3.8_PID_Tradiccional ****
+make -j4 all 
+arm-none-eabi-size   Control_Robot_v3.8_PID_Tradiccional.elf 
+   text	   data	    bss	    dec	    hex	filename
+  53356	    496	   4512	  58364	   e3fc	Control_Robot_v3.8_PID_Tradiccional.elf
+Finished building: default.size.stdout
+ 
+
+11:22:36 Build Finished. 0 errors, 0 warnings. (took 317ms)
+

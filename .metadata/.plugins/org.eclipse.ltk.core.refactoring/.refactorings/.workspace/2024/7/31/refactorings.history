@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete 3 resources" deleteContents="false" description="Delete 3 resources" element1="/A_Base_FreeRTOS/Debug" element2="/A_Base_FreeRTOS/Release" element3="/A_Base_FreeRTOS/Ejemplo_Led Debug.launch" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="3" stamp="1722461704482"/>
+</session>

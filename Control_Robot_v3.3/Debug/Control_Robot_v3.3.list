@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000201e8  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00005041  00000000  00000000  00020218  2**0
+ 12 .debug_info   000054d1  00000000  00000000  00020218  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000117d  00000000  00000000  00025259  2**0
+ 13 .debug_abbrev 000011a0  00000000  00000000  000256e9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000478  00000000  00000000  000263d8  2**3
+ 14 .debug_aranges 00000498  00000000  00000000  00026890  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000003d0  00000000  00000000  00026850  2**3
+ 15 .debug_ranges 000003f0  00000000  00000000  00026d28  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00010f8e  00000000  00000000  00026c20  2**0
+ 16 .debug_macro  00010f8e  00000000  00000000  00027118  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00006a4a  00000000  00000000  00037bae  2**0
+ 17 .debug_line   00006b92  00000000  00000000  000380a6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00058859  00000000  00000000  0003e5f8  2**0
+ 18 .debug_str    000588a2  00000000  00000000  0003ec38  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  00096e51  2**0
+ 19 .comment      00000050  00000000  00000000  000974da  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00002b34  00000000  00000000  00096ea4  2**2
+ 20 .debug_frame  00002bcc  00000000  00000000  0009752c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1650,9 +1650,9 @@ void int_Hardware(void)
  8001228:	4a9a      	ldr	r2, [pc, #616]	; (8001494 <int_Hardware+0x2c0>)
  800122a:	609a      	str	r2, [r3, #8]
 	//Definimos el pin a utilizar
-	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_9; 						//PIN_x, 0-15
+	handler_GPIO_USB_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_2; 						//PIN_x, 0-15
  800122c:	4b9a      	ldr	r3, [pc, #616]	; (8001498 <int_Hardware+0x2c4>)
- 800122e:	2209      	movs	r2, #9
+ 800122e:	2202      	movs	r2, #2
  8001230:	701a      	strb	r2, [r3, #0]
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
@@ -1681,9 +1681,9 @@ void int_Hardware(void)
  800124e:	4a91      	ldr	r2, [pc, #580]	; (8001494 <int_Hardware+0x2c0>)
  8001250:	609a      	str	r2, [r3, #8]
 	//Definimos el pin a utiliza
-	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_10; 						//PIN_x, 0-15
+	handler_GPIO_USB_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_3; 						//PIN_x, 0-15
  8001252:	4b92      	ldr	r3, [pc, #584]	; (800149c <int_Hardware+0x2c8>)
- 8001254:	220a      	movs	r2, #10
+ 8001254:	2203      	movs	r2, #3
  8001256:	701a      	strb	r2, [r3, #0]
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
@@ -1892,7 +1892,7 @@ void int_Hardware(void)
 
 	//---------------USART1----------------
 	//Definimos el periferico USARTx a utilizar
-	handler_USART_USB.ptrUSARTx = USART1;
+	handler_USART_USB.ptrUSARTx = USART2;
  8001356:	4b59      	ldr	r3, [pc, #356]	; (80014bc <int_Hardware+0x2e8>)
  8001358:	4a59      	ldr	r2, [pc, #356]	; (80014c0 <int_Hardware+0x2ec>)
  800135a:	609a      	str	r2, [r3, #8]
@@ -2147,7 +2147,7 @@ void int_Hardware(void)
  80014b4:	40020c00 	.word	0x40020c00
  80014b8:	2000034c 	.word	0x2000034c
  80014bc:	2000026c 	.word	0x2000026c
- 80014c0:	40011000 	.word	0x40011000
+ 80014c0:	40004400 	.word	0x40004400
  80014c4:	20000210 	.word	0x20000210
  80014c8:	200003c0 	.word	0x200003c0
  80014cc:	40000400 	.word	0x40000400
@@ -2514,7 +2514,7 @@ void BasicTimer3_Callback(void)
  80017b0:	eec7 7a26 	vdiv.f32	s15, s14, s13
  80017b4:	4b8a      	ldr	r3, [pc, #552]	; (80019e0 <BasicTimer3_Callback+0x370>)
  80017b6:	edc3 7a00 	vstr	s15, [r3]
-			velocity_c = (handler_Motor_R.parametersMotor.velocity+handler_Motor_L.parametersMotor.velocity)/2;        //[m/s]
+			velocity_c = (handler_Motor_R.parametersMotor.velocity + handler_Motor_L.parametersMotor.velocity)/2;        //[m/s]
  80017ba:	4b80      	ldr	r3, [pc, #512]	; (80019bc <BasicTimer3_Callback+0x34c>)
  80017bc:	ed93 7a0a 	vldr	s14, [r3, #40]	; 0x28
  80017c0:	4b7c      	ldr	r3, [pc, #496]	; (80019b4 <BasicTimer3_Callback+0x344>)
@@ -2978,11 +2978,11 @@ void BasicTimer3_Callback(void)
  8001c44:	0800bbc0 	.word	0x0800bbc0
  8001c48:	0800bbcc 	.word	0x0800bbcc
 
-08001c4c <BasicUSART1_Callback>:
+08001c4c <BasicUSART2_Callback>:
 
 //-------------------------USARTRX--------------------------------
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el USART2
-void BasicUSART1_Callback(void)
+void BasicUSART2_Callback(void)
 {
  8001c4c:	b580      	push	{r7, lr}
  8001c4e:	af00      	add	r7, sp, #0
@@ -2991,7 +2991,7 @@ void BasicUSART1_Callback(void)
  8001c50:	f003 f9e6 	bl	8005020 <getRxData>
  8001c54:	4603      	mov	r3, r0
  8001c56:	461a      	mov	r2, r3
- 8001c58:	4b02      	ldr	r3, [pc, #8]	; (8001c64 <BasicUSART1_Callback+0x18>)
+ 8001c58:	4b02      	ldr	r3, [pc, #8]	; (8001c64 <BasicUSART2_Callback+0x18>)
  8001c5a:	701a      	strb	r2, [r3, #0]
 	//Funcion que almacena los caracteres del comando recibido
 	recepcionCommand();
@@ -7830,7 +7830,8 @@ void extInt_Config(EXTI_Config_t *extiConfig) // *extiConfig = &handlerEXTI
  8003c34:	40013c00 	.word	0x40013c00
 
 08003c38 <callback_extInt0>:
-
+	__enable_irq();
+}
 
 
 //Definimos las funciones para cuando se genera una interrupcion del EXTIx, 0-15
@@ -11159,6 +11160,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler)
  8004f04:	40011400 	.word	0x40011400
 
 08004f08 <getValueBaudRate>:
+		__enable_irq();
+}
 
 //---------------Funcion para calcular el valor correspondiente a ingresar en el BRR----------
 uint16_t getValueBaudRate(uint8_t fck, uint32_t baudRate)
@@ -11379,12 +11382,11 @@ void interruptionTX(USART_TypeDef *ptrUSARTxUsed, uint8_t interrupEnable)
  8005076:	f85d 7b04 	ldr.w	r7, [sp], #4
  800507a:	4770      	bx	lr
 
-0800507c <BasicUSART2_Callback>:
-	__NOP();
-}
+0800507c <BasicUSART1_Callback>:
 
 
-__attribute__((weak)) void BasicUSART2_Callback()
+//Definimos las funciones para cuando se genera una interrupcion del USART1-2 y 6
+__attribute__((weak)) void BasicUSART1_Callback()
 {
  800507c:	b480      	push	{r7}
  800507e:	af00      	add	r7, sp, #0
@@ -11397,6 +11399,8 @@ __attribute__((weak)) void BasicUSART2_Callback()
  800508a:	4770      	bx	lr
 
 0800508c <BasicUSART6_Callback>:
+	__NOP();
+}
 
 
 __attribute__((weak)) void BasicUSART6_Callback()
@@ -11439,7 +11443,7 @@ void USART1_IRQHandler(void)
  80050b8:	701a      	strb	r2, [r3, #0]
 		//Llamanos a la funcion de interrupcion
 		BasicUSART1_Callback();
- 80050ba:	f7fc fdc7 	bl	8001c4c <BasicUSART1_Callback>
+ 80050ba:	f7ff ffdf 	bl	800507c <BasicUSART1_Callback>
 	}
 	else
 	{
@@ -11595,7 +11599,7 @@ void USART2_IRQHandler(void)
  80051c0:	701a      	strb	r2, [r3, #0]
 		//Llamanos a la funcion de interrupcion
 		BasicUSART2_Callback();
- 80051c2:	f7ff ff5b 	bl	800507c <BasicUSART2_Callback>
+ 80051c2:	f7fc fd43 	bl	8001c4c <BasicUSART2_Callback>
 	}
 	else
 	{

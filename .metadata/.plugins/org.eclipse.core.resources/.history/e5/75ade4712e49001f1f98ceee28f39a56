@@ -1,5 +1,0 @@
-../App/Src/main.c:60:5:main	8	static,ignoring_inline_asm
-../App/Src/main.c:86:6:int_Hardware	16	static
-../App/Src/main.c:223:6:BasicTimer2_Callback	8	static
-../App/Src/main.c:230:6:BasicUSART2_Callback	8	static
-../App/Src/main.c:240:6:acelerometro_I2C	24	static

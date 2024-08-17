@@ -1,0 +1,17 @@
+../App/Src/main.c:168:5:main	40	static,ignoring_inline_asm
+../App/Src/main.c:266:6:int_Hardware	16	static
+../App/Src/main.c:576:6:int_MCO2	8	static
+../App/Src/main.c:585:6:int_MPU	8	static
+../App/Src/main.c:602:6:int_Config_Motor	8	static
+../App/Src/main.c:633:6:constains_calculator	24	static
+../App/Src/main.c:652:6:BasicTimer2_Callback	8	static
+../App/Src/main.c:659:6:BasicTimer3_Callback	56	static,ignoring_inline_asm
+../App/Src/main.c:734:6:BasicUSART1_Callback	8	static
+../App/Src/main.c:745:6:callback_extInt1	8	static
+../App/Src/main.c:764:6:callback_extInt3	8	static
+../App/Src/main.c:789:6:recepcionCommand	4	static
+../App/Src/main.c:813:6:runCommand	120	static
+../App/Src/main.c:955:6:PID	40	static
+../App/Src/main.c:980:6:correction	24	static,ignoring_inline_asm
+../App/Src/main.c:1016:6:status_motor	16	static
+../App/Src/main.c:1053:6:config_motor	32	static
