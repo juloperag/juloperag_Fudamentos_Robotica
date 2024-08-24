@@ -187,6 +187,7 @@ void initSystem(void)
 	handler_USART_CommTerm.USART_Config.USART_enableIntTX = USART_TX_INTERRUP_DISABLE;   //USART_TX_INTERRUP_x  x-> DISABLE, ENABLE
 	//Cargamos la configuracion del USART especifico
 	USART_Config(&handler_USART_CommTerm);
+	usart_Config_Init_Priority(&handler_USART_CommTerm, e_USART_PRIOPITY_6);
 
 	//-------------------Fin de Configuracion USARTx-----------------------
 

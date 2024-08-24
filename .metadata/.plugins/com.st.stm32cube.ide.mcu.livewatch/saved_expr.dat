@@ -12,3 +12,5 @@ vel_R_corr
 prom_ang
 ang_Row
 distance_punto_recta
+turn
+flag_mode

@@ -31,7 +31,7 @@ typedef struct
 	float e,e_1,e_2;   						//Valores PID discreto
 	float q0,q1,q2; 					 	//Costantes del PID discreto
 	float u_intel, e_prev;				    //Valores PID simple
-	float kp, ki, kd;				       //Constantes PID simple
+	uint16_t kp, ki, kd;				       //Constantes PID simple
 
 }Parameters_PID_t;
 

@@ -1,10 +1,18 @@
-19:44:57 **** Incremental Build of configuration Debug for project Control_Robot_v3.8_PID_Distance ****
+18:49:23 **** Incremental Build of configuration Debug for project Control_Robot_v3.8_PID_Distance ****
 make -j4 all 
+arm-none-eabi-gcc "../App/Src/MotorDriver.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/MotorDriver.d" -MT"App/Src/MotorDriver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/MotorDriver.o"
+arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v3.8_PID_Distance/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
+arm-none-eabi-gcc -o "Control_Robot_v3.8_PID_Distance.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot_v3.8_PID_Distance\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot_v3.8_PID_Distance.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Control_Robot_v3.8_PID_Distance.elf
+ 
 arm-none-eabi-size   Control_Robot_v3.8_PID_Distance.elf 
+arm-none-eabi-objdump -h -S  Control_Robot_v3.8_PID_Distance.elf  > "Control_Robot_v3.8_PID_Distance.list"
    text	   data	    bss	    dec	    hex	filename
-  55252	    496	   4560	  60308	   eb94	Control_Robot_v3.8_PID_Distance.elf
+  55244	    496	   4552	  60292	   eb84	Control_Robot_v3.8_PID_Distance.elf
 Finished building: default.size.stdout
  
+Finished building: Control_Robot_v3.8_PID_Distance.list
+ 
 
-19:44:57 Build Finished. 0 errors, 0 warnings. (took 232ms)
+18:49:25 Build Finished. 0 errors, 0 warnings. (took 1s.982ms)
 

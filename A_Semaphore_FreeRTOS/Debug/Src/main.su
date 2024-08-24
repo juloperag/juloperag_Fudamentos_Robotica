@@ -1,4 +1,4 @@
 ../Src/main.c:60:5:main	40	static,ignoring_inline_asm
 ../Src/main.c:125:6:initSystem	16	static
-../Src/main.c:221:6:callback_extInt13	16	static,ignoring_inline_asm
-../Src/main.c:247:10:getRandomNumber	16	static
+../Src/main.c:222:6:callback_extInt13	16	static,ignoring_inline_asm
+../Src/main.c:248:10:getRandomNumber	16	static
