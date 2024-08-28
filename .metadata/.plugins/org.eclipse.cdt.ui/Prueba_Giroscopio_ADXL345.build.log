@@ -1,0 +1,10 @@
+19:13:48 **** Incremental Build of configuration Debug for project Prueba_Giroscopio_ADXL345 ****
+make -j4 all 
+arm-none-eabi-size   Prueba_Giroscopio_ADXL345.elf 
+   text	   data	    bss	    dec	    hex	filename
+  31492	    476	   3928	  35896	   8c38	Prueba_Giroscopio_ADXL345.elf
+Finished building: default.size.stdout
+ 
+
+19:13:49 Build Finished. 0 errors, 0 warnings. (took 279ms)
+

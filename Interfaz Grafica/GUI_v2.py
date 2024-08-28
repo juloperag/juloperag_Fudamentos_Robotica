@@ -17,6 +17,7 @@ class FrameNavegation(Frame):
         #Referencia comunicacion serial y text
         self.txt = txt
         self.CommunicationSerial = CommunicationSerial
+        self.booleanisComunication = False
         #Generar y Configurar la grafica
         self.fig, self.ax = plt.subplots(figsize=(4.5, 4), dpi=100)
         self.ax.set_xlabel("Coordenada X",fontsize=6)
@@ -55,6 +56,12 @@ class FrameNavegation(Frame):
         self.txt.config(state="disabled")
 
     #--------------Envio de comandos--------------------
+    #Cambio en la Comunicacion Serial
+    def setCommunicationSerial(self, CommunicationSerial = None):
+        self.CommunicationSerial = CommunicationSerial
+    def setisComunication(self, value):
+        self.booleanisComunication = value
+    #Envio de comando
     def buttonsendCommand(self,com):
         msg = str(self.command[com]["command"])
         #Agregar valor
@@ -75,7 +82,7 @@ class FrameNavegation(Frame):
         #Agregar valor final
         msg = msg + " @"
         #Enviar comando
-        if self.CommunicationSerial and self.CommunicationSerial.is_open:
+        if self.booleanisComunication:
             self.CommunicationSerial.write(msg.encode('ascii'))
         else:
             messagebox.showerror("Error", f"No se pudo enviar el comando debido a que se encuentra desconectado el puerto serial")        
@@ -89,11 +96,11 @@ class FrameNavegation(Frame):
         y = float(values_num[1])
         #Agregamos coordenadas
         self.x_values.append(x)
-        self.y_values.append(y)
-        #Agregar el nuevo punto sin limpiar
-        plt.scatter(x, y)
-        #Conextar puntos                     
-        self.ax.plot(x, y, color='red')      
+        self.y_values.append(y)              
+        #Conectar el nuevo punto con el anterior
+        if len(self.x_values) > 1:
+        #Conectar el último punto con el penúltimo
+            self.ax.plot(self.x_values[-2:], self.y_values[-2:], linestyle='-', color='b')     
         #Redibujar la gráfica en el canvas
         self.canvas.draw()      
 
@@ -185,6 +192,7 @@ class FrameAStar(Frame):
         #Referencia comunicacion serial y text
         self.txt = txt
         self.CommunicationSerial = CommunicationSerial
+        self.booleanisComunication = False
         #Definicion Variables
         self.creategrip_flag = False
         self.flagStart = False
@@ -198,7 +206,13 @@ class FrameAStar(Frame):
         #Creacion de widgets
         self.creat_widgets()
 
-    #----------Funciones para el envio al text------------------
+    #----------Envio de informacion------------------
+    #Cambio en la Comunicacion Serial
+    def setCommunicationSerial(self, CommunicationSerial = None):
+        self.CommunicationSerial = CommunicationSerial
+    def setisComunication(self, value):
+        self.booleanisComunication = value
+    #Envio al txt
     def writeTextfromAStar(self, megg):
         #Habilitar escritura
         self.txt.config(state="normal")
@@ -300,7 +314,7 @@ class FrameAStar(Frame):
                     msg = msg + (self.buttons[i][j])["text"]
                 msg = msg + ";"
             #Enviar de mensajes
-            if self.CommunicationSerial and self.CommunicationSerial.is_open:
+            if self.booleanisComunication:
                 #Enviar comando
                 self.CommunicationSerial.write(("aStar @").encode('ascii'))
                 time.sleep(1)
@@ -429,8 +443,9 @@ class MainFrame(Frame):
             try:
                 if self.CommunicationSerial is not self.CommunicationSerial.is_open:
                     self.CommunicationSerial = serial.Serial(self.cmbox_port.get(),self.cmbox_baudrate.get(),timeout=1)
+                    self.Navegation.setCommunicationSerial(self.CommunicationSerial)
+                    self.A_Star.setCommunicationSerial(self.CommunicationSerial)
                     time.sleep(1)
-                    messagebox.showinfo("Conexión Serial", f"Conectado al puerto {self.cmbox_port.get()}")
                     self.labelcomunication.config(text = "Connected", fg= "green") 
                     self.isComunication = True
             except serial.SerialException as e:
@@ -442,21 +457,27 @@ class MainFrame(Frame):
             if self.CommunicationSerial and self.CommunicationSerial.is_open:
                 self.isComunication = False 
                 self.CommunicationSerial.close()
-                messagebox.showinfo("Conexión Serial", f"Desconectado del puerto")
+                self.Navegation.setCommunicationSerial(self.CommunicationSerial)
+                self.A_Star.setCommunicationSerial(self.CommunicationSerial)
                 self.labelcomunication.config(text = "Disconnected", fg= "red")
+        #Establecemos valor en de comunicacion en las clases
+        self.Navegation.setisComunication(self.isComunication)
+        self.A_Star.setisComunication(self.isComunication)
     #Recepcion
     def receiveCommunicationSerial(self):
         while self.isRun:
-            if(self.isComunication):
+            if self.isComunication:
                 mesg = self.CommunicationSerial.readline().decode('latin-1')
                 if mesg:
                     #Escribir mensaje en la bandeja de texto
                     self.writeText(mesg +'\n')
-                #Se verifica si llega un mensaje especial
-                if mesg[0] == '$':
-                    self.A_Star.recieveAStarGridMap(mesg)
-                if mesg[0] == '&':
-                    self.Navegation.add_point(mesg)
+                    #Se verifica si llega un mensaje especial
+                    if mesg[0] == '$':
+                        self.A_Star.recieveAStarGridMap(mesg)
+                    if mesg[0] == '&':
+                        self.Navegation.add_point(mesg)
+            else:
+                time.sleep(1)
     def writeText(self, megg):
         #Habilitar escritura
         self.txt.config(state="normal")
@@ -470,7 +491,7 @@ class MainFrame(Frame):
         msg = self.value_send.get()   
         self.sendCommunicationSerial(msg)
     def sendCommunicationSerial(self, msg):
-        if self.CommunicationSerial and self.CommunicationSerial.is_open:
+        if self.isComunication:
             self.CommunicationSerial.write(msg.encode('ascii'))
         else:
             messagebox.showerror("Error", f"No se pudo enviar el mensaje debido a que se encuentra desconectado el puerto serial")

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="e_intel"/>
+		<item key="selection" value="vel_Setpoint_L"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="Vel_Setpoint_L"/>
+			<item value="dutty_Setpoint_R"/>
+			<item value="vel_Setpoint_R"/>
+			<item value="dutty_Setpoint_L"/>
 			<item value="u_intel"/>
 			<item value="Dutty_Setpoint"/>
 			<item value="Dutty_Setpoint_"/>
@@ -19,12 +23,12 @@
 			<item value="flag_mode"/>
 			<item value="count_time"/>
 			<item value="loat vel_R_corr = 0;"/>
-			<item value="duttyInicial"/>
-			<item value="velRef_L"/>
-			<item value="distance_c"/>
-			<item value=" w_angular_c"/>
 		</list>
 		<list key="replacehistory">
+			<item value="vel_Setpoint_L"/>
+			<item value="vel_Setpoint_R"/>
+			<item value=""/>
+			<item value="Vel_Setpoint_L"/>
 			<item value="e_intel"/>
 			<item value="dutty_Setpoint"/>
 			<item value="Dutty_Setpoint_R"/>
@@ -32,14 +36,10 @@
 			<item value="porDutty_R"/>
 			<item value="porDutty_L"/>
 			<item value="flag_mode"/>
-			<item value=""/>
 			<item value="duttySetPoint"/>
 			<item value="xHandlerTimer_Led"/>
 			<item value="timeAction_TIMER_Sampling"/>
 			<item value="timer_TIMER_Count"/>
-			<item value="handler_TIMER_Sampling"/>
-			<item value="handler_TIMER_"/>
-			<item value="periodo_TIMER_Count"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

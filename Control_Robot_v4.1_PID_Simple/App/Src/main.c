@@ -6,6 +6,7 @@
  ******************************************************************************
  */
 
+// 8 1 11
 //Constantes
 //Todo con dutty_set_point de 28
 //Alimentacion cable kp = 30, Ki = 0, Kd = 520
@@ -108,9 +109,9 @@ void PID(Parameters_PID_t *ptrPIDHandler, float setpoint, float measure);       
 void PID_simple(Parameters_PID_t *ptrPIDHandler, float timer, float setpoint, float measure);//Funcion para la implrementacion del PID simple
 void correction(Motor_Handler_t *ptrMotorHandler);                                           //Funcion para corregir el dutty
 //----Cabeceras de los modos------
-void straight_line(uint16_t distance_straight_line, uint8_t value_dutty);
-void turn_itself(uint16_t turn_grad, uint8_t turn_direction, uint8_t value_dutty);
-void config_mode(uint8_t status, uint8_t value_dutty);
+void straight_line(uint16_t distance_straight_line);
+void turn_itself(uint16_t turn_grad, uint8_t turn_direction);
+void config_mode(uint8_t status);
 //-----Variables del MPU
 float ang_Row = 0;                               //Variable para almacenar el angulo del eje Z
 int16_t gyro_offset = 0;                         //Variable para guardad el offset de la calibracion
@@ -144,9 +145,10 @@ uint16_t limit_count_turn = 0;                    //Limite de cuentas del giro
 int16_t distance = 0;                             //Variable que guarda la distancia a recorrer
 float porDutty_L = 0;                             //Porcentaje equivalente de velocidad en cada rueda
 float porDutty_R = 0;
-float dutty_Setpoint_R = 0;                       //velocidad correpcio nen cada rueda
-float dutty_Setpoint_L = 0;
-float duttySetPoint = 0;                          //Dutty setpoint
+float vel_Setpoint_R = 0;                        //Diferentes setpoit
+float vel_Setpoint_L = 0;
+float velSetPoint = 0;
+float duttySetPoint = 28;                          //Dutty setpoint
 //--------Variables del timerSampling---------
 u_int32_t time_accion = 0;                        //Variable para guardar el Tiempo entre acciones
 uint16_t time_accumulated = 0;                    //Tiempo acumulado
@@ -190,6 +192,8 @@ int main(void)
 	cm_R =	((PI*DR)/(100*Ce));  //[mm/cuentas]
 	//Definimos la frecuencia del Timer contador
 	timeAction_TIMER_Sampling = (Ts/20);
+	//Calculamos el setpoint
+	velSetPoint = (0.00169*duttySetPoint + 0.0619);
 
 	//--------------------------Configuramos inicia el MPU----------------------
 	//Configuracion MPU
@@ -214,11 +218,8 @@ int main(void)
 		//Calculo de odometry y aplicacion PID
 		if(flag_action == 1)
 		{
-			//Convertirmos los valores de velocidad a porcentaje
-			porDutty_L = 590*(handler_Motor_L.parametersMotor.velocity) - 36.53;
-			porDutty_R = 590*(handler_Motor_R.parametersMotor.velocity) - 36.53;
 			//Conversion de tiempo
-			sampling_timer = (time_accion/1000);
+			sampling_timer = ((float) time_accion/1000);
 			//Verificamos el modo de operacion
 			if(flag_mode == 1)
 			{
@@ -230,14 +231,14 @@ int main(void)
 				parameter_Posicion_Robot.xg_position = parameter_Posicion_Robot.xg_position_inicial + parameter_Posicion_Robot.xr_position*cos_cal + parameter_Posicion_Robot.xr_position*sin_cal;
 				parameter_Posicion_Robot.yg_position = parameter_Posicion_Robot.yg_position_inicial - parameter_Posicion_Robot.xr_position*sin_cal + parameter_Posicion_Robot.yr_position*cos_cal;
 				//Convertimos el valor y imprimemos
-				sprintf(bufferMsg,"%#.4f\t%#.4f\n", parameter_Posicion_Robot.xg_position , parameter_Posicion_Robot.yg_position);
-				writeMsgForTXE(&handler_USART_USB, bufferMsg);
+				//sprintf(bufferMsg,"&%#.4f\t%#.4f\n", parameter_Posicion_Robot.xg_position , parameter_Posicion_Robot.yg_position);
+				//writeMsgForTXE(&handler_USART_USB, bufferMsg);
 				//Control PID para la distancia
 				distance_recta = (parameter_Posicion_Robot.yr_position)/1000;
 				PID_simple(&parameter_PID_distace, sampling_timer, 0,  distance_recta);
 				//Aplicacndo correcion
-				dutty_Setpoint_L = duttySetPoint - parameter_PID_distace.u;
-				dutty_Setpoint_R = duttySetPoint + parameter_PID_distace.u;
+				vel_Setpoint_L = velSetPoint - parameter_PID_distace.u;
+				vel_Setpoint_R = velSetPoint + parameter_PID_distace.u;
 			}
 			else if(flag_mode == 2)
 			{
@@ -245,8 +246,13 @@ int main(void)
 			}
 			else{ __NOP(); }
 			//Aplicacion del PID
-			PID_simple(&handler_Motor_L.parametersMotor.parametersPID, sampling_timer, dutty_Setpoint_L,  porDutty_L);
-			PID_simple(&handler_Motor_R.parametersMotor.parametersPID, sampling_timer, dutty_Setpoint_R,  porDutty_R);
+			PID_simple(&handler_Motor_L.parametersMotor.parametersPID, sampling_timer, vel_Setpoint_L,  handler_Motor_L.parametersMotor.velocity);
+			PID_simple(&handler_Motor_R.parametersMotor.parametersPID, sampling_timer, vel_Setpoint_R,  handler_Motor_R.parametersMotor.velocity);
+			//Cambiamos valores
+			handler_Motor_L.configMotor.new_dutty += handler_Motor_L.parametersMotor.parametersPID.u;
+			handler_Motor_R.configMotor.new_dutty += handler_Motor_R.parametersMotor.parametersPID.u;
+			sprintf(bufferMsg,"%#.4f\t%#.4f\t%#.4f\t%#.4f\n",porDutty_L, porDutty_R, vel_Setpoint_L, vel_Setpoint_R);
+			writeMsgForTXE(&handler_USART_USB, bufferMsg);
 			//Correccion del dutty
 			correction(&handler_Motor_L);
 			correction(&handler_Motor_R);
@@ -622,7 +628,7 @@ void int_Config_Motor(void)
 {
 	//---------------Motor Derecho----------------
 	//Parametro de la señal del dutty
-	handler_Motor_R.configMotor.dutty =  20;
+	handler_Motor_R.configMotor.dutty =  28;
 	handler_Motor_R.configMotor.frecuency = &value_period;
 	handler_Motor_R.configMotor.dir = SET;
 	//handler de los perifericos
@@ -633,13 +639,13 @@ void int_Config_Motor(void)
 	handler_Motor_R.parametersMotor.parametersPID.e = handler_Motor_R.parametersMotor.parametersPID.e_prev = 0;
 	handler_Motor_R.parametersMotor.parametersPID.u =  handler_Motor_R.parametersMotor.parametersPID.e_intel = 0;
 	//Calculo de Constantes PID
-	handler_Motor_R.parametersMotor.parametersPID.kp = 10;
+	handler_Motor_R.parametersMotor.parametersPID.kp = 250;
 	handler_Motor_R.parametersMotor.parametersPID.ki = 0;
 	handler_Motor_R.parametersMotor.parametersPID.kd = 100;
 
 	//---------------Motor Izquierdo----------------
 	//Parametro de la señal del dutty
-	handler_Motor_L.configMotor.dutty =  20;
+	handler_Motor_L.configMotor.dutty =  28;
 	handler_Motor_L.configMotor.frecuency = &value_period;
 	handler_Motor_L.configMotor.dir = SET;
 	//handler de los perifericos
@@ -650,7 +656,7 @@ void int_Config_Motor(void)
 	handler_Motor_L.parametersMotor.parametersPID.e = handler_Motor_L.parametersMotor.parametersPID.e_prev = 0;
 	handler_Motor_L.parametersMotor.parametersPID.u =  handler_Motor_L.parametersMotor.parametersPID.e_intel = 0;
 	//Calculo de Constantes PID
-	handler_Motor_L.parametersMotor.parametersPID.kp = 10;
+	handler_Motor_L.parametersMotor.parametersPID.kp = 250;
 	handler_Motor_L.parametersMotor.parametersPID.ki = 0;
 	handler_Motor_L.parametersMotor.parametersPID.kd = 100;
 
@@ -659,9 +665,9 @@ void int_Config_Motor(void)
 	parameter_PID_distace.e = parameter_PID_distace.e_prev = 0;
 	parameter_PID_distace.u =  parameter_PID_distace.e_intel = 0;
 	//Calculo de Constantes PID
-	parameter_PID_distace.kp = 27;
+	parameter_PID_distace.kp = 0;
 	parameter_PID_distace.ki = 0;
-	parameter_PID_distace.kd = 5900;
+	parameter_PID_distace.kd = 0;
 };
 
 
@@ -793,33 +799,53 @@ void runCommand(char *prtcommand)
 	{
 		writeMsgForTXE(&handler_USART_USB, "Help Menu: \n");
 		writeMsgForTXE(&handler_USART_USB, "1) help  ---Imprime lista de comandos. \n");
-		writeMsgForTXE(&handler_USART_USB, "2) init --- Reinicia las coordenadas globales \n");
-		writeMsgForTXE(&handler_USART_USB, "3) frequency # --- Cambiar el valor de la frecuenencia de las pruebas, [HZ] \n");
-		writeMsgForTXE(&handler_USART_USB, "4) line # # ---Inicia Linea recta, #: dist [mm], #: dutty \n");
-		writeMsgForTXE(&handler_USART_USB, "5) turn # # # ---Iniciamos el giro del robot #: ang [grados]# :dir #:dutty \n");
-		writeMsgForTXE(&handler_USART_USB, "6) stop --- Para el estudio en medio de la ejecucion \n");
-		writeMsgForTXE(&handler_USART_USB, "0) const # # # ---Constantes del PID #: kp,ti,td \n");
+		writeMsgForTXE(&handler_USART_USB, "2) dutty # --- Cambiar el valor de dutty [%] \n");
+		writeMsgForTXE(&handler_USART_USB, "3) frequency # --- Cambiar el valor de la frecuenencia del motor [HZ] \n");
+		writeMsgForTXE(&handler_USART_USB, "4) line # ---Inicia Linea recta, #: dist [mm]  \n");
+		writeMsgForTXE(&handler_USART_USB, "5) turn # # ---Iniciamos el giro del robot #: ang [grados]# \n");
+		writeMsgForTXE(&handler_USART_USB, "6) stop --- Para la ejecucion de los motore \n");
+		writeMsgForTXE(&handler_USART_USB, "7) init --- Reinicia las coordenadas globales \n");
+		writeMsgForTXE(&handler_USART_USB, "0) const # # # # ---Constantes del PID #: tipo PID->1:vel, kp,ti,td \n");
 	}
 
 	//----------------------Operacion de movimiento--------------------
 	//Definimos el valor de las frecuencias para el study
+	else if (strcmp(cmd, "dutty") == 0)
+	{
+		//Cuaramdos el dutty
+		duttySetPoint = firtsParameter;
+		//Calculamos el setpoint
+		velSetPoint = (0.00169*duttySetPoint + 0.0619);
+	}
 	else if (strcmp(cmd, "frequency") == 0)
 	{
 		frequency_PWM_Motor = 100000/firtsParameter;
 	}
 	else if (strcmp(cmd, "line") == 0)
 	{
-		straight_line(firtsParameter,secondParameter);
+		straight_line(firtsParameter);
 	}
 	else if (strcmp(cmd, "const") == 0)
 	{
-		parameter_PID_distace.kp = firtsParameter;
-		parameter_PID_distace.ki = secondParameter;
-		parameter_PID_distace.kd = thirdParameter;
+		if(firtsParameter==1)
+		{
+			handler_Motor_R.parametersMotor.parametersPID.kp = ((float) secondParameter)/100;
+			handler_Motor_R.parametersMotor.parametersPID.ki = ((float) thirdParameter)/100;
+			handler_Motor_R.parametersMotor.parametersPID.kd = ((float) forthParameter)/100;
+			handler_Motor_L.parametersMotor.parametersPID.kp = ((float) secondParameter)/100;
+			handler_Motor_L.parametersMotor.parametersPID.ki = ((float) thirdParameter)/100;
+			handler_Motor_L.parametersMotor.parametersPID.kd = ((float) forthParameter)/100;
+		}
+		else
+		{
+			parameter_PID_distace.kp = ((float) secondParameter)/100;
+			parameter_PID_distace.ki = ((float) thirdParameter)/100;
+			parameter_PID_distace.kd = ((float) forthParameter)/100;
+		}
 	}
 	else if (strcmp(cmd, "turn") == 0)
 	{
-		turn_itself(firtsParameter, secondParameter, thirdParameter);   //a = [grados], b = Direccion giro, c = Porcentaje dutty
+		turn_itself(firtsParameter, secondParameter);   //a = [grados], b = Direccion giro, c = Porcentaje dutty
 	}
 	else if (strcmp(cmd, "stop") == 0)
 	{
@@ -847,7 +873,7 @@ void runCommand(char *prtcommand)
 
 //------------------------------Inicio de la definicion de funciones del modo----------------------------------------
 //------linea recta------
-void straight_line(uint16_t distance_straight_line, uint8_t value_dutty)   //a = [mm], b = porcentaje
+void straight_line(uint16_t distance_straight_line)   //a = [mm]
 {
 	//---------Configuracion coordenadas---------
 	//Coordenadas Globales
@@ -864,15 +890,15 @@ void straight_line(uint16_t distance_straight_line, uint8_t value_dutty)   //a =
 	//Defimos la distancia a recorrer
 	distance = distance_straight_line;
 	//Cargamos la configuracion del modo e iniciamos el modo
-	config_mode(1, value_dutty);
+	config_mode(1);
 }
 
 //---------Giro sobre si mismo---------
-void turn_itself(uint16_t turn_grad, uint8_t turn_direction, uint8_t value_dutty)   //a = [grados], b = direccion giro, c = porcentaje
+void turn_itself(uint16_t turn_grad, uint8_t turn_direction)   //a = [grados], b = direccion giro
 {
 	//-------------Configruacion Modo--------------
 	//Definimos el setpoint del dutty
-	dutty_Setpoint_L = dutty_Setpoint_R = value_dutty;
+	vel_Setpoint_L = vel_Setpoint_R = duttySetPoint;
 	//Definicion del angulo de giro
 	turn = (turn_grad*PI)/180;
 	//Cambiamso la direccion del motor
@@ -891,11 +917,11 @@ void turn_itself(uint16_t turn_grad, uint8_t turn_direction, uint8_t value_dutty
 		updateDirMotor(handler_Motor_Execute);
 	}
 	//Cargamos la configuracion del modo e iniciamos el modo
-	config_mode(2, value_dutty);
+	config_mode(2);
 }
 
 
-void config_mode(uint8_t status, uint8_t value_dutty)
+void config_mode(uint8_t status)
 {
 	//----------------Informacion Angular-----------------
 	parameter_Posicion_Robot.phi_relativo = 0;
@@ -909,8 +935,9 @@ void config_mode(uint8_t status, uint8_t value_dutty)
 	handler_Motor_R.parametersMotor.parametersPID.e = handler_Motor_R.parametersMotor.parametersPID.e_prev = 0;
 	handler_Motor_R.parametersMotor.parametersPID.u =  handler_Motor_R.parametersMotor.parametersPID.e_intel = 0;
 	//-------------Configruacion Modo--------------
-	//Definimos el del setpoint
-	duttySetPoint = value_dutty;
+	//Definimos el dutty inicial
+	handler_Motor_L.configMotor.new_dutty = duttySetPoint;
+	handler_Motor_R.configMotor.new_dutty = duttySetPoint;
 	//Cargamos la configuracion
 	config_motor(status, duttySetPoint, duttySetPoint, frequency_PWM_Motor); //Tipo de Estudio, por dutty L, por dutty R, fre pwm [hz]
 	//Iniciamos los motores
@@ -946,8 +973,12 @@ void correction(Motor_Handler_t *ptrMotorHandler)
 	//Definimos variables auxiliares
 	float port_dutty = 0;
 	//Conversion ley de control->velocidad->valor dutty
-	if(ptrMotorHandler == &handler_Motor_L){ port_dutty = (0.9234*(ptrMotorHandler->parametersMotor.parametersPID.u) - 3) ; }
-	else{ port_dutty = ptrMotorHandler->parametersMotor.parametersPID.u ; }
+	if(ptrMotorHandler == &handler_Motor_L)
+	{
+		port_dutty = (0.9234*(ptrMotorHandler->configMotor.new_dutty) - 3);
+		port_dutty = ptrMotorHandler->configMotor.new_dutty;
+	}
+	else{ port_dutty = ptrMotorHandler->configMotor.new_dutty; }
 
     //Saturo el porcentaje de dutty en un tope maximo y minimo
     if (port_dutty >= 60) { port_dutty = 60; }

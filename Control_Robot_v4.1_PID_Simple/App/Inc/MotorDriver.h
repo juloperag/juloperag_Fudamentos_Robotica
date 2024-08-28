@@ -30,7 +30,7 @@ typedef struct
 	float u;                                   //Accion de control
 	float e; 								   //Error
 	float e_intel, e_prev;				       //Error integral y previo
-	uint16_t kp, ki, kd;				       //Constantes PID simple
+	float kp, ki, kd;				           //Constantes PID simple
 
 }Parameters_PID_t;
 
@@ -48,7 +48,8 @@ typedef struct
 typedef struct
 {
 	uint16_t *frecuency;             //frecuencia del timer
-	float dutty;                   //dutty de pwm del motor
+	float  new_dutty;               //Nuevo valor de dutty a reemplazar
+	float dutty;                    //dutty de pwm del motor
 	uint8_t dir;                    //indica el tipo de giro
 
 }Config_Motor_t;
