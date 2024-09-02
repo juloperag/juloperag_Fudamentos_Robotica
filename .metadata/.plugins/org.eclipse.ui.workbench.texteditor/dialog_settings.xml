@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="vel_Setpoint_L"/>
+		<item key="selection" value="R2"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="R2"/>
+			<item value="pi"/>
+			<item value="flag_count_odometry "/>
+			<item value="fabs"/>
 			<item value="Vel_Setpoint_L"/>
 			<item value="dutty_Setpoint_R"/>
 			<item value="vel_Setpoint_R"/>
@@ -19,15 +23,12 @@
 			<item value="vel_L_corr"/>
 			<item value="porVel_R"/>
 			<item value="porVel_L"/>
-			<item value="flag_motor"/>
-			<item value="flag_mode"/>
-			<item value="count_time"/>
-			<item value="loat vel_R_corr = 0;"/>
 		</list>
 		<list key="replacehistory">
+			<item value=""/>
+			<item value="M_PI"/>
 			<item value="vel_Setpoint_L"/>
 			<item value="vel_Setpoint_R"/>
-			<item value=""/>
 			<item value="Vel_Setpoint_L"/>
 			<item value="e_intel"/>
 			<item value="dutty_Setpoint"/>
@@ -39,12 +40,11 @@
 			<item value="duttySetPoint"/>
 			<item value="xHandlerTimer_Led"/>
 			<item value="timeAction_TIMER_Sampling"/>
-			<item value="timer_TIMER_Count"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="318"/>
-		<item key="DIALOG_Y_ORIGIN" value="197"/>
+		<item key="DIALOG_X_ORIGIN" value="715"/>
+		<item key="DIALOG_Y_ORIGIN" value="98"/>
 		<item key="DIALOG_WIDTH" value="545"/>
 		<item key="DIALOG_HEIGHT" value="326"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

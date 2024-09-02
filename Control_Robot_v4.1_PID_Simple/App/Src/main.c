@@ -231,8 +231,8 @@ int main(void)
 				parameter_Posicion_Robot.xg_position = parameter_Posicion_Robot.xg_position_inicial + parameter_Posicion_Robot.xr_position*cos_cal + parameter_Posicion_Robot.xr_position*sin_cal;
 				parameter_Posicion_Robot.yg_position = parameter_Posicion_Robot.yg_position_inicial - parameter_Posicion_Robot.xr_position*sin_cal + parameter_Posicion_Robot.yr_position*cos_cal;
 				//Convertimos el valor y imprimemos
-				//sprintf(bufferMsg,"&%#.4f\t%#.4f\n", parameter_Posicion_Robot.xg_position , parameter_Posicion_Robot.yg_position);
-				//writeMsgForTXE(&handler_USART_USB, bufferMsg);
+				sprintf(bufferMsg,"&%#.4f\t%#.4f\n", parameter_Posicion_Robot.xg_position , parameter_Posicion_Robot.yg_position);
+				writeMsgForTXE(&handler_USART_USB, bufferMsg);
 				//Control PID para la distancia
 				distance_recta = (parameter_Posicion_Robot.yr_position)/1000;
 				PID_simple(&parameter_PID_distace, sampling_timer, 0,  distance_recta);
@@ -251,8 +251,8 @@ int main(void)
 			//Cambiamos valores
 			handler_Motor_L.configMotor.new_dutty += handler_Motor_L.parametersMotor.parametersPID.u;
 			handler_Motor_R.configMotor.new_dutty += handler_Motor_R.parametersMotor.parametersPID.u;
-			sprintf(bufferMsg,"%#.4f\t%#.4f\t%#.4f\t%#.4f\n",porDutty_L, porDutty_R, vel_Setpoint_L, vel_Setpoint_R);
-			writeMsgForTXE(&handler_USART_USB, bufferMsg);
+			//sprintf(bufferMsg,"%#.4f\t%#.4f\t%#.4f\t%#.4f\n",handler_Motor_L.parametersMotor.velocity, handler_Motor_R.parametersMotor.velocity, vel_Setpoint_L, vel_Setpoint_R);
+			//writeMsgForTXE(&handler_USART_USB, bufferMsg);
 			//Correccion del dutty
 			correction(&handler_Motor_L);
 			correction(&handler_Motor_R);
@@ -665,9 +665,9 @@ void int_Config_Motor(void)
 	parameter_PID_distace.e = parameter_PID_distace.e_prev = 0;
 	parameter_PID_distace.u =  parameter_PID_distace.e_intel = 0;
 	//Calculo de Constantes PID
-	parameter_PID_distace.kp = 0;
-	parameter_PID_distace.ki = 0;
-	parameter_PID_distace.kd = 0;
+	parameter_PID_distace.kp = 1.0;
+	parameter_PID_distace.ki = 0.1;
+	parameter_PID_distace.kd = 0.8;
 };
 
 

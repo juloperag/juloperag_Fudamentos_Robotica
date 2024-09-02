@@ -1,4 +1,4 @@
-../App/Src/main.c:162:5:main	72	static,ignoring_inline_asm
+../App/Src/main.c:162:5:main	48	static,ignoring_inline_asm
 ../App/Src/main.c:291:6:int_Hardware	16	static
 ../App/Src/main.c:601:6:int_MCO2	8	static
 ../App/Src/main.c:610:6:int_MPU	8	static

@@ -1,4 +1,4 @@
-11:22:30 **** Build of configuration Debug for project Control_Robot ****
+18:30:50 **** Build of configuration Debug for project Control_Robot ****
 make -j4 all 
 arm-none-eabi-gcc -o "Control_Robot.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Control_Robot.elf
@@ -12,5 +12,5 @@ Finished building: default.size.stdout
 Finished building: Control_Robot.list
  
 
-11:22:31 Build Finished. 0 errors, 0 warnings. (took 740ms)
+18:30:51 Build Finished. 0 errors, 0 warnings. (took 802ms)
 
