@@ -1,4 +1,4 @@
-18:30:54 **** Incremental Build of configuration Debug for project Control_Robot_v4.1_PID_Simple ****
+14:18:53 **** Incremental Build of configuration Debug for project Control_Robot_v4.1_PID_Simple ****
 make -j4 all 
 arm-none-eabi-size   Control_Robot_v4.1_PID_Simple.elf 
    text	   data	    bss	    dec	    hex	filename
@@ -6,5 +6,5 @@ arm-none-eabi-size   Control_Robot_v4.1_PID_Simple.elf
 Finished building: default.size.stdout
  
 
-18:30:54 Build Finished. 0 errors, 0 warnings. (took 316ms)
+14:18:53 Build Finished. 0 errors, 0 warnings. (took 363ms)
 

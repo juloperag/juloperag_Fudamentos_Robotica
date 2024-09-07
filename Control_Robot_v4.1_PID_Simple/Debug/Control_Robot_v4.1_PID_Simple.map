@@ -1725,19 +1725,19 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
                 0x000000000800187a       0x5c ./App/Src/MotorDriver.o
                 0x000000000800187a                updateDirMotor
  *fill*         0x00000000080018d6        0x2 
- .text.main     0x00000000080018d8      0x4c0 ./App/Src/main.o
+ .text.main     0x00000000080018d8      0x4c4 ./App/Src/main.o
                 0x00000000080018d8                main
  .text.int_Hardware
-                0x0000000008001d98      0x39c ./App/Src/main.o
-                0x0000000008001d98                int_Hardware
+                0x0000000008001d9c      0x39c ./App/Src/main.o
+                0x0000000008001d9c                int_Hardware
  .text.int_MCO2
-                0x0000000008002134       0x14 ./App/Src/main.o
-                0x0000000008002134                int_MCO2
- .text.int_MPU  0x0000000008002148       0x28 ./App/Src/main.o
-                0x0000000008002148                int_MPU
+                0x0000000008002138       0x14 ./App/Src/main.o
+                0x0000000008002138                int_MCO2
+ .text.int_MPU  0x000000000800214c       0x28 ./App/Src/main.o
+                0x000000000800214c                int_MPU
  .text.int_Config_Motor
-                0x0000000008002170      0x134 ./App/Src/main.o
-                0x0000000008002170                int_Config_Motor
+                0x0000000008002174      0x130 ./App/Src/main.o
+                0x0000000008002174                int_Config_Motor
  .text.BasicTimer2_Callback
                 0x00000000080022a4       0x14 ./App/Src/main.o
                 0x00000000080022a4                BasicTimer2_Callback
@@ -3289,21 +3289,21 @@ LOAD c:/st/stm32cubeide_1.10.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_macro   0x0000000000011343       0x10 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(SysTickDriver.o)
  .debug_macro   0x0000000000011353      0x23e B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
 
-.debug_line     0x0000000000000000     0x857d
+.debug_line     0x0000000000000000     0x857b
  .debug_line    0x0000000000000000      0xa42 ./App/Src/MPUaccel.o
  .debug_line    0x0000000000000a42      0x867 ./App/Src/MotorDriver.o
- .debug_line    0x00000000000012a9     0x128b ./App/Src/main.o
- .debug_line    0x0000000000002534       0x89 ./Core/Startup/startup_stm32f411retx.o
- .debug_line    0x00000000000025bd      0x7f0 ./Core/syscalls.o
- .debug_line    0x0000000000002dad      0x4e6 ./Core/sysmem.o
- .debug_line    0x0000000000003293      0x7fe B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
- .debug_line    0x0000000000003a91     0x1286 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(ExtiDriver.o)
- .debug_line    0x0000000000004d17      0x7ac B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(GPIOxDriver.o)
- .debug_line    0x00000000000054c3      0x8a0 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(I2CDriver.o)
- .debug_line    0x0000000000005d63      0x6b1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PLLDriver.o)
- .debug_line    0x0000000000006414      0xb96 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PwmDriver.o)
- .debug_line    0x0000000000006faa      0x71c B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(SysTickDriver.o)
- .debug_line    0x00000000000076c6      0xeb7 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
+ .debug_line    0x00000000000012a9     0x1289 ./App/Src/main.o
+ .debug_line    0x0000000000002532       0x89 ./Core/Startup/startup_stm32f411retx.o
+ .debug_line    0x00000000000025bb      0x7f0 ./Core/syscalls.o
+ .debug_line    0x0000000000002dab      0x4e6 ./Core/sysmem.o
+ .debug_line    0x0000000000003291      0x7fe B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(BasicTimer.o)
+ .debug_line    0x0000000000003a8f     0x1286 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(ExtiDriver.o)
+ .debug_line    0x0000000000004d15      0x7ac B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(GPIOxDriver.o)
+ .debug_line    0x00000000000054c1      0x8a0 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(I2CDriver.o)
+ .debug_line    0x0000000000005d61      0x6b1 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PLLDriver.o)
+ .debug_line    0x0000000000006412      0xb96 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(PwmDriver.o)
+ .debug_line    0x0000000000006fa8      0x71c B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(SysTickDriver.o)
+ .debug_line    0x00000000000076c4      0xeb7 B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug\libPeripheralDrivers.a(USARTxDriver.o)
 
 .debug_str      0x0000000000000000    0x591b1
  .debug_str     0x0000000000000000    0x53f3b ./App/Src/MPUaccel.o

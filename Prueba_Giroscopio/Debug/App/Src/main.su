@@ -1,6 +1,6 @@
-../App/Src/main.c:64:5:main	16	static,ignoring_inline_asm
-../App/Src/main.c:114:6:int_Hardware	16	static
-../App/Src/main.c:258:6:int_MPU	8	static
-../App/Src/main.c:279:6:BasicTimer2_Callback	8	static
-../App/Src/main.c:285:6:BasicTimer3_Callback	4	static
-../App/Src/main.c:292:6:BasicUSART2_Callback	8	static
+../App/Src/main.c:66:5:main	40	static,ignoring_inline_asm
+../App/Src/main.c:128:6:int_Hardware	16	static
+../App/Src/main.c:272:6:int_MPU	8	static
+../App/Src/main.c:293:6:BasicTimer2_Callback	8	static
+../App/Src/main.c:299:6:BasicTimer3_Callback	4	static
+../App/Src/main.c:306:6:BasicUSART2_Callback	8	static

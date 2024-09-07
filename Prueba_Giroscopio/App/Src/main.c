@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stm32f411xe.h>
 #include <stdio.h>
+#include "math.h"
 //Perifericos
 #include <GPIOxDriver.h>
 #include <BasicTimer.h>
@@ -60,9 +61,14 @@ uint8_t counting_view = 0;                        //Cantador para visualizar los
 uint64_t time_preview = 0;
 #define ACCEL_ADDRESSS  0b1101000;             //Definicion de la direccion del Sclave
 
+float anguloCombinado = 0;
 
 int main(void)
 {
+	float aceleracionX = 0;
+	float aceleracionY = 0;
+	float alpha = 0.99;
+	float anguloAcel = 0;
 
 	//Incrementamos la velocidad de reloj del sistema
 	uint8_t clock = CLOCK_SPEED_100MHZ;    //Velocidad de reloj entre 25 o 100 MHz
@@ -86,6 +92,14 @@ int main(void)
 		{
 			//Obtener angulo
 			angulo = getAngle(&handler_MPUAccel_MPU6050, &time_preview, angulo, READ_GYRO_Z, gyro_offset);
+			aceleracionX =  readMPU(&handler_MPUAccel_MPU6050, READ_ACCEL_X, 0);
+			aceleracionY =  readMPU(&handler_MPUAccel_MPU6050, READ_ACCEL_Y, 0);
+			// Calcular el ángulo basado en la aceleración
+			  anguloAcel = atan2(aceleracionY, aceleracionX) * (180.0 / 3.1416);  // Convertir a grados
+
+			  // Combinar ambos ángulos usando el filtro complementario
+			  anguloCombinado = alpha * (angulo) + (1 - alpha) * anguloAcel;
+
 			//Contador para visualizar los datos en un tiempo dado
 			if(counting_view>50)
 			{
