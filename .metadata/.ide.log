@@ -2025,3 +2025,11 @@ java.net.NoRouteToHostException: No route to host: connect
 2024-09-06 10:56:55,505 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 2024-09-06 11:43:24,098 [ERROR] ConfigurationRetriever:139 - IOException on connection: connect timed out
 2024-09-06 11:43:29,217 [ERROR] AdobePublisher:183 - Exception while getting the server answer: java.net.SocketTimeoutException: Read timed out
+2024-09-07 10:37:27,247 [INFO] Activator:177 - 
+
+
+2024-09-07 10:37:27,252 [INFO] Activator:178 - !SESSION log4j initialized
+2024-09-07 10:38:16,518 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-09-07 10:38:16,520 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-09-07 10:38:16,523 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2024-09-07 14:23:25,425 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out

@@ -17,7 +17,7 @@ typedef struct
   
 }file_cell_t;
 //Definimos las cabeceras de las funciones
-file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, float start_x, float start_y, float  goal_x, float goal_y);
-uint8_t search_position_file_Open(file_cell_t **list_file, uint64_t avan_file);
-void heuristic_cell_map(Cell_map_t **grid, char **map_String, uint8_t row, uint8_t colum, float goal_x, float goal_y);
+file_cell_t* aplicattion_A_Star(Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float start_x, float start_y, float  goal_x, float goal_y);
+uint8_t search_position_file_Open(file_cell_t list_file[64], uint64_t avan_file);
+void heuristic_cell_map(Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float goal_x, float goal_y);
 float heuristic_single_cell(Cell_map_t *cell, float  goal_x, float goal_y);

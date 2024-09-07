@@ -5,26 +5,12 @@ int8_t ne_pos_x[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
 int8_t ne_pos_y[8] = {1, 1, 1, 0, -1, -1, -1, 0};
 
 // Función para crear la malla de celdas
-Cell_map_t** creat_grid_map(uint8_t row, uint8_t colum, float separation) 
+void build_grid_map(Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float separation)
 {  
     //Se definen variables
     float rel_x;
     float rel_y;
-    
-    //-----------------------Creacion malla---------------------------
-    Cell_map_t **grid = (Cell_map_t **)malloc(row * sizeof(Cell_map_t *));
-    if (grid == NULL) {
-        printf("Error: No se pudo asignar memoria para la malla de celdas\n");
-        exit(1);
-    }
-    for (int i = 0; i < row; i++) {
-        grid[i] = (Cell_map_t *)malloc(colum * sizeof(Cell_map_t));
-        if (grid[i] == NULL) {
-            printf("Error: No se pudo asignar memoria para la fila %d de la malla de celdas\n", i);
-            exit(1);
-        }
-    }
-    
+
     //---------------------Asignacion de informacion------------------------
     // Llenar la matriz de celdas con valores predeterminados
     for (int i = 0; i < row; i++) {
@@ -76,6 +62,4 @@ Cell_map_t** creat_grid_map(uint8_t row, uint8_t colum, float separation)
             }
         }
     }
-
-    return grid;
 }

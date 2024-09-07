@@ -313,6 +313,8 @@ class FrameAStar(Frame):
                 for j in range(cols):
                     msg = msg + (self.buttons[i][j])["text"]
                 msg = msg + ";"
+            #Agregamos indicador final
+            msg = msg + "$"
             #Enviar de mensajes
             if self.booleanisComunication:
                 #Enviar comando
@@ -467,8 +469,16 @@ class MainFrame(Frame):
     def receiveCommunicationSerial(self):
         while self.isRun:
             if self.isComunication:
-                mesg = self.CommunicationSerial.readline().decode('latin-1')
-                if mesg:
+                try:
+                    mesg = self.CommunicationSerial.readline().decode('latin-1')
+                except serial.SerialException as e:
+                    self.isComunication = False 
+                    self.labelcomunication.config(text = "Disconnected", fg = "red") 
+                    self.CommunicationSerial.close()
+                    self.Navegation.setCommunicationSerial(self.CommunicationSerial)
+                    self.A_Star.setCommunicationSerial(self.CommunicationSerial)
+                    messagebox.showerror("Error", f" Error de comunicación serial: {self.cmbox_port.get()} \nError: {str(e)} ")
+                if mesg and self.isComunication:
                     #Escribir mensaje en la bandeja de texto
                     self.writeText(mesg +'\n')
                     #Se verifica si llega un mensaje especial

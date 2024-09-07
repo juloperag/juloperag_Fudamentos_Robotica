@@ -1,7 +1,9 @@
-../App/Src/main.c:62:5:main	24	static,ignoring_inline_asm
-../App/Src/main.c:102:6:int_Hardware	16	static
-../App/Src/main.c:196:6:BasicTimer2_Callback	8	static
-../App/Src/main.c:203:6:BasicUSART2_Callback	8	static,ignoring_inline_asm
-../App/Src/main.c:233:6:save_char_Parameter_Grid_Map	16	static,ignoring_inline_asm
-../App/Src/main.c:245:8:separate_Parameters	64	static
-../App/Src/main.c:361:6:send_path	32	static
+../App/Src/main.c:78:5:main	16	static,ignoring_inline_asm
+../App/Src/main.c:127:6:int_Hardware	16	static
+../App/Src/main.c:221:6:BasicTimer2_Callback	8	static
+../App/Src/main.c:228:6:BasicUSART2_Callback	8	static
+../App/Src/main.c:241:6:recepcion_Sring_Parameter_Grid_Map	16	static,ignoring_inline_asm
+../App/Src/main.c:264:6:recepcionCommand	4	static
+../App/Src/main.c:287:6:runCommand	88	static
+../App/Src/main.c:320:6:Separate_parameters	48	static
+../App/Src/main.c:424:6:send_path	64	static

@@ -3,10 +3,10 @@
 #include <math.h>
 
 //-----------------------------------------------Funciones para la implementacion de A Star------------------------------------------------------------------
-file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, float start_x, float start_y, float goal_x, float goal_y) {
+file_cell_t* aplicattion_A_Star(Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float start_x, float start_y, float goal_x, float goal_y) {
   //Variables
   file_cell_t *ptrFile;                           //Puntero a la ficha de la secuencia actual de A Star
-  file_cell_t *file_Open[64] = {0};               //Arreglo de fichas abiertas
+  file_cell_t file_Open[100] = {0};               //Arreglo de fichas abiertas
   uint64_t file_Open_Availability = 0b1;          //Conjunto de bits que indica que fichas abiertas estan disponibles para la comparacion
   uint8_t bit_file_cell = 0;                      //bit de una ficha que indica su disponibilidad
   uint8_t index_ptr = 0;                          //Indice de la ficha de la secuencia actual de A Star
@@ -16,11 +16,10 @@ file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, f
 
   //----------------Se crea la ficha inicial----------------
   //Se crea la ficha inicial
-  file_Open[0] = (file_cell_t *)malloc(sizeof(file_cell_t));
-  file_Open[0]->num_parent = 0;
-  file_Open[0]->cost_g = 0.0f; 
+  file_Open[0].num_parent = 0;
+  file_Open[0].cost_g = 0.0f;
   //Por medio de un puntero se asigna la ficha inicial
-  ptrFile = file_Open[0];
+  ptrFile = &file_Open[0];
   
   // ------------- Se identifica la celda inicial -----------
   for (int i = 0; i < row; i++) 
@@ -53,17 +52,16 @@ file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, f
           //Se abre la celda
           ptrFile->ptrCell_file->neighbors.ptrCellMap[k]->status = OPEN;
           //Se crea la ficha
-          file_Open[index_file_Open] = (file_cell_t *)malloc(sizeof(file_cell_t));
-          file_Open[index_file_Open]->ptrCell_file = ptrFile->ptrCell_file->neighbors.ptrCellMap[k];
+          file_Open[index_file_Open].ptrCell_file = ptrFile->ptrCell_file->neighbors.ptrCellMap[k];
           for(uint8_t u = 0; u < ptrFile->num_parent; u++)
           {
-            file_Open[index_file_Open]->ptrCell_parent[u] = ptrFile->ptrCell_parent[u];
+            file_Open[index_file_Open].ptrCell_parent[u] = ptrFile->ptrCell_parent[u];
           }
-          file_Open[index_file_Open]->ptrCell_parent[ptrFile->num_parent] = ptrFile->ptrCell_file;
-          file_Open[index_file_Open]->ptrCell_parent[(ptrFile->num_parent+1)] = NULL;
-          file_Open[index_file_Open]->num_parent = ptrFile->num_parent+1;
-          file_Open[index_file_Open]->cost_g = ptrFile->ptrCell_file->neighbors.distance_neigh[k]+ptrFile->cost_g;
-          file_Open[index_file_Open]->function_F = file_Open[index_file_Open]->cost_g + ptrFile->ptrCell_file->neighbors.ptrCellMap[k]->h;
+          file_Open[index_file_Open].ptrCell_parent[ptrFile->num_parent] = ptrFile->ptrCell_file;
+          file_Open[index_file_Open].ptrCell_parent[(ptrFile->num_parent+1)] = NULL;
+          file_Open[index_file_Open].num_parent = ptrFile->num_parent+1;
+          file_Open[index_file_Open].cost_g = ptrFile->ptrCell_file->neighbors.distance_neigh[k]+ptrFile->cost_g;
+          file_Open[index_file_Open].function_F = file_Open[index_file_Open].cost_g + ptrFile->ptrCell_file->neighbors.ptrCellMap[k]->h;
           //Indicacion de la disponibilidad de la ficha
           file_Open_Availability |= (0b1 << index_file_Open);
         }
@@ -73,8 +71,6 @@ file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, f
     //-----------------Cerramos la ficha actual del puntero----------------------
     //indicamos el nuevo estado de la celda
     ptrFile->ptrCell_file->status = CLOSED;
-    //Liberamos la memoria del arreglo de fichas
-    free(ptrFile);
     //Indicacion de la no disponibilidad de la ficha
     file_Open_Availability &=  ~(0b1 << index_ptr);
      
@@ -83,21 +79,21 @@ file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, f
       //Recorrido
       bit_file_cell = (file_Open_Availability >> k) & 0b1;
       //Se el bit es un valor logico de 1 entonces la ficha esta disponible para su comparacion con las demas
-      if(bit_file_cell==1)
+      if(bit_file_cell==1 && file_Open[k].ptrCell_file != NULL)
       {
         // Verificar que la función F sea menor al valor anterior
-        if (file_Open[k]->function_F < min_f) {
+        if (file_Open[k].function_F < min_f) {
           // Reemplazamos valores
-          min_f = file_Open[k]->function_F;
-          min_h = file_Open[k]->ptrCell_file->h;
+          min_f = file_Open[k].function_F;
+          min_h = file_Open[k].ptrCell_file->h;
           index_ptr = k;
         }
         // Verificar que la función F sea igual al valor anterior, si es así se desempata con el valor h
-        else if (file_Open[k]->function_F == min_f) {
-          if (file_Open[k]->ptrCell_file->h < min_h) {
+        else if (file_Open[k].function_F == min_f) {
+          if (file_Open[k].ptrCell_file->h < min_h) {
               // Reemplazamos valores
-              min_f = file_Open[k]->function_F;
-              min_h = file_Open[k]->ptrCell_file->h;
+              min_f = file_Open[k].function_F;
+              min_h = file_Open[k].ptrCell_file->h;
               index_ptr = k;         
           }       
         }
@@ -105,7 +101,7 @@ file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, f
     }
     
     //--------------- Seleccionamos nueva ficha para el puntero--------------------
-    ptrFile = file_Open[index_ptr];
+    ptrFile = &file_Open[index_ptr];
     
     //-----------------Verificacion si se llego al gol----------------------
     if (ptrFile->ptrCell_file->coor_x == goal_x && ptrFile->ptrCell_file->coor_y == goal_y) {
@@ -116,19 +112,18 @@ file_cell_t* aplicattion_A_Star(Cell_map_t **grid, uint8_t row, uint8_t colum, f
 }
 
 
-
-uint8_t search_position_file_Open(file_cell_t **list_file, uint64_t avan_file)
+uint8_t search_position_file_Open(file_cell_t list_file[64], uint64_t avan_file)
 {
   //Variables
   uint8_t bit_list = 0;
-  uint8_t index = 100;
+  uint8_t index = 110;
   float value_f = 0;
   //bucle para recorrer la lista de bits
-  for(int i = 0; i<64; i++)
+  for(int i = 0; i<110; i++)
   {
     //Recorrido
     bit_list = (avan_file >> i) & 0b1;
-    //Se comprueba el el bit de correspondiente a la disponibilidad de la ficha
+    //Se comprueba el bit de correspondiente a la disponibilidad de la ficha
     if(bit_list  == 0)
     {
       index = i;
@@ -138,20 +133,18 @@ uint8_t search_position_file_Open(file_cell_t **list_file, uint64_t avan_file)
   /*En caso que no se indico un valor diferente a 100 para el indice, se busca una ubicacion dentro 
   de la lista de fichas abiertas, seleccionando aquella ubicacion donde el valor de la funcion f
   sea la mayor*/
-  if (index == 100)
+  if (index == 110)
   {  
     //Recorrido del arreglo de fichas abiertas
     for(int k = 0; k<64; k++)
     {  
       //Se busca el mayor valor de la funcion f
-      if(list_file[k] != NULL && list_file[k]->function_F > value_f)
+      if(list_file[k].ptrCell_file != NULL && list_file[k].function_F > value_f)
       {
-        value_f = list_file[k]->function_F;
+        value_f = list_file[k].function_F;
         index = k;
       }
     }
-    //liberamos la memoria de la ficha
-    free(list_file[index]);
   }
   
   return index;
@@ -160,19 +153,18 @@ uint8_t search_position_file_Open(file_cell_t **list_file, uint64_t avan_file)
 
 
 //-----------------------------------------------Funciones calculo heuristica----------------------------------------------------------------
-void heuristic_cell_map(Cell_map_t **grid, char **map_String, uint8_t row, uint8_t colum, float goal_x, float goal_y)
-{
+void heuristic_cell_map(Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float goal_x, float goal_y){
   //Recorrido por cada una de las celdas
   for (int i = 0; i < row; i++)
   {
     for (int j = 0; j < colum; j++) 
     {
       //Calculo heuristica
-      if(grid[i][j].coor_x == goal_x && grid[i][j].coor_y == goal_y)
+      if(grid[i][j].feature =='G')
       {
         grid[i][j].h = 0.0f;
       }
-      else if(map_String[i][j]=='#')
+      else if(grid[i][j].feature=='#')
       {
         grid[i][j].h = -1.0f;
       }

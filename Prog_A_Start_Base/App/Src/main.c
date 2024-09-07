@@ -7,14 +7,19 @@
  */
 
 //----------------------------------Inicio de definicion de librerias-------------------------------------------
+//----Sistema--------
 #include <stdint.h>
 #include <stm32f411xe.h>
 #include <stdio.h>
+//----Perifericos-----
 #include <GPIOxDriver.h>
 #include <BasicTimer.h>
 #include <USARTxDriver.h>
 #include <PLLDriver.h>
-
+//------CMSIS------
+#include <arm_math.h>
+#include <math.h>
+//-----Proyecto-------
 #include "A_Star.h"
 
 //-----------------------------------Fin de definicion de librerias------------------------------------------
@@ -38,14 +43,18 @@ char bufferMsg[64] = {0};
 
 //------------------Definiciones generales----------------------------------
 //-----Cabeceras de funciones----
-void save_char_Parameter_Grid_Map(char newchar);                         //Funcion para recolectar los caracteres provenientes e la interfaz grafica
-char** separate_Parameters(char *parameter_string);						 //Funcion para separar los parametros presentes en el string
-void send_path(file_cell_t *file_cell, char **map_String, uint8_t row);  //Funcion para imprimir la ruta encontrada
+void recepcion_Sring_Parameter_Grid_Map(char newchar);                                                     //Funcion para recolectar los caracteres provenientes e la interfaz grafica
+void Separate_parameters(Cell_map_t array_string[20][20], char *parameter_string);	                 //Funcion para separar los parametros presentes en el string
+void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t row, uint8_t colum); //Funcion para imprimir la ruta encontrada
+void recepcionCommand(void);                                                          		 //Funcion que recibe los caracteres del comando recibido
+void runCommand(char *prtcommand);                                                    		 //Funcion que ejecuta el comando ingresando
 
 //---Recepcion de string del grid map----
 uint8_t	status_A_Star = 0;              	//Variable que indica el estado de la recoleccion de caracteres
 char bufferParameterStringGM[450];          //Buffer para almacenar el string Grid Map
 uint16_t index_String_GM = 0;              //Variable que indica el indice del buffer
+//---------------Definicion Grid map----------------
+Cell_map_t grid_map[20][20] = {0};
 //---Parametros de la celda-------------
 //String que indica los obstaculos dentro de la malla
 uint8_t grid_map_row = 0;                                     //filas de la malla
@@ -56,6 +65,13 @@ float start_x = 0;                                            //posicion inicial
 float start_y = 0;                                            //posicion inicial en y
 float goal_x = 0;                                             //posicion final en x
 float goal_y = 0;                                             //posicion final en y
+//-----Variables de la ejecucion de A Star---------------
+uint8_t string_aStar_Complete = 0;
+uint8_t flag_A_Star = 0;
+//-----Variables de la recepcion de comandos----
+uint8_t commandComplete = 1;                     //Bandera que indica si el comando esta completo
+uint8_t counterRecepcion = 0;                    //Variable para la posicion del arrelgo
+char bufferRecepcion[64] = {0};                  //Arreglo que almacena el comando ingresado
 
 void acelerometro_I2C(void);                       //Cabecera para la comunicacion I2C
 
@@ -72,23 +88,32 @@ int main(void)
 
 	while(1)
 	{
-		if(status_A_Star==2)
+		//--------------------Comandos-----------------------
+		if(commandComplete==1)
 		{
-		  //-------------Separar el String en los parametros del grid m-------------
-		  char **array_grid_map_string =  separate_Parameters(bufferParameterStringGM);
+			runCommand(bufferRecepcion);
+			//Reniciamos la variable
+			commandComplete=0;
+		}
+		else
+		{ __NOP(); }
+
+		//---------------A-Star-----------------
+		if(flag_A_Star==1 && string_aStar_Complete==1)
+		{
+		 //-------------Separar el String en los parametros del grid m-------------
+		  Separate_parameters(grid_map, bufferParameterStringGM);
 		  //---------Creacion de la malla con cada una de sus celdas-----------
-		  Cell_map_t **grid_map = creat_grid_map(grid_map_row, grid_map_colum, cell_separation);
+		  build_grid_map(grid_map, grid_map_row, grid_map_colum, cell_separation);
 		  //-------Calculo de la heuristica de la celda de acuerdo a la posicion objetivo-------
-		  heuristic_cell_map(grid_map, array_grid_map_string, grid_map_row, grid_map_colum, goal_x, goal_y);
+		  heuristic_cell_map(grid_map, grid_map_row, grid_map_colum, goal_x, goal_y);
 		  //------------------Aplicacion del algoritmo A star------------------
 		  file_cell_t *file_path = aplicattion_A_Star(grid_map, grid_map_row, grid_map_colum, start_x, start_y, goal_x, goal_y);
 		  //-----------------Impresion de la ruta encontrada--------------------
-		  send_path(file_path, array_grid_map_string, grid_map_row);
-
-		  //Reinicamos bandera
-		  status_A_Star = 0;
-		  //Reiniciamos index
-		  index_String_GM = 0;
+		  send_path(file_path, grid_map, grid_map_colum, grid_map_row);
+		  //Reinicamos banderas
+		  flag_A_Star = 0;
+		  string_aStar_Complete = 0;
 		}
 		else{  __NOP(); }
 	}
@@ -202,47 +227,97 @@ void BasicTimer2_Callback(void)
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el USART2
 void BasicUSART2_Callback(void)
 {
-	//Se recibe caracter
+	//Guardamos el caracter recibido
 	charRead = getRxData();
-	//Se verifica el inicio o final de un string de informacion del Grip Map
-	if(charRead=='$')
-	{
-		if(status_A_Star  == 0)
-		{
-			status_A_Star = 1;
-		}
-		else
-		{
-			bufferParameterStringGM[index_String_GM]= '\0';
-			status_A_Star  = 2;
-		}
-	}
-	else{ __NOP(); }
-	//Si se inicia un nuevo String GM se procede a guardar los caracteres
-	if(status_A_Star == 1)
-	{
-		save_char_Parameter_Grid_Map(charRead);
-	}
-	else{ __NOP(); }
+	if(flag_A_Star){ recepcion_Sring_Parameter_Grid_Map(charRead); }
+	else{ recepcionCommand(); }
 }
 
 
 //----------------------------Fin de la definicion de las funciones ISR----------------------------------------
 
-//----------------------------Inicio de la definicion de las funciones-----------------------------------------
-void save_char_Parameter_Grid_Map(char newchar)
+//----------------------------Inicio de la definicion de las funciones de los comandos----------------------------------------
+
+void recepcion_Sring_Parameter_Grid_Map(char newchar)
 {
-	if(newchar!='$')
-	{
-		bufferParameterStringGM[index_String_GM] = newchar;
-		index_String_GM++;
-	}
-	else{ __NOP(); }
+	if(string_aStar_Complete!=1)
+		if(newchar == '$')
+		{
+			//Almacenamos el elemento nulo
+			bufferParameterStringGM[index_String_GM]= '\0';
+			//Establecemos la bandera como alta
+			string_aStar_Complete = 1;
+			//Reiniciamos contador
+			index_String_GM = 0;
+		}
+		else
+		{
+			//Almacenamos los caracteres del comando en un arrelgo
+			bufferParameterStringGM[index_String_GM] = newchar;
+			//Aumentamos en uno la posicion del arreglo
+			index_String_GM++;
+		}
+	else{__NOP();}
 }
 
+//Funcion que recibe los caracteres del comando recibido
+void recepcionCommand(void)
+{
+	if(charRead == '@')
+	{
+		//Almacenamos el elemento nulo
+		bufferRecepcion[counterRecepcion] = '\0';
+		//Establecemos la bandera como alta
+		commandComplete = 1;
+		//Reiniciamos la variable
+		counterRecepcion = 0;
+		//Reiniciamos la variable
+	}
+	else
+	{
+		//Almacenamos los caracteres del comando en un arrelgo
+		bufferRecepcion[counterRecepcion] = charRead;
+		//Aumentamos en uno la posicion del arreglo
+		counterRecepcion++;
+		//Reiniciamos la variable
+	}
+}
+
+//Funcion que ejecuta el comando ingresando
+void runCommand(char *prtcommand)
+{
+	//Variables para almacenar los elmentos que entrega el comando luego de ser divididos por la funcion sscanf
+	char cmd[64]= {0};
+	int firtsParameter = 0;
+
+	//char bufferMsg[64]= {0};
+
+	//Funcion que lee la cadena de caracteres y la divide en los elementos definidos
+	sscanf(prtcommand, "%s %u ", cmd, &firtsParameter);
+
+	//Imprime lista que muestra los comandos que tiene el dispositivo
+	if(strcmp(cmd, "help")==0)
+	{
+		writeMsgForTXE(&handler_USART_USB, "Help Menu: \n");
+		writeMsgForTXE(&handler_USART_USB, "1) help  ---Imprime lista de comandos. \n");
+		writeMsgForTXE(&handler_USART_USB, "2) aStar --- Indicador de inicio de aStar \n");
+	}
+
+	//----------------------Operacion de movimiento--------------------
+	//Definimos el valor de las frecuencias para el study
+	else if (strcmp(cmd,"aStar") == 0)
+	{
+		//Levantamos bandera
+		flag_A_Star = 1;
+	}
+}
+//----------------------------Fin de la definicion de las funciones de los comandos----------------------------------------
 
 
-char** separate_Parameters(char *parameter_string)
+
+//---------------------Funciones Auxiliares-----------------------
+//Funcion para separar los diferentes parametros del string
+void Separate_parameters(Cell_map_t array_string[20][20], char *parameter_string)
 {
   //Definicion de variables
   char buffercharSeparate[10];
@@ -301,12 +376,6 @@ char** separate_Parameters(char *parameter_string)
     }
   }
   //---------------transformacion del string grid map en un array---------------
-  //Creacion del array que va a contener cada uno de los caracteres
-  char **array_string = (char **)malloc(grid_map_row * sizeof(char *));
-  for (int i = 0; i < grid_map_row; i++)
-  {
-    array_string[i] = (char *)malloc((grid_map_colum + 1) * sizeof(char));
-  }
   //Variables para los indices
   uint8_t index_row = 0;
   uint8_t index_col = 0;
@@ -316,8 +385,6 @@ char** separate_Parameters(char *parameter_string)
   {
     if (parameter_string[i] == ';')
     {
-      //Se agrega un elemento nulo para indicar el fin de la fila
-      array_string[index_row][index_col] = '\0';
       //Se aumenta el indice de la fila y se reinicia el indice de la columna
       index_row++;
       index_col = 0;
@@ -325,26 +392,24 @@ char** separate_Parameters(char *parameter_string)
     else
     {
       //Se guarda el caracter
-      array_string[index_row][index_col] = parameter_string[i];
+      array_string[index_row][index_col].feature = parameter_string[i];
       //se aumenta el indice de la columna
       index_col++;
     }
   }
-  //Se arregla un elemento nulo en la ultima fila y columna
-  array_string[index_row][index_col] = '\0';
   //---------------Definicion del start y del goal---------------
   //Recorremo el array creado para encontrar la posicion de los objetivos
   for(int i = 0; i < grid_map_row; i++)
   {
     for(int j = 0; j < grid_map_colum; j++)
     {
-      if(array_string[i][j] == 'S')
+      if(array_string[i][j].feature == 'S')
       {
         //Definimos su posicion
         start_x = j*cell_separation;
         start_y = i*cell_separation;
       }
-      else if (array_string[i][j] == 'G')
+      else if (array_string[i][j].feature == 'G')
       {
       //Definimos su posicion
         goal_x= j*cell_separation;
@@ -352,37 +417,47 @@ char** separate_Parameters(char *parameter_string)
       }
     }
   }
-
-  return array_string;
-
 }
 
 
-void send_path(file_cell_t *file_cell, char **map_String, uint8_t row)
+//Funcion para imprimir la ruta encontrada
+void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t row, uint8_t colum)
 {
   //Variables
   uint8_t index = 0;
+  char buffermsg[22] = {0};
 
   //Cambiamos los caracteres de la malla de strings por caracteres que indican la ruta establecida con A Star
   while(1)
   {
-    if(file_cell->ptrCell_parent[index] != NULL)
-    {
-      map_String[file_cell->ptrCell_parent[index]->index_row][file_cell->ptrCell_parent[index]->index_col] = '+';
-      index++;
-    }
-    else
-    {
-      break;
-    }
+	if(file_cell->ptrCell_parent[index] != NULL)
+	{
+	   array_string[file_cell->ptrCell_parent[index]->index_row][file_cell->ptrCell_parent[index]->index_col].feature = '+';
+	  index++;
+	}
+	else
+	{
+	  break;
+	}
   }
-  //Cambiamos los caracteres de la malla de strings para indicar el inicio de la trayectoria
-  map_String[file_cell->ptrCell_parent[0]->index_row][file_cell->ptrCell_parent[0]->index_col] = 'S';
+  //Indica de nuevo el inicio del recorrido
+   array_string[file_cell->ptrCell_parent[0]->index_row][file_cell->ptrCell_parent[0]->index_col].feature = 'S';
 
+  //Envio de caracter para indicar que se trata del grid map
+  writeChar(&handler_USART_USB, '$');
   //Imprimir la malla modificada
   for(int i=0;i<row;i++)
   {
-	sprintf(bufferMsg, "%s;", map_String[i]);
+	for(int j=0;j<colum;j++)
+	{
+	  //Agregamos las caracteristicas por fila a un buffer
+	  buffermsg[j] = array_string[i][j].feature;
+	  index = j;
+	}
+	//Agragamos el valor nullo al final del string
+	buffermsg[index+1] = '\0';
+	//imprimimos el string
+	sprintf(bufferMsg, "%s;",buffermsg);
 	writeMsg(&handler_USART_USB, bufferMsg);
   }
 }

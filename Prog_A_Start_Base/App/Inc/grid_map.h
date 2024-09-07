@@ -25,10 +25,12 @@ typedef struct Cell_map_t
     float coor_x;                              //Posicion x de la celda    
     float coor_y;                              //Posicion y de la celda
     Cell_map_neighbors_t neighbors;            //Punteros a la estructuras de las celdas vecinas de la celda actual
+    //parametros para A-Star
+    char feature;                              //Caracter que indica la celda
     float h;                                   //Heuristica de la celda
     uint8_t status;                            //Estado de la celda
     
 }Cell_map_t;
 
 //Definimos las cabeceras de las funciones
-Cell_map_t** creat_grid_map(uint8_t row, uint8_t colum, float separation);
+void build_grid_map(Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float separation);
