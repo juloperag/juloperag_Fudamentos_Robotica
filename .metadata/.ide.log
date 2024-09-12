@@ -2033,3 +2033,70 @@ java.net.NoRouteToHostException: No route to host: connect
 2024-09-07 10:38:16,520 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
 2024-09-07 10:38:16,523 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 2024-09-07 14:23:25,425 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-09-07 20:59:44,520 [INFO] Activator:177 - 
+
+
+2024-09-07 20:59:44,523 [INFO] Activator:178 - !SESSION log4j initialized
+2024-09-07 21:00:33,154 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-09-07 21:00:33,156 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-09-07 21:00:33,160 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2024-09-08 12:05:11,155 [INFO] Activator:177 - 
+
+
+2024-09-08 12:05:11,155 [INFO] Activator:178 - !SESSION log4j initialized
+2024-09-08 12:05:28,013 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:28,013 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:28,013 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:30,154 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:30,154 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:30,154 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:31,357 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:31,357 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:31,357 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-08 12:05:57,652 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-09-08 12:05:57,652 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-09-08 12:05:57,652 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2024-09-08 18:47:20,386 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Exception in thread "org.eclipse.cdt.internal.ui.text.CReconciler" java.util.ConcurrentModificationException
+2024-09-08 18:47:20,386 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1511)
+2024-09-08 18:47:20,386 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at java.base/java.util.HashMap$ValueIterator.next(HashMap.java:1539)
+2024-09-08 18:47:20,402 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.model.CModelManager.mergeDeltas(CModelManager.java:1218)
+2024-09-08 18:47:20,402 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.model.CModelManager.fireReconcileDelta(CModelManager.java:1148)
+2024-09-08 18:47:20,402 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.model.CModelManager.fire(CModelManager.java:1109)
+2024-09-08 18:47:20,402 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.model.CModelManager.fire(CModelManager.java:1065)
+2024-09-08 18:47:20,417 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.model.CModelOperation.run(CModelOperation.java:621)
+2024-09-08 18:47:20,417 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.model.CModelOperation.runOperation(CModelOperation.java:641)
+2024-09-08 18:47:20,417 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.model.WorkingCopy.reconcile(WorkingCopy.java:365)
+2024-09-08 18:47:20,417 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.ui.text.CReconcilingStrategy.reconcile(CReconcilingStrategy.java:79)
+2024-09-08 18:47:20,417 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.ui.text.CReconcilingStrategy.reconcile(CReconcilingStrategy.java:64)
+2024-09-08 18:47:20,433 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:89)
+2024-09-08 18:47:20,433 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.ui.text.CCompositeReconcilingStrategy.reconcile(CCompositeReconcilingStrategy.java:90)
+2024-09-08 18:47:20,433 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:76)
+2024-09-08 18:47:20,433 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.ui.text.CReconciler.process(CReconciler.java:346)
+2024-09-08 18:47:20,448 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:207)
+2024-09-10 10:27:20,455 [INFO] Activator:177 - 
+
+
+2024-09-10 10:27:20,455 [INFO] Activator:178 - !SESSION log4j initialized
+2024-09-10 10:28:13,029 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-10 10:28:13,029 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-10 10:28:13,029 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-10 10:28:29,637 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-09-10 10:28:29,637 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-09-10 10:28:29,637 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2024-09-10 11:56:31,959 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-10 11:56:31,983 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-10 11:56:31,984 [ERROR] ConfigurationRetriever:139 - IOException on connection: sw-center.st.com
+2024-09-10 16:41:31,363 [INFO] Activator:177 - 
+
+
+2024-09-10 16:41:31,367 [INFO] Activator:178 - !SESSION log4j initialized
+2024-09-10 16:42:17,136 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-09-10 16:42:17,138 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-09-10 16:42:17,140 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2024-09-11 11:54:23,889 [INFO] Activator:177 - 
+
+
+2024-09-11 11:54:23,889 [INFO] Activator:178 - !SESSION log4j initialized
+2024-09-11 11:55:03,542 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-09-11 11:55:03,542 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-09-11 11:55:03,542 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.

@@ -1,5 +1,0 @@
-../App/Src/PositionRobot.c:14:6:change_position	40	static
-../App/Src/PositionRobot.c:29:6:change_coordinates_position	40	static
-../App/Src/PositionRobot.c:44:6:calculation_parameter_distance	64	static
-../App/Src/PositionRobot.c:62:8:distance_to_straight_line	48	static
-../App/Src/PositionRobot.c:71:8:distance_traveled	48	static

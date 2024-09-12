@@ -51,9 +51,6 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/ThirdParty/FreeRTOS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Inc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/ThirdParty/SEGGER/Config&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/ThirdParty/SEGGER/OS&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/ThirdParty/SEGGER/SEGGER&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/PeripheralDrivers/Inc&quot;"/>

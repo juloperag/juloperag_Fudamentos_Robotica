@@ -1,0 +1,16 @@
+../App/Src/task_handler.c:40:6:vTask_Menu	64	static
+../App/Src/task_handler.c:86:6:vTask_Print	24	static
+../App/Src/task_handler.c:101:6:vTask_Commands	48	static
+../App/Src/task_handler.c:120:6:vTask_Go	32	static
+../App/Src/task_handler.c:143:6:vTask_Stop	56	static
+../App/Src/task_handler.c:179:6:vTask_Line_PID	120	static
+../App/Src/task_handler.c:231:6:led_state_callback	16	static
+../App/Src/task_handler.c:244:6:process_command	24	static,ignoring_inline_asm
+../App/Src/task_handler.c:263:5:extract_command	32	static
+../App/Src/task_handler.c:295:6:straight_line	16	static
+../App/Src/task_handler.c:330:6:config_mode	24	static
+../App/Src/task_handler.c:338:6:init_coordinates	4	static
+../App/Src/task_handler.c:358:6:status_motor	16	static
+../App/Src/task_handler.c:387:6:config_motor	32	static
+../App/Src/task_handler.c:404:6:PID_simple	32	static
+../App/Src/task_handler.c:417:6:correction	24	static,ignoring_inline_asm

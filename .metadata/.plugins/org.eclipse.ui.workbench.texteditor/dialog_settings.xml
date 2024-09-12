@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="index_String_GM"/>
+		<item key="selection" value="correction"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="correction"/>
+			<item value="distance_c"/>
+			<item value="init_con"/>
 			<item value="index_String_GM"/>
 			<item value="init_coordinates"/>
 			<item value="distance"/>
@@ -20,15 +23,12 @@
 			<item value="pi"/>
 			<item value="flag_count_odometry "/>
 			<item value="fabs"/>
-			<item value="Vel_Setpoint_L"/>
-			<item value="dutty_Setpoint_R"/>
-			<item value="vel_Setpoint_R"/>
 		</list>
 		<list key="replacehistory">
+			<item value=""/>
 			<item value="ang_for_Displament_ICR"/>
 			<item value="ang_De"/>
 			<item value="ang_"/>
-			<item value=""/>
 			<item value="M_PI"/>
 			<item value="vel_Setpoint_L"/>
 			<item value="vel_Setpoint_R"/>

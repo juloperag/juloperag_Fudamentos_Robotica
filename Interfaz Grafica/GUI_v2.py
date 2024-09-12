@@ -51,6 +51,11 @@ class FrameNavegation(Frame):
         self.txt.config(state="normal")
         #Escribir caracteres
         self.txt.insert("end", megg)
+        # Verificar la cantidad de líneas
+        num_lines = int(self.txt.index('end-1c').split('.')[0])
+        # Si el número de líneas supera el límite, eliminar las primeras líneas
+        if num_lines > 500:
+            self.txt.delete("1.0", f"{num_lines-500}.0")  # Eliminar
         self.txt.see("end")
         #Desactivar escritura
         self.txt.config(state="disabled")
@@ -87,22 +92,27 @@ class FrameNavegation(Frame):
         else:
             messagebox.showerror("Error", f"No se pudo enviar el comando debido a que se encuentra desconectado el puerto serial")        
 
-    #----------Agregar puntos a la Grafica o limpiarla--------------
     def add_point(self, mesg):
-        #Separamos coordenadas
+        # Separamos coordenadas
         mesg = mesg.lstrip('&')
         values_num = mesg.split()
         x = float(values_num[0])
-        y = float(values_num[1])
-        #Agregamos coordenadas
+        y = float(values_num[1])    
+        # Agregar coordenadas
         self.x_values.append(x)
-        self.y_values.append(y)              
-        #Conectar el nuevo punto con el anterior
+        self.y_values.append(y)          
+        # Verificar si se ha superado el número máximo de puntos
+        if len(self.x_values) > 500:
+            self.x_values.pop(0)  # Eliminar el primer punto      
+            self.y_values.pop(0)
+            self.ax.lines[0].remove()  # Eliminar la primera línea añadida
+            self.ax.relim()            # Recalcular los límites
+            self.ax.autoscale_view()   # Ajustar la vista
+        # Conectar el último punto con el penúltimo solo si hay más de 1 punto
         if len(self.x_values) > 1:
-        #Conectar el último punto con el penúltimo
-            self.ax.plot(self.x_values[-2:], self.y_values[-2:], linestyle='-', color='b')     
-        #Redibujar la gráfica en el canvas
-        self.canvas.draw()      
+            self.ax.plot(self.x_values[-2:], self.y_values[-2:], linestyle='-', color='b')
+        # Redibujar la gráfica en el canvas
+        self.canvas.draw()
 
     def clear_graph(self):
         self.x_values.clear()  # Limpiar la lista de X
@@ -151,7 +161,7 @@ class FrameNavegation(Frame):
         Entry(self.frame_righ, textvariable = self.value_Frequency, width=4).grid(row=3,column=2, padx=s_pax,pady=s_pay)
         Label(self.frame_righ, text=" Hz", bg = self.color_bg_master).grid(row=3,column=3,  padx=s_pax,pady=s_pay)
         #Titulo
-        Label(self.frame_righ, font = 18, text="Moviment Action", bg = self.color_bg_master).grid(row=4,column=0,columnspan=4, pady= s_t_pay)
+        Label(self.frame_righ, font = 18, text="Movement Action", bg = self.color_bg_master).grid(row=4,column=0,columnspan=4, pady= s_t_pay)
         #line
         Button(self.frame_righ, text= "Line", command=lambda i="c" : self.buttonsendCommand(i)).grid(row=5,column=0, padx=s_pax,pady=s_pay)
         Label(self.frame_righ, text="Distance", bg = self.color_bg_master).grid(row=5,column=1, padx=s_pax,pady=s_pay)
@@ -167,19 +177,23 @@ class FrameNavegation(Frame):
         self.cmbox_Nav.grid(row=7,column=2, columnspan=2, padx=s_pax) 
         self.cmbox_Nav.current(0) 
         #Square
-        Button(self.frame_righ, text= "Square", command=lambda i="e" : self.buttonsendCommand(i)).grid(row=8,column=0, padx=s_pax,pady=s_pay)
+        Button(self.frame_righ, text= "Square", command=lambda i="e" : self.buttonsendCommand(i)).grid(row=8,column=0, rowspan=2, padx=s_pax,pady=s_pay)
         Label(self.frame_righ, text="D.Side", bg = self.color_bg_master).grid(row=8,column=1, padx=s_pax,pady=s_pay)
         Entry(self.frame_righ, textvariable = self.value_Square, width=5).grid(row=8,column=2, padx=s_pax,pady=s_pay)
         Label(self.frame_righ, text=" mm", bg = self.color_bg_master).grid(row=8,column=3,  padx=s_pax,pady=s_pay)
+        Label(self.frame_righ, text="Direction", bg = self.color_bg_master).grid(row=9,column=1, padx=s_pax)
+        self.cmbox_square = Combobox(self.frame_righ,values=["left","right"], width=5, state ="readonly")
+        self.cmbox_square.grid(row=9,column=2, columnspan=2, padx=s_pax) 
+        self.cmbox_square.current(0) 
         #A-Star
-        Button(self.frame_righ, text= "A_Star", width=6, command=lambda i="f" : self.buttonsendCommand(i)).grid(row=9,column=1, padx=s_pax,pady=s_pay)
+        Button(self.frame_righ, text= "A_Star", width=6, command=lambda i="f" : self.buttonsendCommand(i)).grid(row=10,column=1, padx=s_pax,pady=s_pay)
         #Stop
-        Button(self.frame_righ, text= "Stop", width=6, bg= "#f8c6c6", command=lambda i="g" : self.buttonsendCommand(i)).grid(row=10,column=1, padx=s_pax,pady=s_pay)
+        Button(self.frame_righ, text= "Stop", width=6, bg= "#f8c6c6", command=lambda i="g" : self.buttonsendCommand(i)).grid(row=11,column=1, padx=s_pax,pady=s_pay)
         #Titulo
-        Label(self.frame_righ, font = 18, text="Position Graph", bg = self.color_bg_master).grid(row=11,column=0,columnspan=4, pady= s_pay)
+        Label(self.frame_righ, font = 18, text="Position Graph", bg = self.color_bg_master).grid(row=12,column=0,columnspan=4, pady= s_pay)
         #Graph
-        Button(self.frame_righ, text= "Clear", width=6, command = self.clear_graph).grid(row=12,column=0, padx=s_pax,pady=s_pay)
-        Button(self.frame_righ, text= "Init", width=6, command=lambda i="h" : self.buttonsendCommand(i)).grid(row=12,column=2, padx=s_pax,pady=s_pay)
+        Button(self.frame_righ, text= "Clear", width=6, command = self.clear_graph).grid(row=13,column=0, padx=s_pax,pady=s_pay)
+        Button(self.frame_righ, text= "Init", width=6, command=lambda i="h" : self.buttonsendCommand(i)).grid(row=13,column=2, padx=s_pax,pady=s_pay)
                
 class FrameAStar(Frame):
     #width=700, height=600
@@ -218,6 +232,11 @@ class FrameAStar(Frame):
         self.txt.config(state="normal")
         #Escribir caracteres
         self.txt.insert("end", megg)
+        # Verificar la cantidad de líneas
+        num_lines = int(self.txt.index('end-1c').split('.')[0])
+        # Si el número de líneas supera el límite, eliminar las primeras líneas
+        if num_lines > 500:
+            self.txt.delete("1.0", f"{num_lines-500}.0")  # Eliminar
         self.txt.see("end")
         #Desactivar escritura
         self.txt.config(state="disabled")
@@ -493,6 +512,11 @@ class MainFrame(Frame):
         self.txt.config(state="normal")
         #Escribir caracteres
         self.txt.insert("end", megg)
+        # Verificar la cantidad de líneas
+        num_lines = int(self.txt.index('end-1c').split('.')[0])
+        # Si el número de líneas supera el límite, eliminar las primeras líneas
+        if num_lines > 500:
+            self.txt.delete("1.0", f"{num_lines-500}.0")  # Eliminar
         self.txt.see("end")
         #Desactivar escritura
         self.txt.config(state="disabled")

@@ -1,12 +1,14 @@
 B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include/core_cm4.h:1688:22:__NVIC_EnableIRQ	16	static
+B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Core/Include/core_cm4.h:1816:22:__NVIC_SetPriority	16	static
 ../Src/BasicTimer.c:17:6:BasicTimer_Config	24	static,ignoring_inline_asm
-../Src/BasicTimer.c:154:28:BasicTimer2_Callback	4	static,ignoring_inline_asm
-../Src/BasicTimer.c:159:28:BasicTimer3_Callback	4	static,ignoring_inline_asm
-../Src/BasicTimer.c:164:28:BasicTimer4_Callback	4	static,ignoring_inline_asm
-../Src/BasicTimer.c:169:28:BasicTimer5_Callback	4	static,ignoring_inline_asm
-../Src/BasicTimer.c:178:6:TIM2_IRQHandler	8	static
-../Src/BasicTimer.c:189:6:TIM3_IRQHandler	8	static
-../Src/BasicTimer.c:200:6:TIM4_IRQHandler	8	static
-../Src/BasicTimer.c:211:6:TIM5_IRQHandler	8	static
-../Src/BasicTimer.c:224:6:statusiInterruptionTimer	16	static
-../Src/BasicTimer.c:241:6:updateFrequencyTimer	16	static
+../Src/BasicTimer.c:154:6:timer_Config_Init_Priority	16	static,ignoring_inline_asm
+../Src/BasicTimer.c:180:28:BasicTimer2_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:185:28:BasicTimer3_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:190:28:BasicTimer4_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:195:28:BasicTimer5_Callback	4	static,ignoring_inline_asm
+../Src/BasicTimer.c:204:6:TIM2_IRQHandler	8	static
+../Src/BasicTimer.c:215:6:TIM3_IRQHandler	8	static
+../Src/BasicTimer.c:226:6:TIM4_IRQHandler	8	static
+../Src/BasicTimer.c:237:6:TIM5_IRQHandler	8	static
+../Src/BasicTimer.c:250:6:statusiInterruptionTimer	16	static
+../Src/BasicTimer.c:267:6:updateFrequencyTimer	16	static

@@ -150,6 +150,32 @@ void BasicTimer_Config(BasicTimer_Handler_t *ptrBTimerHandler)
 	ptrBTimerHandler->ptrTIMx->CR1 |= TIM_CR1_CEN;
 }
 
+//------------Funcion para configurar las interrupciones------------------
+void timer_Config_Init_Priority(BasicTimer_Handler_t *ptrBTimerHandler, uint8_t newPriority)
+{
+	//Desactivamos las interupciones globales
+	__disable_irq();
+	//Matriculamos la interrupcion en el NVIC
+	if(ptrBTimerHandler->ptrTIMx == TIM2)
+	{
+		NVIC_SetPriority(TIM2_IRQn, newPriority);
+	}
+	else if(ptrBTimerHandler->ptrTIMx == TIM3)
+	{
+		NVIC_SetPriority(TIM3_IRQn, newPriority);
+	}
+	else if(ptrBTimerHandler->ptrTIMx == TIM4)
+	{
+		NVIC_SetPriority(TIM4_IRQn, newPriority);
+	}
+	else if(ptrBTimerHandler->ptrTIMx == TIM5)
+	{
+		NVIC_SetPriority(TIM5_IRQn, newPriority);
+	}
+	//Activamos las interupciones globales
+	__enable_irq();
+}
+
 //Definimos las funciones para cuando se genera una interrupcion del TIM2-3
 __attribute__((weak)) void BasicTimer2_Callback(void)
 {

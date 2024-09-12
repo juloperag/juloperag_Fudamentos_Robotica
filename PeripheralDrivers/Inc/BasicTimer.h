@@ -23,6 +23,21 @@
 #define INTERRUPTION_DISABLE   0
 #define INTERRUPTION_ENABLE    1
 
+//Macros que definen la prioridad del USART
+enum
+{
+	e_TIMER_PRIOPITY_6 = 6,
+	e_TIMER_PRIOPITY_7,
+	e_TIMER_PRIOPITY_8,
+	e_TIMER_PRIOPITY_9,
+	e_TIMER_PRIOPITY_10,
+	e_TIMER_PRIOPITY_11,
+	e_TIMER_PRIOPITY_12,
+	e_TIMER_PRIOPITY_13,
+	e_TIMER_PRIOPITY_14,
+	e_TIMER_PRIOPITY_15
+};
+
 //Estructura que contiene la configuracion minima para el manejo del Timerx
 typedef struct
 {
@@ -41,6 +56,7 @@ typedef struct
 
 //Definimos las cabeceras de las funciones para el uso del timer
 void BasicTimer_Config(BasicTimer_Handler_t *ptrBTimerHandler);
+void timer_Config_Init_Priority(BasicTimer_Handler_t *ptrBTimerHandler, uint8_t newPriority);
 void BasicTimer2_Callback(void);
 void BasicTimer3_Callback(void);
 void BasicTimer4_Callback(void);

@@ -1,0 +1,173 @@
+/*
+ * task_handler.c
+ *
+ *  Created on: Aug 7, 2024
+ *      Author: julil
+ */
+
+
+#include "main.h"
+
+//Prototipos
+void process_command(char cmd[20]);
+int extract_command(char cmd[20]);
+
+//Mesajes para imprimir por la consola
+const char *msg_com_invalid = "Comando invalido  \n";
+
+
+//-----------------------Inicio definicion funciones de las Task---------------------------
+//------Tarea Menu-------
+void vTask_Menu(void * pvParameters)
+{
+	//Variables para la recepcion
+	uint32_t cmd_addr;
+	//Variables de la separacin
+	char cmd[20]= {0};
+	int firtsParameter = 0;
+	int secondParameter = 0;
+
+	//Mensaje inicial del menu
+	const char* msg_menu = "=======================\n"
+			               "|         Menu        |\n"
+						   "=======================\n"
+						   "go ---> inicia \n";
+
+	while(1)
+	{
+		if(next_state == sMainMenu){ xQueueSend(xQueue_Print, &msg_menu, portMAX_DELAY); }
+		//Se espera por el comando a ejecutar
+		xTaskNotifyWait(0,0,&cmd_addr, portMAX_DELAY);
+		//Funcion que lee la cadena de caracteres y la divide en los elementos definidos
+		sscanf((char* ) cmd_addr, "%s %u %u", cmd, &firtsParameter, &secondParameter);
+
+		//Se verificamos si se tiene un solo caracter
+		if(strcmp(cmd, "go") == 0)
+		{
+			//Notificamos a la tarea respectiva
+			//xTaskNotify(xHandleTask_Go, (uint32_t) firtsParameter, eSetValueWithoutOverwrite);
+			xTaskNotify(xHandleTask_Go, 0, eNoAction);
+			//Cambio de state
+			next_state = sGo;
+		}
+		else
+		{
+			//Se envia la opcion especificada
+			xQueueSend(xQueue_Print, &msg_com_invalid, portMAX_DELAY);
+			/*Se envia una notificacion previa con la finalidad de desbloquear
+			 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
+			xTaskNotify(xHandleTask_Menu, 0, eNoAction);
+			xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+		}
+	}
+
+}
+
+//-------Tarea de Imprimir-------
+void vTask_Print(void * pvParameters)
+{
+	//Variable para guardad mensaje a enviar
+	uint32_t *msg;
+
+	while(1)
+	{
+		//Se espera por el puntero del mensaje
+		xQueueReceive(xQueue_Print, &msg, portMAX_DELAY);
+		//Enviamos por puerto serial dicho mensaje
+		writeMsg(&handler_USART_CommTerm, (char *) msg);
+	}
+}
+
+//-------Tarea de los comando-------
+void vTask_Commands(void * pvParameters)
+{
+	BaseType_t notify_status = {0};
+	char cmd[20];
+
+	while(1)
+	{
+		//Se espera por la notificacion de la interrupcion
+		notify_status = xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
+		//Si es verdadero se recibe una notificacion
+		if(notify_status == pdTRUE)
+		{
+			//Se procesa el comando recibido
+			process_command(cmd);
+		}
+	}
+}
+
+//------------Tarea Go---------------
+void vTask_Go(void * pvParameters)
+{
+
+
+
+}
+//-----------------------Fin definicion funciones de las Task---------------------------
+
+
+
+//-----------------------Inicio definicion funciones del Software Timer---------------------------
+
+void led_state_callback(TimerHandle_t xTimer)
+{
+	//Cambio estado opuesto Led
+	GPIOxTooglePin(&handler_GPIO_BlinkyPin);
+}
+
+//-----------------------Fin Definicion Funciones del Software Timer---------------------------
+
+
+//-----------------------Inicio definicion funciones Adicionales---------------------------
+
+//Funcion que ayuda en el procesamiento del comando
+void process_command(char cmd[20])
+{
+	extract_command(cmd);
+
+	switch(next_state)
+	{
+	case sMainMenu:
+		//Notificamos a la tarea respectiva
+		xTaskNotify(xHandleTask_Menu, (uint32_t) cmd, eSetValueWithoutOverwrite);
+		break;
+	case sGo:
+		//xTaskNotify(xHandleTask_Rtc, (uint32_t) cmd, eSetValueWithoutOverwrite);
+		break;
+	default:
+		__NOP();
+		break;
+	}
+}
+//Funcion para obtener el comando
+int extract_command(char cmd[20])
+{
+	//Definicion de variables
+	uint8_t item;
+	uint8_t counter_j = 0;
+	BaseType_t status;
+	//Se verifica si hay un nuevo mensaje
+	status = uxQueueMessagesWaiting(xQueue_InputData);
+	if(status == 0)
+	{
+		return -1;
+	}
+	do{
+		//Recibimos un elemento y lo montamos en item
+		status = xQueueReceive(xQueue_InputData, &item, 0);
+		if(status ==pdTRUE){
+			//Vamos llenando el arreglo del comando
+			cmd[counter_j++] = item;
+		}
+	}while(item != '#');
+
+	//Agregamos el elemento nulo y ademas definimos el largo del mensaje
+	cmd[counter_j - 1] = '\0';
+
+	return 0;
+}
+
+//-----------------------Fin definicion funciones Adicionales---------------------------
+
+
