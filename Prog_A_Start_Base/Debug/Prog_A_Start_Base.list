@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000201e8  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000040cd  00000000  00000000  00020218  2**0
+ 12 .debug_info   00004313  00000000  00000000  00020218  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00000fb0  00000000  00000000  000242e5  2**0
+ 13 .debug_abbrev 00000fd3  00000000  00000000  0002452b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000348  00000000  00000000  00025298  2**3
+ 14 .debug_aranges 00000358  00000000  00000000  00025500  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000002b0  00000000  00000000  000255e0  2**3
+ 15 .debug_ranges 000002c0  00000000  00000000  00025858  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00010dcf  00000000  00000000  00025890  2**0
+ 16 .debug_macro  00010dcf  00000000  00000000  00025b18  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000052d9  00000000  00000000  0003665f  2**0
+ 17 .debug_line   00005368  00000000  00000000  000368e7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00058228  00000000  00000000  0003b938  2**0
+ 18 .debug_str    00058243  00000000  00000000  0003bc4f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  00093b60  2**0
+ 19 .comment      00000050  00000000  00000000  00093e92  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000025b0  00000000  00000000  00093bb0  2**2
+ 20 .debug_frame  000025fc  00000000  00000000  00093ee4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -3449,10 +3449,10 @@ int main(void)
  8002398:	f7fe fe7e 	bl	8001098 <aplicattion_A_Star>
  800239c:	6038      	str	r0, [r7, #0]
 		  //-----------------Impresion de la ruta encontrada--------------------
-		  send_path(file_path, grid_map, grid_map_colum, grid_map_row);
- 800239e:	4b10      	ldr	r3, [pc, #64]	; (80023e0 <main+0x110>)
+		  send_path(file_path, grid_map, grid_map_row, grid_map_colum);
+ 800239e:	4b0f      	ldr	r3, [pc, #60]	; (80023dc <main+0x10c>)
  80023a0:	781a      	ldrb	r2, [r3, #0]
- 80023a2:	4b0e      	ldr	r3, [pc, #56]	; (80023dc <main+0x10c>)
+ 80023a2:	4b0f      	ldr	r3, [pc, #60]	; (80023e0 <main+0x110>)
  80023a4:	781b      	ldrb	r3, [r3, #0]
  80023a6:	490c      	ldr	r1, [pc, #48]	; (80023d8 <main+0x108>)
  80023a8:	6838      	ldr	r0, [r7, #0]
@@ -3926,14 +3926,14 @@ void runCommand(char *prtcommand)
  8002648:	490f      	ldr	r1, [pc, #60]	; (8002688 <runCommand+0x90>)
  800264a:	480d      	ldr	r0, [pc, #52]	; (8002680 <runCommand+0x88>)
  800264c:	f001 f942 	bl	80038d4 <writeMsgForTXE>
-	else if (strcmp(cmd,"aStar") == 0)
+	else if (strcmp(cmd,"applyastar") == 0)
 	{
 		//Levantamos bandera
 		flag_A_Star = 1;
 	}
 }
  8002650:	e00b      	b.n	800266a <runCommand+0x72>
-	else if (strcmp(cmd,"aStar") == 0)
+	else if (strcmp(cmd,"applyastar") == 0)
  8002652:	f107 0310 	add.w	r3, r7, #16
  8002656:	490d      	ldr	r1, [pc, #52]	; (800268c <runCommand+0x94>)
  8002658:	4618      	mov	r0, r3
@@ -4502,7 +4502,7 @@ void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t 
  8002a50:	46bd      	mov	sp, r7
  8002a52:	bd80      	pop	{r7, pc}
  8002a54:	20000238 	.word	0x20000238
- 8002a58:	080096e0 	.word	0x080096e0
+ 8002a58:	080096e4 	.word	0x080096e4
  8002a5c:	20000244 	.word	0x20000244
 
 08002a60 <Reset_Handler>:
@@ -8301,10 +8301,10 @@ void USART6_IRQHandler(void)
  8004170:	e7ee      	b.n	8004150 <_printf_float+0x2b8>
  8004172:	bf00      	nop
  8004174:	7fefffff 	.word	0x7fefffff
- 8004178:	080096f4 	.word	0x080096f4
- 800417c:	080096f8 	.word	0x080096f8
- 8004180:	08009700 	.word	0x08009700
- 8004184:	080096fc 	.word	0x080096fc
+ 8004178:	080096f8 	.word	0x080096f8
+ 800417c:	080096fc 	.word	0x080096fc
+ 8004180:	08009704 	.word	0x08009704
+ 8004184:	08009700 	.word	0x08009700
  8004188:	08009af9 	.word	0x08009af9
  800418c:	9a0a      	ldr	r2, [sp, #40]	; 0x28
  800418e:	6da3      	ldr	r3, [r4, #88]	; 0x58
@@ -8796,8 +8796,8 @@ void USART6_IRQHandler(void)
  800461c:	f104 0619 	add.w	r6, r4, #25
  8004620:	e7f5      	b.n	800460e <_printf_i+0x22e>
  8004622:	bf00      	nop
- 8004624:	08009704 	.word	0x08009704
- 8004628:	08009715 	.word	0x08009715
+ 8004624:	08009708 	.word	0x08009708
+ 8004628:	08009719 	.word	0x08009719
 
 0800462c <_scanf_float>:
  800462c:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -9191,7 +9191,7 @@ void USART6_IRQHandler(void)
  8004a3e:	e7c4      	b.n	80049ca <_scanf_float+0x39e>
  8004a40:	2500      	movs	r5, #0
  8004a42:	e634      	b.n	80046ae <_scanf_float+0x82>
- 8004a44:	08009726 	.word	0x08009726
+ 8004a44:	0800972a 	.word	0x0800972a
  8004a48:	08009b4b 	.word	0x08009b4b
 
 08004a4c <nanf>:
@@ -9630,7 +9630,7 @@ void USART6_IRQHandler(void)
  8004e4e:	f04f 0c01 	mov.w	ip, #1
  8004e52:	e7f6      	b.n	8004e42 <_strtod_l+0x28a>
  8004e54:	08009978 	.word	0x08009978
- 8004e58:	0800972c 	.word	0x0800972c
+ 8004e58:	08009730 	.word	0x08009730
  8004e5c:	7ff00000 	.word	0x7ff00000
  8004e60:	9a17      	ldr	r2, [sp, #92]	; 0x5c
  8004e62:	1c51      	adds	r1, r2, #1
@@ -9919,9 +9919,9 @@ void USART6_IRQHandler(void)
  8005142:	6023      	str	r3, [r4, #0]
  8005144:	e786      	b.n	8005054 <_strtod_l+0x49c>
  8005146:	bf00      	nop
- 8005148:	08009701 	.word	0x08009701
- 800514c:	08009740 	.word	0x08009740
- 8005150:	080096f9 	.word	0x080096f9
+ 8005148:	08009705 	.word	0x08009705
+ 800514c:	08009744 	.word	0x08009744
+ 8005150:	080096fd 	.word	0x080096fd
  8005154:	08009884 	.word	0x08009884
  8005158:	08009b4b 	.word	0x08009b4b
  800515c:	08009a10 	.word	0x08009a10
@@ -14893,7 +14893,7 @@ void USART6_IRQHandler(void)
  80081f2:	e7e6      	b.n	80081c2 <_scanf_i+0x1aa>
  80081f4:	2001      	movs	r0, #1
  80081f6:	e7ed      	b.n	80081d4 <_scanf_i+0x1bc>
- 80081f8:	080096e4 	.word	0x080096e4
+ 80081f8:	080096e8 	.word	0x080096e8
  80081fc:	080083dd 	.word	0x080083dd
  8008200:	080058ed 	.word	0x080058ed
  8008204:	08009b0e 	.word	0x08009b0e
@@ -15494,7 +15494,7 @@ void USART6_IRQHandler(void)
  8008742:	61a3      	str	r3, [r4, #24]
  8008744:	e7d2      	b.n	80086ec <__sinit+0xc>
  8008746:	bf00      	nop
- 8008748:	080096f0 	.word	0x080096f0
+ 8008748:	080096f4 	.word	0x080096f4
  800874c:	08008679 	.word	0x08008679
 
 08008750 <__sfp>:
@@ -15549,7 +15549,7 @@ void USART6_IRQHandler(void)
  80087ce:	603b      	str	r3, [r7, #0]
  80087d0:	e7ee      	b.n	80087b0 <__sfp+0x60>
  80087d2:	bf00      	nop
- 80087d4:	080096f0 	.word	0x080096f0
+ 80087d4:	080096f4 	.word	0x080096f4
  80087d8:	ffff0001 	.word	0xffff0001
 
 080087dc <fiprintf>:

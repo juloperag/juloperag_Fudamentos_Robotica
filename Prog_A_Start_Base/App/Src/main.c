@@ -110,7 +110,7 @@ int main(void)
 		  //------------------Aplicacion del algoritmo A star------------------
 		  file_cell_t *file_path = aplicattion_A_Star(grid_map, grid_map_row, grid_map_colum, start_x, start_y, goal_x, goal_y);
 		  //-----------------Impresion de la ruta encontrada--------------------
-		  send_path(file_path, grid_map, grid_map_colum, grid_map_row);
+		  send_path(file_path, grid_map, grid_map_row, grid_map_colum);
 		  //Reinicamos banderas
 		  flag_A_Star = 0;
 		  string_aStar_Complete = 0;
@@ -305,7 +305,7 @@ void runCommand(char *prtcommand)
 
 	//----------------------Operacion de movimiento--------------------
 	//Definimos el valor de las frecuencias para el study
-	else if (strcmp(cmd,"aStar") == 0)
+	else if (strcmp(cmd,"applyastar") == 0)
 	{
 		//Levantamos bandera
 		flag_A_Star = 1;
