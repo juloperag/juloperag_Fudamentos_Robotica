@@ -22,7 +22,6 @@
 #define ACELERACION  0                        //Magnitud fisica a medir
 #define GIROSCOPIO   1
 
-#define RESET (0b1 << 7)                     //bit de reset
 
 //--------Elementos de calibracion--------
 #define CAL_ACCEL_X     0

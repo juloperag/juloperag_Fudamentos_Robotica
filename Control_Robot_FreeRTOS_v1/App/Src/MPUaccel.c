@@ -2,7 +2,7 @@
 #include "MPUAccel.h"
 //#include <SysTickDriver.h>
 
-void configMPUAccel (MPUAccel_Handler_t *ptrMPUAccel){
+void configMPUAccel(MPUAccel_Handler_t *ptrMPUAccel, BasicTimer_Handler_t *ptrBTimerHandler, uint16_t *ptrcountingTimer){
 
 	uint8_t rdy  = 0;
 	uint8_t byte = 0;
@@ -16,13 +16,13 @@ void configMPUAccel (MPUAccel_Handler_t *ptrMPUAccel){
 	//------------------Reiniciamos el MPU--------------------------
 	i2c_WriteSingleRegister(ptrMPUAccel->ptrI2Chandler, PWR_MGMT_l, 0x00);
 	//Pausa
-	//delay_ms(1);
+	timer_delay(ptrBTimerHandler, ptrcountingTimer, 1);
 
 	//---------------Configuracion Accel----------------------------
 	byte =  i2c_ReadSingleRegister(ptrMPUAccel->ptrI2Chandler, ACCEL_CONFIG);
 	byte &= ~(0b00011000);
 	//Pausa
-	//delay_ms(1);
+	timer_delay(ptrBTimerHandler, ptrcountingTimer, 1);
 	//Deacuerdo al valor predeterminado se carga una configuracion
 	i2c_WriteSingleRegister(ptrMPUAccel->ptrI2Chandler, ACCEL_CONFIG, (byte) | (ptrMPUAccel->fullScaleACCEL<<3));
 
@@ -30,7 +30,7 @@ void configMPUAccel (MPUAccel_Handler_t *ptrMPUAccel){
 	byte =  i2c_ReadSingleRegister(ptrMPUAccel->ptrI2Chandler, GIRO_CONFIG);
 	byte &= ~(0b00011000);
 	//Pausa
-	//delay_ms(1);
+	timer_delay(ptrBTimerHandler, ptrcountingTimer, 1);
 	//Deacuerdo al valor predeterminado se carga una configuracion
 	i2c_WriteSingleRegister(ptrMPUAccel->ptrI2Chandler, GIRO_CONFIG, (byte) | (ptrMPUAccel->fullScaleACCEL <<3));
 }
@@ -118,7 +118,7 @@ float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead, int16_t offs
 }
 
 //Funcion para en el modo de calibracion para la lectura de dos registros que compone uno de los ejes de acelerometro o del giroscopio
-int16_t readCalibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
+int16_t readCalibrationMPU(MPUAccel_Handler_t *ptrMPUAccel,  uint8_t elementRead)
 {
 	//Variable para guardar la  direccion de los dos registros a leer
 	uint8_t address_H = 0;
@@ -151,7 +151,7 @@ int16_t readCalibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead)
 
 
 //Funcion para la calibracion de las mediciones realizadas
-float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementCalibration)
+float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, BasicTimer_Handler_t *ptrBTimerHandler, uint16_t *ptrcountingTimer, uint8_t elementCalibration)
 {
 	//Variables la ejecucion de la calibracion
 	int64_t aux_sum = 0;
@@ -163,7 +163,7 @@ float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementCalibration
 		//Lectura del registro respectivo y acumulacion
 		aux_sum += readCalibrationMPU(ptrMPUAccel, elementCalibration);
 		//Pausa
-		//delay_ms(1);
+		timer_delay(ptrBTimerHandler, ptrcountingTimer, 1);
 	}
 	//Promedio del eje medido
 	 offset = aux_sum/num_samples;

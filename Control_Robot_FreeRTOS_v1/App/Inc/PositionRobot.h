@@ -22,6 +22,7 @@ typedef struct
 	double initline_y;
 	double delta_before[2];       //Vector director anterior [mm]
 	double grad_vector_init;     //Grado de inclinacion de la linea recta[grados]
+	uint8_t routelist;            //Recorrido de la lista
 	uint8_t number_operation;    //numero de operacion
 }Parameter_build_t;
 
@@ -77,8 +78,8 @@ typedef struct
 //Definicion de cabeceras de las funciones
 void build_Operation(Parameters_Operation_t *prtList, Parameter_build_t *prtbuild, double finishline_x, double finishline_y);
 void add_Operation(Parameters_Operation_t *prtList, uint8_t num_operation, uint8_t type_operation, double coor_x, double coor_y, double grad_turn);
-void change_position(Parameters_Path_t *ptrParameterPath, int distance);
-void change_coordinates_position(Parameters_Path_t *ptrParameterPath, double coor_x, double coor_y);
+void change_position(Parameters_Path_t *ptrParameterPath, int distance, double starcoor_x, double starcoor_y);
+void change_coordinates_position(Parameters_Path_t *ptrParameterPath, double goalcoor_x, double goalcoor_y, double starcoor_x, double starcoor_y);
 void calculation_parameter_distance(Parameters_Path_t  *ptrParameterPath);
 double distance_to_straight_line(Parameters_Path_t  *ptrParameterPath, double position_x, double position_y);
 double distance_traveled(Parameters_Path_t  *ptrParameterPath, double position_x, double position_y);

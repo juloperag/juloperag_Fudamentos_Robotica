@@ -1,6 +1,8 @@
+"./App/Src/A_Star.o"
 "./App/Src/MPUaccel.o"
 "./App/Src/MotorDriver.o"
 "./App/Src/PositionRobot.o"
+"./App/Src/grid_map.o"
 "./App/Src/main.o"
 "./App/Src/task_handler.o"
 "./Core/Startup/startup_stm32f411retx.o"

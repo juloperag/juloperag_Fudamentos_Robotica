@@ -12,3 +12,4 @@ B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/ST
 ../Src/BasicTimer.c:237:6:TIM5_IRQHandler	8	static
 ../Src/BasicTimer.c:250:6:statusiInterruptionTimer	16	static
 ../Src/BasicTimer.c:267:6:updateFrequencyTimer	16	static
+../Src/BasicTimer.c:279:6:timer_delay	24	static,ignoring_inline_asm

@@ -275,4 +275,19 @@ void updateFrequencyTimer(BasicTimer_Handler_t *ptrBTimerHandler, uint16_t newPe
 	ptrBTimerHandler->ptrTIMx->ARR = ptrBTimerHandler->TIMx_Config.TIMX_period;
 }
 
+//Funcion para realizar un delay con un timer
+void timer_delay(BasicTimer_Handler_t *ptrBTimerHandler,uint16_t *countingTimer, uint16_t maxCountinegTimer)
+{
+	//Aseguramos que el valor de las cuestas se reinicio
+	*countingTimer = 0;
+	//Activamos la interrupcion del Timer
+	statusiInterruptionTimer(ptrBTimerHandler, SET);
+	//El programa se queda aqui hasta que se cumple la condiccion
+	while(*countingTimer<maxCountinegTimer)
+	{
+		__NOP();
+	}
+	//Desactivamos la interrupcion del Timer
+	statusiInterruptionTimer(ptrBTimerHandler, RESET);
+}
 

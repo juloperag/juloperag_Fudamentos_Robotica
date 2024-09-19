@@ -26,7 +26,7 @@ void build_Operation(Parameters_Operation_t *prtList, Parameter_build_t *prtbuil
 	else
 	{
 		//Agregar operacion de rotacion
-		prtbuild->number_operation++;
+		if(prtbuild->routelist>0){ prtbuild->number_operation++; }
 		add_Operation(prtList, prtbuild->number_operation, TURN, 0, 0, grad_turn_res);
 		//agregar operacion de linea recta
 		prtbuild->number_operation++;
@@ -49,29 +49,29 @@ void add_Operation(Parameters_Operation_t *prtList, uint8_t num_operation, uint8
 
 
 //-----------------Funciones para definir los parametros de la poscion teorica--------------
-void change_position(Parameters_Path_t *ptrParameterPath, int distance)
+void change_position(Parameters_Path_t *ptrParameterPath, int distance, double starcoor_x, double starcoor_y)
 {
 	//Definimos la distancia
 	 ptrParameterPath->line_Distance = distance;                  //[mm]
 	//Calculamos la posicicion
 	double pot_x = ptrParameterPath->line_Distance*cos((ptrParameterPath->rotative_Grad*M_PI)/180);
 	double pot_y = ptrParameterPath->line_Distance*sin((ptrParameterPath->rotative_Grad*M_PI)/180);
-	//Guardamos la posicion del Goal como la posicion de Start
-	ptrParameterPath->start_position_x = ptrParameterPath->goal_Position_x;
-	ptrParameterPath->start_position_y = ptrParameterPath->goal_Position_y;
+	//Guardamos Coordenadas iniciales
+	ptrParameterPath->start_position_x = starcoor_x;
+	ptrParameterPath->start_position_y = starcoor_y;
 	//Definimos la nueva posicion de llegada
 	ptrParameterPath->goal_Position_x += pot_x;
 	ptrParameterPath->goal_Position_y += pot_y;
 }
 
-void change_coordinates_position(Parameters_Path_t *ptrParameterPath, double coor_x, double coor_y)
+void change_coordinates_position(Parameters_Path_t *ptrParameterPath, double goalcoor_x, double goalcoor_y, double starcoor_x, double starcoor_y)
 {
-	//Guardamos la posicion del Goal como la posicion de Start
-	ptrParameterPath->start_position_x = ptrParameterPath->goal_Position_x;
-	ptrParameterPath->start_position_y = ptrParameterPath->goal_Position_y;
+	//Guardamos Coordenadas iniciales
+	ptrParameterPath->start_position_x = starcoor_x;
+	ptrParameterPath->start_position_y = starcoor_y;
 	//Definimos la nueva posicion de llegada
-	ptrParameterPath->goal_Position_x = coor_x;
-	ptrParameterPath->goal_Position_y = coor_y;
+	ptrParameterPath->goal_Position_x = goalcoor_x;
+	ptrParameterPath->goal_Position_y = goalcoor_y;
 	//Definimos la distancia
 	ptrParameterPath->line_Distance = sqrt(pow((ptrParameterPath->goal_Position_x - ptrParameterPath->start_position_x),2)+
 			pow(ptrParameterPath->goal_Position_y - ptrParameterPath->start_position_y,2));;                  //[mm]

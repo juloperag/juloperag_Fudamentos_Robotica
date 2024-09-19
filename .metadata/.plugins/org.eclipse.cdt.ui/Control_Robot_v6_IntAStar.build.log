@@ -1,10 +1,18 @@
-23:40:48 **** Incremental Build of configuration Debug for project Control_Robot_v6_IntAStar ****
+18:21:58 **** Incremental Build of configuration Debug for project Control_Robot_v6_IntAStar ****
 make -j4 all 
+arm-none-eabi-gcc "../App/Src/MotorDriver.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/MotorDriver.d" -MT"App/Src/MotorDriver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/MotorDriver.o"
+arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Control_Robot_v6_IntAStar/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
+arm-none-eabi-gcc -o "Control_Robot_v6_IntAStar.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Control_Robot_v6_IntAStar\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Control_Robot_v6_IntAStar.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Control_Robot_v6_IntAStar.elf
+ 
 arm-none-eabi-size   Control_Robot_v6_IntAStar.elf 
+arm-none-eabi-objdump -h -S  Control_Robot_v6_IntAStar.elf  > "Control_Robot_v6_IntAStar.list"
    text	   data	    bss	    dec	    hex	filename
-  67204	    504	  41248	 108956	  1a99c	Control_Robot_v6_IntAStar.elf
+  67180	    504	  41248	 108932	  1a984	Control_Robot_v6_IntAStar.elf
 Finished building: default.size.stdout
  
+Finished building: Control_Robot_v6_IntAStar.list
+ 
 
-23:40:48 Build Finished. 0 errors, 0 warnings. (took 323ms)
+18:22:01 Build Finished. 0 errors, 0 warnings. (took 3s.294ms)
 

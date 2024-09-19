@@ -1,8 +1,0 @@
-../App/Src/PositionRobot.c:14:6:build_Operation	56	static
-../App/Src/PositionRobot.c:42:6:add_Operation	40	static
-../App/Src/PositionRobot.c:52:6:change_position	40	static
-../App/Src/PositionRobot.c:67:6:change_coordinates_position	40	static
-../App/Src/PositionRobot.c:82:6:calculation_parameter_distance	64	static
-../App/Src/PositionRobot.c:100:8:distance_to_straight_line	48	static
-../App/Src/PositionRobot.c:109:8:distance_traveled	48	static
-../App/Src/PositionRobot.c:123:8:calculed_ang_turn	64	static

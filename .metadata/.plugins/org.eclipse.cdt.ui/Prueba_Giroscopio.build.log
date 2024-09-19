@@ -1,10 +1,17 @@
-18:43:40 **** Incremental Build of configuration Debug for project Prueba_Giroscopio ****
+18:22:15 **** Build of configuration Debug for project Prueba_Giroscopio ****
 make -j4 all 
+arm-none-eabi-gcc "../App/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -DSTM32F411xE -c -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Prueba_Giroscopio/App/Inc" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Prueba_Giroscopio/Core/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Prueba_Giroscopio/Core/Device/ST/STM32F4xx/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/Prueba_Giroscopio/DSP/Include" -I"B:/Documentos/Universidad-Materias/Fundamentos de Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"App/Src/main.d" -MT"App/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/main.o"
+arm-none-eabi-gcc -o "Prueba_Giroscopio.elf" @"objects.list"  -lPeripheralDrivers -mcpu=cortex-m4 -T"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces\Prueba_Giroscopio\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Prueba_Giroscopio.map" -Wl,--gc-sections -static -L"B:\Documentos\Universidad-Materias\Fundamentos de Robotica\Robotic\WorkSpaces/PeripheralDrivers/Debug" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Prueba_Giroscopio.elf
+ 
 arm-none-eabi-size   Prueba_Giroscopio.elf 
+arm-none-eabi-objdump -h -S  Prueba_Giroscopio.elf  > "Prueba_Giroscopio.list"
    text	   data	    bss	    dec	    hex	filename
   34612	    476	   3960	  39048	   9888	Prueba_Giroscopio.elf
 Finished building: default.size.stdout
  
+Finished building: Prueba_Giroscopio.list
+ 
 
-18:43:41 Build Finished. 0 errors, 0 warnings. (took 270ms)
+18:22:18 Build Finished. 0 errors, 0 warnings. (took 2s.990ms)
 

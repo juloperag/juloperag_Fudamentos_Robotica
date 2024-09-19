@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stm32f4xx.h>
 #include <I2CDriver.h>
+#include <BasicTimer.h>
 
 
 //---------------------Definicion de macros---------------------------
@@ -22,7 +23,6 @@
 #define ACELERACION  0                        //Magnitud fisica a medir
 #define GIROSCOPIO   1
 
-#define RESET (0b1 << 7)                     //bit de reset
 
 //--------Elementos de calibracion--------
 #define CAL_ACCEL_X     0
@@ -101,8 +101,8 @@ typedef struct
 
 
 //Cabeceras de las funciones la configuracion y adquisicion de datos del MPU
-void configMPUAccel(MPUAccel_Handler_t *ptrMPUAccel);
-float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementCalibration);
+void configMPUAccel(MPUAccel_Handler_t *ptrMPUAccel, BasicTimer_Handler_t *ptrBTimerHandler, uint16_t *ptrcountingTimer);
+float calibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, BasicTimer_Handler_t *ptrBTimerHandler, uint16_t *ptrcountingTimer, uint8_t elementCalibration);
 int16_t readCalibrationMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead);
 float readMPU(MPUAccel_Handler_t *ptrMPUAccel, uint8_t elementRead, int16_t offset);
 

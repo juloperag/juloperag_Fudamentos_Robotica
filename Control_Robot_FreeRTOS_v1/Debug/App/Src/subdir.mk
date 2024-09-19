@@ -5,23 +5,29 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../App/Src/A_Star.c \
 ../App/Src/MPUaccel.c \
 ../App/Src/MotorDriver.c \
 ../App/Src/PositionRobot.c \
+../App/Src/grid_map.c \
 ../App/Src/main.c \
 ../App/Src/task_handler.c 
 
 OBJS += \
+./App/Src/A_Star.o \
 ./App/Src/MPUaccel.o \
 ./App/Src/MotorDriver.o \
 ./App/Src/PositionRobot.o \
+./App/Src/grid_map.o \
 ./App/Src/main.o \
 ./App/Src/task_handler.o 
 
 C_DEPS += \
+./App/Src/A_Star.d \
 ./App/Src/MPUaccel.d \
 ./App/Src/MotorDriver.d \
 ./App/Src/PositionRobot.d \
+./App/Src/grid_map.d \
 ./App/Src/main.d \
 ./App/Src/task_handler.d 
 
@@ -33,7 +39,7 @@ App/Src/%.o App/Src/%.su: ../App/Src/%.c App/Src/subdir.mk
 clean: clean-App-2f-Src
 
 clean-App-2f-Src:
-	-$(RM) ./App/Src/MPUaccel.d ./App/Src/MPUaccel.o ./App/Src/MPUaccel.su ./App/Src/MotorDriver.d ./App/Src/MotorDriver.o ./App/Src/MotorDriver.su ./App/Src/PositionRobot.d ./App/Src/PositionRobot.o ./App/Src/PositionRobot.su ./App/Src/main.d ./App/Src/main.o ./App/Src/main.su ./App/Src/task_handler.d ./App/Src/task_handler.o ./App/Src/task_handler.su
+	-$(RM) ./App/Src/A_Star.d ./App/Src/A_Star.o ./App/Src/A_Star.su ./App/Src/MPUaccel.d ./App/Src/MPUaccel.o ./App/Src/MPUaccel.su ./App/Src/MotorDriver.d ./App/Src/MotorDriver.o ./App/Src/MotorDriver.su ./App/Src/PositionRobot.d ./App/Src/PositionRobot.o ./App/Src/PositionRobot.su ./App/Src/grid_map.d ./App/Src/grid_map.o ./App/Src/grid_map.su ./App/Src/main.d ./App/Src/main.o ./App/Src/main.su ./App/Src/task_handler.d ./App/Src/task_handler.o ./App/Src/task_handler.su
 
 .PHONY: clean-App-2f-Src
 

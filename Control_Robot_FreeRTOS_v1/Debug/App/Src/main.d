@@ -41,6 +41,8 @@ App/Src/main.o: ../App/Src/main.c \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/DSP/Include/dsp/none.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/DSP/Include/dsp/utils.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/MotorDriver.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/A_Star.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/grid_map.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/MPUAccel.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/I2CDriver.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/PositionRobot.h
@@ -86,6 +88,8 @@ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/DSP/Include/dsp/none.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/DSP/Include/dsp/utils.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/MotorDriver.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/A_Star.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/grid_map.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/MPUAccel.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/I2CDriver.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/App/Inc/PositionRobot.h:

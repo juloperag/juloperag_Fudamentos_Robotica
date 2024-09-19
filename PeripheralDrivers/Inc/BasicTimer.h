@@ -64,5 +64,6 @@ void BasicTimer5_Callback(void);
 void startTimer(BasicTimer_Handler_t *ptrBTimerHandler);
 void statusiInterruptionTimer(BasicTimer_Handler_t *ptrBTimerHandler, uint8_t status);
 void updateFrequencyTimer(BasicTimer_Handler_t *ptrBTimerHandler, uint16_t newPer);
+void timer_delay(BasicTimer_Handler_t *ptrBTimerHandler,uint16_t *countingTimer, uint16_t maxCountinegTimer);
 
 #endif /* INC_BASICTIMER_H_ */
