@@ -6,6 +6,19 @@
 #define OPEN 1
 #define CLOSED 2
 
+typedef struct
+{
+	uint8_t grid_map_row;                      //filas de la malla
+	uint8_t grid_map_colum;                    //columnas de la malla
+	float cell_separation;                     //sepacion entre las celdas, en cm
+	float start_x;                             //posicion inicial en x
+	float start_y;                             //posicion inicial en y
+	float goal_x;                              //posicion final en x
+	float goal_y;                              //posicion final en y
+	Cell_map_t grid_map[20][20];               //Grid map
+}item_A_Star_t;
+
+
 //Estructura que contiene la informacion de una ficha 
 typedef struct
 {

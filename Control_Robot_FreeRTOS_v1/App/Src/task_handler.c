@@ -10,7 +10,13 @@
 
 //------------------Definiciones generales----------------------------------
 //--------------------------Macros--------------------------
+#define SGMFALSE 0                              //Macros para verificar el exito de la separacion de las caracteristicas del grid map
+#define SGMTRUE 1
 #define distanceBetweenWheels 10600             //Distacia entre ruedas     10430
+#define ENABLE_PATH_ASTAR_BIT 0b1               //Bit que indica que hay un camino habilitado
+#define EXECUTE_PATH_ASTAR_BIT 0b10             //Bit para ejecutar AStar
+#define ENABLE_OPERATION_BIT 0b1                //Bit para habilitar el uso de tarea ejecucion operaciones
+#define EXECUTE_OPERATION_BIT 0b10              //Bit para indicar una ejecucion de operacion
 //-------------------Cabeceras de funciones-----------------
 //----Cabeceras de funciones para los motores----------
 void config_motor(int firth, float second, float third);
@@ -25,18 +31,22 @@ void config_mode(uint8_t status, float dutty_L, float dutty_R);
 //----Cabeceras de las operaciones------
 void set_operation_square(Parameters_Operation_t *prtList, double dis_side, double direction_square);
 void set_operation_AStar(Parameters_Operation_t *prtList, file_cell_t *file_cell, Parameters_Position_t *ptrParameterPosition, Parameters_Path_t *ptrParameterPath);
+void set_operation_in_queue(Parameters_Operation_t list[30]);
 //----Cabeceras de funciones de los comandos--------
 void process_stringsend(char stringsend[500]);
 int extract_stringsend(char stringsend[500]);
+//---Cabeceras de A-Star----------
+uint8_t Separate_parameters(item_A_Star_t* ptritem, char *parameter_string);	                 //Funcion para separar los parametros presentes en el string
+void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t row, uint8_t colum); //Funcion para imprimir la ruta encontrada
+
 //------------------Variables---------------------
 //---------Puntero-----------
 Motor_Handler_t *handler_Motor_Execute = {0};     //Handler que se refiere a uno de los motores
-//-------Operaciones----------
-Parameters_Operation_t list_operation[30];
-uint8_t counting_operation = 0;                   //Contador para ejecutar las operaciones
 //---------mensajes----------
 const char *msg_com_invalid = "Comando invalido  \n";
-const char *msg_stop= "Accion de parada \n";
+const char *msg_stop = "Accion de parada \n";
+const char *msg_finish_Operation = "Operaciones Finalizadas \n";
+const char *msg_fail = "Uno o varios parametros son incorrectos, volver a intentar \n";
 //-------Odometria-------------
 Parameters_Path_t parameter_Path_Robot = {0};           //Estructura que almacena los parametros del camino a recorrer
 float cos_cal  = 0;                                     //Variables que almacenan el calculo del seno y coseno
@@ -116,33 +126,31 @@ void vTask_Menu(void * pvParameters)
 			{
 				//Notificamos a la tarea respectiva
 				xTaskNotify(xHandleTask_Line, (uint32_t) xReceivedStructure.firtparameter, eSetValueWithoutOverwrite);
-				//Cambio de state
-				next_state = sExecution;
 			}
 			else if(strcmp(xReceivedStructure.send_cmd, "turn") == 0)
 			{
 				//Notificamos a la tarea respectiva
 				xTaskNotify(xHandleTask_Turn_itself, (uint32_t) &xReceivedStructure, eSetValueWithoutOverwrite);
-				//Cambio de state
-				next_state = sExecution;
 			}
 			else if(strcmp(xReceivedStructure.send_cmd, "square") == 0)
 			{
 				//Notificamos a la tarea respectiva
-				xTaskNotify(xHandleTask_Turn_itself, (uint32_t) &xReceivedStructure, eSetValueWithoutOverwrite);
+				xTaskNotify(xHandleTask_Square, (uint32_t) &xReceivedStructure, eSetValueWithoutOverwrite);
+			}
+			else if(strcmp(xReceivedStructure.send_cmd, "applyastar") == 0)
+			{
 				//Cambio de state
-				next_state = sExecution;
-
+				next_state = sAStar;
 			}
 			else if(strcmp(xReceivedStructure.send_cmd, "exepathastar") == 0)
 			{
 				//Notificamos a la tarea respectiva
 				xTaskNotify(xHandleTask_Execute_Astar, 0, eNoAction);
-				//Cambio de state
-				next_state = sExecution;
 			}
 			else
 			{
+				//Cambio de state
+				next_state = sMenuOperation;
 				//Se envia la opcion especificada
 				xQueueSend(xQueue_Print, &msg_com_invalid, portMAX_DELAY);
 				/*Se envia una notificacion previa con la finalidad de desbloquear
@@ -155,8 +163,62 @@ void vTask_Menu(void * pvParameters)
 
 }
 
-
-//-----------------------Tareas de Operaciones-----------------
+//-----------------------Tareas de Operaciones--------------------
+//------------Tarea grupo de eventos---------------
+void vTask_Execute_Operation(void *pvParameters)
+{
+	//Definicion de variables
+	Parameters_Operation_t option_operation;
+	const EventBits_t xBitsToWaitFor = (ENABLE_OPERATION_BIT | EXECUTE_OPERATION_BIT);
+	BaseType_t status;
+	//Ciclo de la tarea
+	while(1)
+	{
+		//Se espera por lis bit eventos para generar una condicion de desbloqueo
+		xEventGroupWaitBits(xEventGroup_Execute_Operation, xBitsToWaitFor, pdFALSE, pdTRUE, portMAX_DELAY);
+		//Impiamos el bit correspondiente a la ejecucion
+		xEventGroupClearBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);
+		//Recibimos las opciones de las operaciones
+		status = xQueueReceive(xQueue_Operation, &option_operation, 0);
+		//Si se presenta una operacion se ejecuta
+		if(status ==pdTRUE)
+		{
+			//Delay para espera la finalizacion del modo
+			timer_delay(&handler_TIMER_Delay, &countingTimer, 500);
+			//Deacuerdo a la operacion se configura
+			switch(option_operation.operacion)
+			{
+				case LINE:{
+					//Definicion de parametros
+					change_coordinates_position(&parameter_Path_Robot, option_operation.x_destination, option_operation.y_destination,
+							parameter_Path_Robot.goal_Position_x, parameter_Path_Robot.goal_Position_y);
+					//Configuracion inicial linea recta
+					straight_line(duttySetPoint);
+					break;
+				}
+				case TURN:{
+					//Configuracion inicial del giro
+					turn_itself(option_operation.grad_Rotative);
+					break;
+				}
+				default:{ break; }
+			}
+		}
+		else
+		{
+			//Impiamos el bit correspondiente a la habilitacion
+			xEventGroupClearBits(xEventGroup_Execute_Operation, ENABLE_OPERATION_BIT);
+			//cambio de status
+			next_state = sMenuOperation;
+			//Se envia la opcion especificada
+			xQueueSend(xQueue_Print, &msg_finish_Operation, portMAX_DELAY);
+			/*Se envia una notificacion previa con la finalidad de desbloquear
+			 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
+			xTaskNotify(xHandleTask_Execute_Operation, 0, eNoAction);
+			xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+		}
+	}
+}
 //------------Tarea linea---------------
 void vTask_Line(void * pvParameters)
 {
@@ -175,6 +237,8 @@ void vTask_Line(void * pvParameters)
 			change_position(&parameter_Path_Robot, parameter, parameter_Path_Robot.goal_Position_x, parameter_Path_Robot.goal_Position_y);
 			//Configuracion inicial linea recta
 			straight_line(duttySetPoint);
+			//Cambio de state
+			next_state = sExecution;
 		}
 	}
 }
@@ -199,6 +263,8 @@ void vTask_Turn(void *pvParameters)
 			if(xReceivedStructure->secondparameter==1){ degrees = -1*xReceivedStructure->firtparameter;}
 			//Configuracion inicial del giro
 			turn_itself(degrees);
+			//Cambio de state
+			next_state = sExecution;
 		}
 	}
 }
@@ -208,6 +274,7 @@ void vTask_Square(void *pvParameters)
 	//Definicion de variable
 	BaseType_t notify_status = {0};
 	command_t *xReceivedStructure;
+	Parameters_Operation_t list_operation[30];
 	uint32_t data;
 	//Ciclo de la tarea
 	while(1)
@@ -222,6 +289,10 @@ void vTask_Square(void *pvParameters)
 			init_coordinates();
 			//Configuracion de operaciones
 			set_operation_square(list_operation, xReceivedStructure->firtparameter, xReceivedStructure->secondparameter);
+			//Definir operaciones en la cola de operaciones
+			set_operation_in_queue(list_operation);
+			//Cambio de state
+			next_state = sExecution;
 		}
 	}
 }
@@ -230,8 +301,12 @@ void vTask_Execute_AStar(void * pvParameters)
 {
 	//Definicion de variable de notificacion
 	BaseType_t notify_status = {0};
+	uint8_t status = 0;
+	const char *msg_Fail_Execute_Path = "El path generado por AStar no se a establecido \n";
 	uint32_t parameter;
-
+	file_cell_t *file_path;
+	Parameters_Operation_t list_operation[30];
+	//Ciclo de la tarea
 	while(1)
 	{
 		//Se espera por la notificacion
@@ -239,14 +314,128 @@ void vTask_Execute_AStar(void * pvParameters)
 		//Si es verdadero se recibe una notificacion
 		if(notify_status == pdTRUE)
 		{
-			//Restablecimiento de coordenadas
-			init_coordinates();
-			//Configuracion de operaciones
-			//set_operation_AStar(list_operation, file_path, &parameter_Posicion_Robot, &parameter_Path_Robot);
+			//Se verifica si hay un path ya disponible en el Mailbox
+			status = uxQueueMessagesWaiting(xMailbox_Path);
+			if(status != 0)
+			{
+				//Recepccion del Path
+				xQueuePeek(xMailbox_Mode, &file_path, portMAX_DELAY);
+				//Restablecimiento de coordenadas
+				init_coordinates();
+				//Configuracion de operaciones
+				set_operation_AStar(list_operation, file_path, &parameter_Posicion_Robot, &parameter_Path_Robot);
+				//Definir operaciones en la cola de operaciones
+				set_operation_in_queue(list_operation);
+				//Cambio de state
+				next_state = sExecution;
+			}
+			else
+			{
+				  //Se envia la opcion especificada
+				  xQueueSend(xQueue_Print, &msg_Fail_Execute_Path, portMAX_DELAY);
+				  /*Se envia una notificacion previa con la finalidad de desbloquear
+					 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
+				  xTaskNotify(xHandleTask_Execute_Astar, 0, eNoAction);
+				  xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+				  //cambio de status
+				  next_state = sMenuOperation;
+			}
+
 		}
 	}
 }
 
+
+//--------------Tareas de aplicacion de AStar---------------
+//------Tarea de separacion del grip map------------
+void vTask_Separate_GripMap(void *pvParameters)
+{
+	//Definicion de variable
+	BaseType_t notify_status = {0};
+	char *xReceivedString;
+	char parameterStringGM[500];
+	uint32_t data;
+	item_A_Star_t xitemAStar = {0};
+	uint8_t status_separate;
+	//Ciclo de la tarea
+	while(1)
+	{
+		//Se espera por la notificacion
+		notify_status = xTaskNotifyWait(0,0,&data,portMAX_DELAY);
+		//Si es verdadero se recibe una notificacion
+		if(notify_status == pdTRUE)
+		{
+			//Se realiza un casting
+			xReceivedString = (char*)  data;
+			//Se realiza una copia del string
+		    memcpy(parameterStringGM, xReceivedString, 500 * sizeof(char));
+			//-------------Separar el String en los parametros del grid map-------------
+		    status_separate = Separate_parameters(&xitemAStar, parameterStringGM);
+		    //Se verifica el estado de la separacion
+		    if(status_separate)
+		    {
+		    	//Notificamos a la tarea respectiva
+		    	xTaskNotify(xHandleTask_Apply_Astar, (uint32_t) &xitemAStar, eSetValueWithoutOverwrite);
+		    }
+		    else
+		    {
+				//cambio de status
+				next_state = sMenuOperation;
+				//Se envia la opcion especificada
+				xQueueSend(xQueue_Print, &msg_fail, portMAX_DELAY);
+				/*Se envia una notificacion previa con la finalidad de desbloquear
+				 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
+				xTaskNotify(xHandleTask_Separate_GridMap, 0, eNoAction);
+				xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+		    }
+		}
+	}
+}
+//------Tarea de Aplicacion de A Star------------
+void vTask_Apply_Astar(void * pvParameters)
+{
+	//Definicion de variable
+	BaseType_t notify_status = {0};
+	uint32_t data;
+	item_A_Star_t *xReceivedItemGripMap;
+	file_cell_t *file_path;
+	const char *msg_Finish_AStar = "Calculo de A Star Finalizado \n";
+	//Ciclo de la tarea
+	while(1)
+	{
+		//Se espera por la notificacion
+		notify_status = xTaskNotifyWait(0,0,&data,portMAX_DELAY);
+		//Si es verdadero se recibe una notificacion
+		if(notify_status == pdTRUE)
+		{
+		  //Se realiza un casting
+		  xReceivedItemGripMap = (item_A_Star_t*)  data;
+		  //----------------------------------Inicio A Star----------------------------------
+		  //---------Creacion de la malla con cada una de sus celdas-----------
+		  build_grid_map(xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row,
+				  xReceivedItemGripMap->grid_map_colum, xReceivedItemGripMap->cell_separation);
+		  //-------Calculo de la heuristica de la celda de acuerdo a la posicion objetivo-------
+		  heuristic_cell_map(xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row,
+				  xReceivedItemGripMap->grid_map_colum, xReceivedItemGripMap->goal_x, xReceivedItemGripMap->goal_y);
+		  //------------------Aplicacion del algoritmo A star------------------
+		  file_path = aplicattion_A_Star(xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row, xReceivedItemGripMap->grid_map_colum,
+				  xReceivedItemGripMap->start_x, xReceivedItemGripMap->start_y, xReceivedItemGripMap->goal_x, xReceivedItemGripMap->goal_y);
+		  //-----------------Impresion de la ruta encontrada--------------------
+		  send_path(file_path, xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row, xReceivedItemGripMap->grid_map_colum);
+		  //----------------------------------Fin A Star----------------------------------
+		  //Envio de file path a MailBox
+		  xQueueOverwrite(xMailbox_Path, &file_path);
+		  //Se envia la opcion especificada
+		  xQueueSend(xQueue_Print, &msg_Finish_AStar, portMAX_DELAY);
+		  /*Se envia una notificacion previa con la finalidad de desbloquear
+			 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
+		  xTaskNotify(xHandleTask_Apply_Astar, 0, eNoAction);
+		  xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+		  //cambio de status
+		  next_state = sMenuOperation;
+		}
+	}
+}
 
 
 //--------------Tareas de parada de operacion---------------
@@ -256,6 +445,7 @@ void vTask_Stop(void * pvParameters)
 	//Variables para la recepcion
 	command_t xReceivedStructure;
 	BaseType_t notify_status;
+	const EventBits_t xBitsToWaitFor = (ENABLE_OPERATION_BIT | EXECUTE_OPERATION_BIT);
 	//Ciclo de la tarea
 	while(1)
 	{
@@ -268,16 +458,23 @@ void vTask_Stop(void * pvParameters)
 		{
 			if(strcmp(xReceivedStructure.send_cmd, "stop") == 0)
 			{
+				//Se lee el grupo de eventos para limpiar posibles eventos si fuera necesario
+			    xEventGroupClearBits(xEventGroup_Execute_Operation, xBitsToWaitFor);
 				//Paramos los motores
 				status_motor(RESET);
-				//cambio de status
-				next_state = sMenuOperation;
 				//Se envia la opcion especificada
 				xQueueSend(xQueue_Print, &msg_stop, portMAX_DELAY);
 				/*Se envia una notificacion previa con la finalidad de desbloquear
 				 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-				xTaskNotify(xHandleTask_Menu, 0, eNoAction);
+				xTaskNotify(xHandleTask_Stop, 0, eNoAction);
 				xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+				//cambio de status
+				next_state = sMenuOperation;
+			}
+			else
+			{
+				//cambio de status
+				next_state = sExecution;
 			}
 		}
 	}
@@ -308,6 +505,8 @@ void vTask_Stop_Execute(void * pvParameters)
 					//Guardamos la posicion final
 					parameter_Posicion_Robot.xg_position_inicial = parameter_Posicion_Robot.xg_position;
 					parameter_Posicion_Robot.yg_position_inicial = parameter_Posicion_Robot.yg_position;
+					//Se establece un Event Flag
+					xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);
 				}
 			}
 			else if(mode==2)
@@ -316,13 +515,14 @@ void vTask_Stop_Execute(void * pvParameters)
 					//Paramos los motores
 					status_motor(RESET);
 					updateDirMotor(handler_Motor_Execute);
+					//Se establece un Event Flag
+					xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);
 				}
 			}
 			else{ __NOP(); }
 		}
 	}
 }
-
 
 
 //-----------Tareas correspondientes durante la ejecucion de operaciones--------
@@ -344,7 +544,7 @@ void vTask_Measure(void * pvParameters)
 			//Leemos el angulo
 			parameter_Posicion_Robot.grad_relativo = getAngle(&handler_MPUAccel_MPU6050, period_sampling, parameter_Posicion_Robot.grad_relativo, READ_GYRO_Z, gyro_offset);
 			//verificamos el modo
-			xQueuePeek(xMailbox_Mode, &mode, portMAX_DELAY);
+			xQueuePeek(xMailbox_Mode, &mode, 0);
 			if(mode == 1 )
 			{
 				//Acumulamos los angulos
@@ -450,9 +650,7 @@ void vTask_Line_PID(void * pvParameters)
 	}
 }
 
-
 //-----------------------Fin definicion funciones de las Task---------------------------
-
 
 
 //-----------------------Inicio definicion funciones del Software Timer---------------------------
@@ -478,6 +676,8 @@ void process_stringsend(char stringsend[500])
 	//De acuerdo al state se procesa el mensaje
 	if(next_state==sMenuOperation || next_state==sExecution)
 	{
+		//cambio de status
+		next_state = sNullReception;
 		//Funcion que lee la cadena de caracteres y la divide en los elementos definidos
 		sscanf(stringsend, "%s %u %u", structcmd.send_cmd, &structcmd.firtparameter, &structcmd.secondparameter);
 		//Envio de struct a la cola
@@ -500,8 +700,11 @@ void process_stringsend(char stringsend[500])
 	}
 	else if(next_state==sAStar)
 	{
+
+		//cambio de status
+		next_state = sNullReception;
 		//Notificamos a la tarea respectiva
-		//xTaskNotify(xHandleTask_Received_AStar, 0, eNoAction);
+		xTaskNotify(xHandleTask_Separate_GridMap, (uint32_t) stringsend, eSetValueWithoutOverwrite);
 	}
 	else{ __NOP(); }
 }
@@ -596,6 +799,27 @@ void set_operation_AStar(Parameters_Operation_t *prtList, file_cell_t *file_cell
 
 
 //------------------------------Inicio de la definicion de funciones del modo----------------------------------------
+//-----Establecer Operaciones-----
+void set_operation_in_queue(Parameters_Operation_t list[30])
+{
+	//Definicion bits
+	const EventBits_t xBitsSet = (ENABLE_OPERATION_BIT | EXECUTE_OPERATION_BIT);
+	//Limpiamos la cola de operaciones
+	while(xQueueReceive(xQueue_Operation, NULL, 0) == pdPASS){__NOP();}
+	//Recorremos la lista de operaciones
+	for(uint8_t i=0; i<30; i++)
+	{
+		//Verificamos que la operacion en la lista no sea nula
+		if(list[i].operacion != NULL_OPERATION)
+		{
+			//Agregamos configuraciones de operaciones a la cola
+			xQueueSendToBack(xQueue_Operation, &list[i], 0);
+		}
+		else{ break;}
+	}
+	//Establecemos Event Flag para ejecutar la funcion encargada de las operaciones
+	xEventGroupSetBits(xEventGroup_Execute_Operation, xBitsSet);
+}
 //------linea recta------
 void straight_line(uint8_t dutty)   //a = [mm]
 {
@@ -713,7 +937,6 @@ void status_motor(uint8_t status)
 		statusiInterruptionTimer(&handler_TIMER_Sampling, INTERRUPTION_DISABLE);
 	}
 }
-
 //Funcion para al configuracion de los motores
 void config_motor(int firth, float second, float third)  //Tipo de Estudio, por dutty L, por dutty R, fre pwm [hz]
 {
@@ -760,4 +983,189 @@ void correction(Motor_Handler_t *ptrMotorHandler)
     updateDuttyMotor(ptrMotorHandler, port_dutty);
 }
 //----------------------------Fin de la definicion de las funciones para el PID-----------------------------------------
+
+
+
+
+//Funcion para separar los diferentes parametros del string
+uint8_t Separate_parameters(item_A_Star_t* ptritem, char *parameter_string)
+{
+  //Definicion de variables
+  char buffercharSeparate[10];
+  uint8_t index_charSeparate = 0;
+  uint8_t flag_Separate = 0;
+  uint8_t status_parameter = 0;
+  uint8_t index_init_Grid_map = 0;
+  uint8_t findStart = 0;
+  uint8_t findGoal = 0;
+
+  //---------------Definicion de los parametros iniciales---------------
+  for (uint16_t i = 0; parameter_string[i] != '\0'; i++)
+  {
+    //Verificacion del estado
+    if(status_parameter<3)
+    {
+      //Busqueda de la separacion dentro del string
+      if (parameter_string[i] == ':')
+      {
+        buffercharSeparate[index_charSeparate] = '\0';
+        index_charSeparate = 0;
+        flag_Separate = 1;
+      }
+      else
+      {
+        buffercharSeparate[index_charSeparate] = parameter_string[i];
+        index_charSeparate++;
+      }
+      //Si la bandera se levanta se asigna el valor correspondiente al parametro
+      if(flag_Separate == 1)
+      {
+        switch(status_parameter)
+        {
+          case 0:
+          {
+        	//Convertimos valor y lo almacenamos
+        	ptritem->grid_map_row = atoi(buffercharSeparate);
+            //Verificacion parametros mal enviados
+            if(ptritem->grid_map_row>19){ return SGMFALSE; }
+            break;
+          }
+          case 1:
+          {
+          	//Convertimos valor y lo almacenamos
+        	ptritem->grid_map_colum = atoi(buffercharSeparate);
+            //Verificacion parametros mal enviados
+            if(ptritem->grid_map_colum>19){ return SGMFALSE; }
+            break;
+          }
+          case 2:
+          {
+            //Convertimos valor y lo almacenamos
+        	ptritem->cell_separation = atof(buffercharSeparate);
+            //Verificacion parametros mal enviados
+            if(ptritem->cell_separation>100){ return SGMFALSE; }
+            break;
+          }
+        }
+        //Aumentamos y reiniciamos bandera
+        status_parameter++;
+        flag_Separate = 0;
+      }
+    }
+    else
+    {
+      index_init_Grid_map = i;
+      break;
+    }
+    //Verificacion parametros mal enviados
+    if(index_charSeparate>5){ return SGMFALSE; }
+  }
+  //---------------transformacion del string grid map en un array---------------
+  //Variables para los indices
+  uint8_t index_row = 0;
+  uint8_t index_col = 0;
+
+  //Separacion de cada caracter
+  for (uint16_t i = index_init_Grid_map; parameter_string[i] != '\0'; i++)
+  {
+    if (parameter_string[i] == ';')
+    {
+      //Se aumenta el indice de la fila y se reinicia el indice de la columna
+      index_row++;
+      index_col = 0;
+      //Verificacion parametros mal enviados
+      if(index_row>ptritem->grid_map_row){ return SGMFALSE; }
+    }
+    else
+    {
+      //Se guarda el caracter
+      ptritem->grid_map[index_row][index_col].feature = parameter_string[i];
+      //se aumenta el indice de la columna
+      index_col++;
+      //Verificacion parametros mal enviados
+      if(index_col>ptritem->grid_map_colum){ return SGMFALSE; }
+    }
+  }
+  //---------------Definicion del start y del goal---------------
+  //Recorremo el array creado para encontrar la posicion de los objetivos
+  for(int i = 0; i < ptritem->grid_map_row; i++)
+  {
+    for(int j = 0; j < ptritem->grid_map_colum; j++)
+    {
+      if(ptritem->grid_map[i][j].feature == 'S')
+      {
+        //Definimos su posicion
+    	ptritem->start_x = j*ptritem->cell_separation;
+    	ptritem->start_y = i*ptritem->cell_separation;
+    	//Aumentamos valor
+    	findStart++;
+      }
+      else if (ptritem->grid_map[i][j].feature == 'G')
+      {
+		  //Definimos su posicion
+		  ptritem->goal_x= j*ptritem->cell_separation;
+		  ptritem->goal_y= i*ptritem->cell_separation;
+		  //Aumentamos valor
+		  findGoal++;
+      }
+    }
+  }
+  /*Si el codigo llego hasta aqui falta un ultima verificacion, con lo cual
+  se envia un TRUE o FALSe*/
+  if(findStart==1 && findGoal==1){ return SGMTRUE;}
+  else{ return SGMFALSE; }
+}
+
+
+//Funcion para imprimir la ruta encontrada
+void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t row, uint8_t colum)
+{
+  //Variables
+  uint8_t index = 0;
+  char buffermsg[22] = {0};
+  char *ptrmsg = buffermsg;
+
+  //Cambiamos los caracteres de la malla de strings por caracteres que indican la ruta establecida con A Star
+  while(1)
+  {
+	if(file_cell->ptrCell_parent[index] != NULL)
+	{
+	   array_string[file_cell->ptrCell_parent[index]->index_row][file_cell->ptrCell_parent[index]->index_col].feature = '+';
+	  index++;
+	}
+	else
+	{
+	  break;
+	}
+  }
+  //Indica de nuevo el inicio del recorrido
+   array_string[file_cell->ptrCell_parent[0]->index_row][file_cell->ptrCell_parent[0]->index_col].feature = 'S';
+
+  //Envio de caracter para indicar que se trata del grid map
+  buffermsg[0] = '$'; buffermsg[1] = '\0';
+  //Se envia la opcion especificada
+  xQueueSend(xQueue_Print, &ptrmsg, portMAX_DELAY);
+  //Imprimir la malla modificada
+  for(int i=0;i<row;i++)
+  {
+	for(int j=0;j<colum;j++)
+	{
+	  //Agregamos las caracteristicas por fila a un buffer
+	  buffermsg[j] = array_string[i][j].feature;
+	  index = j;
+	}
+	//Agragamos el valor nullo al final del string
+	buffermsg[index+1] = ';';
+	buffermsg[index+2] = '\0';
+	//Se envia la opcion especificada
+	xQueueSend(xQueue_Print, &ptrmsg, portMAX_DELAY);
+  }
+	/*Se envia una notificacion previa con la finalidad de desbloquear
+	 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
+	xTaskNotify(xHandleTask_Apply_Astar, 0, eNoAction);
+	xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+}
+
+
+//------------------------------Fin de la definicion de funciones del A-STAR----------------------------------------
 

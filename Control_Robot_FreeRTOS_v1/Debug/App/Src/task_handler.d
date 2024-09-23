@@ -19,8 +19,8 @@ App/Src/task_handler.o: ../App/Src/task_handler.c \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/queue.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/task.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/timers.h \
- B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/semphr.h \
- B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/queue.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/event_groups.h \
+ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/timers.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/GPIOxDriver.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/Core/Device/ST/STM32F4xx/Include/stm32f4xx.h \
  B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/Core/Device/ST/STM32F4xx/Include/stm32f411xe.h \
@@ -66,8 +66,8 @@ B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/queue.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/task.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/timers.h:
-B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/semphr.h:
-B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/queue.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/event_groups.h:
+B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/ThirdParty/FreeRTOS/include/timers.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/PeripheralDrivers/Inc/GPIOxDriver.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/Core/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 B:/Documentos/Universidad-Materias/Fundamentos\ de\ Robotica/Robotic/WorkSpaces/Control_Robot_FreeRTOS_v1/Core/Device/ST/STM32F4xx/Include/stm32f411xe.h:

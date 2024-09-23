@@ -97,13 +97,16 @@ extern void vTask_Menu(void * pvParameters);
 extern void vTask_Print(void * pvParameters);
 extern void vTask_Commands(void * pvParameters);
 extern void vTask_Line(void * pvParameters);
-extern void vTask_Stop(void * pvParameters);
 extern void vTask_Measure(void * pvParameters);
 extern void vTask_Line_PID(void * pvParameters);
-extern void vTask_Stop_Execute(void * pvParameters);
 extern void vTask_Turn(void *pvParameters);
 extern void vTask_Square(void *pvParameters);
 extern void vTask_Execute_AStar(void * pvParameters);
+extern void vTask_Separate_GripMap(void * pvParameters);
+extern void vTask_Apply_Astar(void * pvParameters);
+extern void vTask_Execute_Operation(void *pvParameters);
+extern void vTask_Stop_Execute(void * pvParameters);
+extern void vTask_Stop(void * pvParameters);
 //Handler de las Tareas
 TaskHandle_t xHandleTask_Menu = NULL;
 TaskHandle_t xHandleTask_Print = NULL;
@@ -115,12 +118,20 @@ TaskHandle_t xHandleTask_Line_PID = NULL;
 TaskHandle_t xHandleTask_Turn_itself = NULL;
 TaskHandle_t xHandleTask_Square = NULL;
 TaskHandle_t xHandleTask_Execute_Astar = NULL;
+TaskHandle_t xHandleTask_Separate_GridMap = NULL;
+TaskHandle_t xHandleTask_Apply_Astar = NULL;
+TaskHandle_t xHandleTask_Execute_Operation = NULL;
 TaskHandle_t xHandleTask_Stop_Execute = NULL;
 //Handler de las Queue
 QueueHandle_t xQueue_Print;
 QueueHandle_t xQueue_StructCommand;
 QueueHandle_t xQueue_InputData;
+QueueHandle_t xQueue_Operation;
 QueueHandle_t xMailbox_Mode;
+QueueHandle_t xMailbox_Path;
+//Handler de grupo de eventos
+EventGroupHandle_t xEventGroup_Execute_Operation;
+EventGroupHandle_t xEventGroup_Execute_Astar;
 
 //Handler para el Software Timer
 TimerHandle_t handler_led_timer;
@@ -220,6 +231,15 @@ int main(void)
 	                    2,/* Priority at which the task is created. */
 	                    &xHandleTask_Menu);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
+	//Tarea execute Operation
+	xReturned = xTaskCreate(
+						vTask_Execute_Operation,       /* Function that implements the task. */
+	                    "Task_Execute_Operation",          /* Text name for the task. */
+	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+						NULL,    /* Parameter passed into the task. */
+	                    2,/* Priority at which the task is created. */
+	                    &xHandleTask_Execute_Operation);      /* Used to pass out the created task's handle. */
+	configASSERT(xReturned == pdPASS);
 	//Tarea Line
 	xReturned = xTaskCreate(
 						vTask_Line,       /* Function that implements the task. */
@@ -238,7 +258,7 @@ int main(void)
 	                    2,/* Priority at which the task is created. */
 	                    &xHandleTask_Turn_itself);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
-	//Tarea turn itself
+	//Tarea Square
 	xReturned = xTaskCreate(
 						vTask_Square,       /* Function that implements the task. */
 	                    "Task_Square",          /* Text name for the task. */
@@ -247,7 +267,25 @@ int main(void)
 	                    2,/* Priority at which the task is created. */
 	                    &xHandleTask_Square);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
-	//Tarea turn itself
+	//Tarea execute Operation
+	xReturned = xTaskCreate(
+						vTask_Apply_Astar,       /* Function that implements the task. */
+	                    "Task_Apply_Astar",          /* Text name for the task. */
+	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+						NULL,    /* Parameter passed into the task. */
+	                    2,/* Priority at which the task is created. */
+	                    &xHandleTask_Apply_Astar);      /* Used to pass out the created task's handle. */
+	configASSERT(xReturned == pdPASS);
+	//Tarea execute Operation
+	xReturned = xTaskCreate(
+						vTask_Separate_GripMap,       /* Function that implements the task. */
+	                    "Task_Separate_GripMap",          /* Text name for the task. */
+	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+						NULL,    /* Parameter passed into the task. */
+	                    2,/* Priority at which the task is created. */
+	                    &xHandleTask_Separate_GridMap);      /* Used to pass out the created task's handle. */
+	configASSERT(xReturned == pdPASS);
+	//Tarea Execute_AStar
 	xReturned = xTaskCreate(
 						vTask_Execute_AStar,       /* Function that implements the task. */
 	                    "Task_Execute_AStar",          /* Text name for the task. */
@@ -256,7 +294,7 @@ int main(void)
 	                    2,/* Priority at which the task is created. */
 	                    &xHandleTask_Execute_Astar);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
-	//Tarea stop
+	//Tarea Stop
 	xReturned = xTaskCreate(
 						vTask_Stop,       /* Function that implements the task. */
 	                    "Task_Stop",          /* Text name for the task. */
@@ -276,9 +314,21 @@ int main(void)
 	//cola para enviar datos por consola
 	xQueue_Print = xQueueCreate(10, sizeof(char *) );
 	configASSERT(xQueue_Print != NULL);
-	//Cola para definir el modo de operacion
+	//Buzon para definir el modo de operacion
 	xMailbox_Mode = xQueueCreate(1, sizeof( uint8_t ));
 	configASSERT(xMailbox_Mode != NULL);
+	//Buzon para pasar el string del grid map
+	xMailbox_Path = xQueueCreate(1, sizeof(file_cell_t * ));
+	configASSERT(xMailbox_Path  != NULL);
+	//Cola para almacenar las operaciones
+	xQueue_Operation = xQueueCreate(30, sizeof(Parameters_Operation_t) );
+	configASSERT(xQueue_Operation != NULL);
+
+	//-------------------Configuracion Even Group-------------
+	//Grupo de eventos para ejecutar las operaciones
+	xEventGroup_Execute_Operation = xEventGroupCreate();
+	//Grupo de eventos para ejecutar de A star
+	xEventGroup_Execute_Astar = xEventGroupCreate();
 
 	//-------------------Configuracion Timer--------------
 	//Software Timer para el blink

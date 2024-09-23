@@ -19,8 +19,7 @@
 #include "task.h"
 #include "queue.h"
 #include "timers.h"
-#include "semphr.h"
-#include "timers.h"
+#include "event_groups.h"
 //----Perifericos
 #include <GPIOxDriver.h>
 #include <BasicTimer.h>
@@ -45,7 +44,8 @@ typedef struct{
 }command_t;
 
 typedef enum{
-	sMenuOperation = 0,
+	sNullReception = 0,
+	sMenuOperation,
 	sExecution,
 	sAStar,
 }state_t;
@@ -56,10 +56,13 @@ typedef enum{
 extern TaskHandle_t xHandleTask_Menu;
 extern TaskHandle_t xHandleTask_Print;
 extern TaskHandle_t xHandleTask_Commands;
+extern TaskHandle_t xHandleTask_Execute_Operation;
 extern TaskHandle_t xHandleTask_Line;
 extern TaskHandle_t xHandleTask_Turn_itself;
 extern TaskHandle_t xHandleTask_Square;
 extern TaskHandle_t xHandleTask_Execute_Astar;
+extern TaskHandle_t xHandleTask_Separate_GridMap;
+extern TaskHandle_t xHandleTask_Apply_Astar;
 extern TaskHandle_t xHandleTask_Stop;
 extern TaskHandle_t xHandleTask_Measure;
 extern TaskHandle_t xHandleTask_Line_PID;
@@ -68,6 +71,7 @@ extern TaskHandle_t xHandleTask_Stop_Execute;
 void vTask_Menu(void * pvParameters);
 void vTask_Print(void * pvParameters);
 void vTask_Commands(void * pvParameters);
+void vTask_Execute_Operation(void *pvParameters);
 void vTask_Line(void * pvParameters);
 void vTask_Stop(void * pvParameters);
 void vTask_Measure(void * pvParameters);
@@ -75,6 +79,8 @@ void vTask_Line_PID(void * pvParameters);
 void vTask_Turn(void *pvParameters);
 void vTask_Square(void *pvParameters);
 void vTask_Execute_AStar(void * pvParameters);
+void vTask_Apply_Astar(void * pvParameters);
+void vTask_Separate_GripMap(void * pvParameters);
 void vTask_Stop_Execute(void * pvParameters);
 
 //Cabecera de la funcion del Software Timer
@@ -82,21 +88,30 @@ void led_state_callback(TimerHandle_t xTimer);
 
 //Handler relacionado con las colas
 extern QueueHandle_t xQueue_Print;
+extern QueueHandle_t xQueue_Operation;
 extern QueueHandle_t xQueue_StructCommand;
 extern QueueHandle_t xQueue_InputData;
 extern QueueHandle_t xMailbox_Mode;
+extern QueueHandle_t xMailbox_Path;
+
+//Handler de grupo de eventos
+extern EventGroupHandle_t xEventGroup_Execute_Operation;
+extern EventGroupHandle_t xEventGroup_Execute_Astar;
 
 //-------------------------Referencia de Perifericos---------------------------
 extern USART_Handler_t handler_USART_CommTerm;               //Handler referente con el periferico USART
 extern GPIO_Handler_t handler_GPIO_BlinkyPin;                //Handler referente con el elemento GPIO_BlinkyPin
 extern BasicTimer_Handler_t handler_TIMER_Motor;
 extern BasicTimer_Handler_t handler_TIMER_Sampling;
+extern BasicTimer_Handler_t handler_TIMER_Delay;
 //----------Motor---------------
 extern Motor_Handler_t handler_Motor_R;
 extern Motor_Handler_t handler_Motor_L;
 //----------MPU6050-------------
 extern MPUAccel_Handler_t handler_MPUAccel_MPU6050;
 //---------------------------Referencia de Variables------------------------
+//------Variables para el delay-----
+extern uint16_t countingTimer;
 //------Varaible del MPU-------
 extern int16_t gyro_offset;
 //-----------Periodo-------------
