@@ -96,7 +96,6 @@ extern QueueHandle_t xMailbox_Path;
 
 //Handler de grupo de eventos
 extern EventGroupHandle_t xEventGroup_Execute_Operation;
-extern EventGroupHandle_t xEventGroup_Execute_Astar;
 
 //-------------------------Referencia de Perifericos---------------------------
 extern USART_Handler_t handler_USART_CommTerm;               //Handler referente con el periferico USART
@@ -129,9 +128,10 @@ extern Parameters_PID_t parameter_PID_distace;
 extern uint16_t time_accumulated;
 extern uint16_t counting_action ;
 //--------Odometria----------------
-extern Parameters_Position_t parameter_Posicion_Robot; 	//Estructura que almacena la posicion del robot
-extern float cm_L;                                      //Factor de conversion rueda Izquierda [mm/cuentas]
+extern Parameters_Position_t parameter_Posicion_Robot;
+extern float cm_L;
 extern float cm_R;
+extern float correct_ang_Gyro_Drift;
 //Definicion de un elemento de la structura state_t
 extern state_t next_state;
 

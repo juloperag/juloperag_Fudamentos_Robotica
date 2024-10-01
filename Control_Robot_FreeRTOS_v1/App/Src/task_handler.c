@@ -111,15 +111,22 @@ void vTask_Menu(void * pvParameters)
 	command_t xReceivedStructure;
 	BaseType_t notify_status;
 	//Mensaje inicial del menu
-	const char* msg_menu = "=======================\n"
+	const char *msg_menu = "=======================\n"
 			               "|     Menu Operation   |\n"
 						   "=======================\n"
-						   "line ---> inicia \n";
+						   "line # --- #:dis[mm] \n"
+						   "turn # # --- #:ang[°] #:dir 0->L 1->R \n"
+						   "square # # --- #:lad[mm], #:dir 0->L 1->R \n"
+						   "applyastar \n"
+						   "exepathastar \n"
+						   "init \n";
+	//Se envia el mensaje del menu de opciones
+	xQueueSend(xQueue_Print, &msg_menu, portMAX_DELAY);
 
 	while(1)
 	{
 		//Se envia el mensaje del menu de opciones
-		if(next_state == sMenuOperation){ xQueueSend(xQueue_Print, &msg_menu, portMAX_DELAY); }
+		if(next_state == sMenuOperation){ timer_delay(&handler_TIMER_Delay, &countingTimer, 1000); xQueueSend(xQueue_Print, &msg_menu, portMAX_DELAY); }
 		//Se espera por la recepcion de un comando
 		xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
 		//Se verificamos recibe el comando
@@ -224,10 +231,10 @@ void vTask_Execute_Operation(void *pvParameters)
 			next_state = sMenuOperation;
 			//Se envia la opcion especificada
 			xQueueSend(xQueue_Print, &msg_finish_Operation, portMAX_DELAY);
-			/*Se envia una notificacion previa con la finalidad de desbloquear
-			 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-			xTaskNotify(xHandleTask_Execute_Operation, 0, eNoAction);
-			xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+			//Entregamos el procesador a la Tarea Print
+			taskYIELD();
+			//Notificamos Tarea de menu para imprimir mensaje de operaciones
+			xTaskNotify(xHandleTask_Menu, 0, eNoAction);
 		}
 	}
 }
@@ -273,6 +280,7 @@ void vTask_Turn(void *pvParameters)
 		{
 			//Cambio de signo si e giro es hacia la derecha
 			if(xReceivedStructure->secondparameter==1){ degrees = -1*xReceivedStructure->firtparameter;}
+			else{degrees = xReceivedStructure->firtparameter;}
 			//Configuracion inicial del giro
 			turn_itself(degrees);
 			//Cambio de state
@@ -343,10 +351,8 @@ void vTask_Execute_AStar(void * pvParameters)
 			{
 				  //Se envia la opcion especificada
 				  xQueueSend(xQueue_Print, &msg_Fail_Execute_Path, portMAX_DELAY);
-				  /*Se envia una notificacion previa con la finalidad de desbloquear
-					 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-				  xTaskNotify(xHandleTask_Execute_Astar, 0, eNoAction);
-				  xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+				  //Entregamos el procesador a la Tarea Print
+				  taskYIELD();
 				  //cambio de status
 				  next_state = sMenuOperation;
 			}
@@ -392,10 +398,8 @@ void vTask_Separate_GripMap(void *pvParameters)
 				next_state = sMenuOperation;
 				//Se envia la opcion especificada
 				xQueueSend(xQueue_Print, &msg_fail, portMAX_DELAY);
-				/*Se envia una notificacion previa con la finalidad de desbloquear
-				 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-				xTaskNotify(xHandleTask_Separate_GridMap, 0, eNoAction);
-				xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+				//Entregamos el procesador a la Tarea Print
+				taskYIELD();
 		    }
 		}
 	}
@@ -436,10 +440,8 @@ void vTask_Apply_Astar(void * pvParameters)
 		  xQueueOverwrite(xMailbox_Path, &status);
 		  //Se envia la opcion especificada
 		  xQueueSend(xQueue_Print, &msg_Finish_AStar, portMAX_DELAY);
-		  /*Se envia una notificacion previa con la finalidad de desbloquear
-			 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-		  xTaskNotify(xHandleTask_Apply_Astar, 0, eNoAction);
-		  xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+		  //Entregamos el procesador a la Tarea Print
+		  taskYIELD();
 		  //cambio de status
 		  next_state = sMenuOperation;
 		}
@@ -457,6 +459,7 @@ void vTask_Stop(void * pvParameters)
 	command_t xReceivedStructure;
 	BaseType_t notify_status;
 	const EventBits_t xBitsToWaitFor = (ENABLE_OPERATION_BIT | EXECUTE_OPERATION_BIT);
+	uint8_t mode = 0;
 	//Ciclo de la tarea
 	while(1)
 	{
@@ -469,18 +472,20 @@ void vTask_Stop(void * pvParameters)
 		{
 			if(strcmp(xReceivedStructure.send_cmd, "stop") == 0)
 			{
+				//verificamos el modo
+				xQueuePeek(xMailbox_Mode, &mode, 0);
 				//Se lee el grupo de eventos para limpiar posibles eventos si fuera necesario
 			    xEventGroupClearBits(xEventGroup_Execute_Operation, xBitsToWaitFor);
 				//Paramos los motores
 				status_motor(RESET);
+				//Si se esta en el modo 2 se cambia la direccion de giro
+				if(mode==2){ updateDirMotor(handler_Motor_Execute); }
 				//Se envia la opcion especificada
 				xQueueSend(xQueue_Print, &msg_stop, portMAX_DELAY);
-				/*Se envia una notificacion previa con la finalidad de desbloquear
-				 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-				xTaskNotify(xHandleTask_Stop, 0, eNoAction);
-				xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
 				//cambio de status
 				next_state = sMenuOperation;
+				//Notificamos Tarea de menu para imprimir mensaje de operaciones
+				xTaskNotify(xHandleTask_Menu, 0, eNoAction);
 			}
 			else
 			{
@@ -497,6 +502,8 @@ void vTask_Stop_Execute(void * pvParameters)
 	BaseType_t notify_status = {0};
 	uint8_t mode = 0;
 	uint32_t ulNotificationValue;
+	const EventBits_t xBitsToWaitFor = (ENABLE_OPERATION_BIT | EXECUTE_OPERATION_BIT);
+	EventBits_t xReturnBists;
 
 	//Ciclo de la tarea
 	while(1)
@@ -517,22 +524,38 @@ void vTask_Stop_Execute(void * pvParameters)
 					//Guardamos la posicion final
 					parameter_Posicion_Robot.xg_position_inicial = parameter_Posicion_Robot.xg_position;
 					parameter_Posicion_Robot.yg_position_inicial = parameter_Posicion_Robot.yg_position;
-					//Se establece un Event Flag
-					xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);
-					//cambio de status
-					next_state = sMenuOperation;
+					//Vericamos si el bit de las operaciones esta activo
+					xReturnBists = xEventGroupWaitBits(xEventGroup_Execute_Operation, xBitsToWaitFor, pdFALSE, pdTRUE, 0);
+					//Deacuerdo al valor retornado se ejecuta una accion
+					if(xReturnBists & ENABLE_OPERATION_BIT) { xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);}
+					else
+					{
+						//cambio de status
+						next_state = sMenuOperation;
+						//Notificamos Tarea de menu para imprimir mensaje de operaciones
+						xTaskNotify(xHandleTask_Menu, 0, eNoAction);
+					}
 				}
 			}
 			else if(mode==2)
 			{
-				if(fabs(ang_complementary) > (fabs(parameter_Path_Robot.rotative_Grad_Relative)-1)){
+				if((fabs(parameter_Posicion_Robot.grad_relativo)*correct_ang_Gyro_Drift) > (fabs(parameter_Path_Robot.rotative_Grad_Relative))){
 					//Paramos los motores
 					status_motor(RESET);
 					updateDirMotor(handler_Motor_Execute);
-					//Se establece un Event Flag
-					xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);
-					//cambio de status
-					next_state = sMenuOperation;
+					//Correccion angulo;
+					parameter_Posicion_Robot.grad_relativo = parameter_Posicion_Robot.grad_relativo*correct_ang_Gyro_Drift;
+					//Vericamos si el bit de las operaciones esta activo
+					xReturnBists = xEventGroupWaitBits(xEventGroup_Execute_Operation, xBitsToWaitFor, pdFALSE, pdTRUE, 0);
+					//Deacuerdo al valor retornado se ejecuta una accion
+					if(xReturnBists & ENABLE_OPERATION_BIT) { xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);}
+					else
+					{
+						//cambio de status
+						next_state = sMenuOperation;
+						//Notificamos Tarea de menu para imprimir mensaje de operaciones
+						xTaskNotify(xHandleTask_Menu, 0, eNoAction);
+					}
 				}
 			}
 			else{ __NOP(); }
@@ -586,25 +609,6 @@ void vTask_Measure(void * pvParameters)
 		}
 		else if(mode == 2)
 		{
-			//----------------Accion a realizar con un tiempo especifico--------------------
-			if(counting_action>=timeAction_TIMER_Sampling)
-			{
-				//Calculo de la distancia recorrida por cada rueda
-				handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
-				handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
-				//Reiniciamos el numero de conteos
-				handler_Motor_R.parametersMotor.count = 0;
-				handler_Motor_L.parametersMotor.count = 0;
-				//Calculo angulo debido al desplazamiento del ICR
-				ang_for_Displament_ICR += (((handler_Motor_R.parametersMotor.distance - handler_Motor_L.parametersMotor.distance)*100)
-						/distanceBetweenWheels)*(180/M_PI); //[rad]
-				//Reiniciamos el contador de accion
-				counting_action = 0;
-			}
-			else{counting_action++;}
-			//Combinar ambos ángulos
-			//ang_complementary = parameter_Posicion_Robot.grad_relativo + ang_for_Displament_ICR;
-			ang_complementary = parameter_Posicion_Robot.grad_relativo;
 			//Notificamos a la tarea respectiva
 			xTaskNotify(xHandleTask_Stop_Execute, 0, eNoAction);
 		}
@@ -842,7 +846,7 @@ void straight_line(uint8_t dutty)   //a = [mm]
 	calculation_parameter_distance(&parameter_Path_Robot);
 	//---------Configuracion coordenadas medidas---------
 	//Coordenadas Globales
-	parameter_Posicion_Robot.grad_grobal += ang_complementary;
+	parameter_Posicion_Robot.grad_grobal += parameter_Posicion_Robot.grad_relativo;
 	//Reiniciaos Coordenadas relativas
 	parameter_Posicion_Robot.xr_position = parameter_Posicion_Robot.yr_position = 0;
 	parameter_Posicion_Robot.phi_relativo = 0;
@@ -1179,7 +1183,7 @@ void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t 
 	buffermsg[index+2] = '\0';
 	//Se envia la opcion especificada
 	xQueueSend(xQueue_Print, &ptrmsg, portMAX_DELAY);
-	  //Entregamos el procesador a la Tarea Print
+	//Entregamos el procesador a la Tarea Print
 	taskYIELD();
   }
 

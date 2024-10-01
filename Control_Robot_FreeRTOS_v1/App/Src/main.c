@@ -74,6 +74,7 @@ uint8_t duttySetPoint = 28;                       //Dutty setpoint de line
 //---------Odometria---------
 float cm_L = 0;                               //Factor de conversion rueda Izquierda [mm/cuentas]
 float cm_R = 0;                               //Factor de conversion rueda Derecha   [mm/cuentas]
+float correct_ang_Gyro_Drift = 1;             //Correccion debido al drift cuando gira el robot
 //-----Variables PID-----------
 Parameters_PID_t parameter_PID_distace = {0};        //Structurapara los parametros del PID
 //--------Variables del timerSampling---------
@@ -130,7 +131,6 @@ QueueHandle_t xMailbox_Mode;
 QueueHandle_t xMailbox_Path;
 //Handler de grupo de eventos
 EventGroupHandle_t xEventGroup_Execute_Operation;
-EventGroupHandle_t xEventGroup_Execute_Astar;
 
 //Handler para el Software Timer
 TimerHandle_t handler_led_timer;
@@ -162,6 +162,8 @@ int main(void)
 	cm_R =	((M_PI*DR)/(100*Ce));  //[mm/cuentas]
 	//Calculamos el setpoint
 	velSetPoint = (0.00169*duttySetPoint + 0.0619);
+	//Definicion de la correccion del drift
+	correct_ang_Gyro_Drift = 1 + 0.022;
 	//Calculo periodo de accion
 	time_accion = period_sampling*timeAction_TIMER_Sampling;
 	//--------------------------Configuramos inicia el MPU----------------------
@@ -309,7 +311,7 @@ int main(void)
 	xQueue_StructCommand = xQueueCreate(10, sizeof(command_t));
 	configASSERT(xQueue_StructCommand != NULL);
 	//cola para enviar datos por consola
-	xQueue_Print = xQueueCreate(25, sizeof(char *) );
+	xQueue_Print = xQueueCreate(10, sizeof(char *) );
 	configASSERT(xQueue_Print != NULL);
 	//Buzon para definir el modo de operacion
 	xMailbox_Mode = xQueueCreate(1, sizeof(uint8_t ));
@@ -324,8 +326,6 @@ int main(void)
 	//-------------------Configuracion Even Group-------------
 	//Grupo de eventos para ejecutar las operaciones
 	xEventGroup_Execute_Operation = xEventGroupCreate();
-	//Grupo de eventos para ejecutar de A star
-	xEventGroup_Execute_Astar = xEventGroupCreate();
 
 	//-------------------Configuracion Timer--------------
 	//Software Timer para el blink
@@ -367,8 +367,8 @@ void initSystem(void)
 
 
 	//---------------------------USART--------------------------------
-	//---------------PIN: PA2----------------
-	//------------AF7: USART2_TX----------------
+	//---------------PIN: PA9----------------
+	//------------AF7: USART1_TX----------------
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_CommTerm_TX.pGPIOx = GPIOA;
 	//Definimos el pin a utilizar
@@ -381,8 +381,8 @@ void initSystem(void)
 	//Cargamos la configuracion del PIN especifico
 	GPIO_Config(&handler_GPIO_CommTerm_TX);
 
-	//---------------PIN: PA3----------------
-	//------------AF7: USART2_RX----------------
+	//---------------PIN: PA10----------------
+	//------------AF7: USART1_RX----------------
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_CommTerm_RX.pGPIOx = GPIOA;
 	//Definimos el pin a utilizar
