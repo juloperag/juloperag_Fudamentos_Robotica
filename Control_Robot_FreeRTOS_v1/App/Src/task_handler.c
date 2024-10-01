@@ -12,6 +12,8 @@
 //--------------------------Macros--------------------------
 #define SGMFALSE 0                              //Macros para verificar el exito de la separacion de las caracteristicas del grid map
 #define SGMTRUE 1
+#define PATHFALSE 0                             //Macros para verificar si se tiene con path listo
+#define PATHTRUE 1
 #define distanceBetweenWheels 10600             //Distacia entre ruedas     10430
 #define ENABLE_PATH_ASTAR_BIT 0b1               //Bit que indica que hay un camino habilitado
 #define EXECUTE_PATH_ASTAR_BIT 0b10             //Bit para ejecutar AStar
@@ -40,6 +42,9 @@ uint8_t Separate_parameters(item_A_Star_t* ptritem, char *parameter_string);	   
 void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t row, uint8_t colum); //Funcion para imprimir la ruta encontrada
 
 //------------------Variables---------------------
+//--------AStar-------------
+item_A_Star_t xitemAStar = {0};
+file_cell_t *file_path;
 //---------Puntero-----------
 Motor_Handler_t *handler_Motor_Execute = {0};     //Handler que se refiere a uno de los motores
 //---------mensajes----------
@@ -130,7 +135,7 @@ void vTask_Menu(void * pvParameters)
 			else if(strcmp(xReceivedStructure.send_cmd, "turn") == 0)
 			{
 				//Notificamos a la tarea respectiva
-				xTaskNotify(xHandleTask_Turn_itself, (uint32_t) &xReceivedStructure, eSetValueWithoutOverwrite);
+				xTaskNotify(xHandleTask_Turn, (uint32_t) &xReceivedStructure, eSetValueWithoutOverwrite);
 			}
 			else if(strcmp(xReceivedStructure.send_cmd, "square") == 0)
 			{
@@ -147,16 +152,21 @@ void vTask_Menu(void * pvParameters)
 				//Notificamos a la tarea respectiva
 				xTaskNotify(xHandleTask_Execute_Astar, 0, eNoAction);
 			}
+			else if(strcmp(xReceivedStructure.send_cmd, "init") == 0)
+			{
+				//Restablecimiento de coordenadas
+				init_coordinates();
+				//Cambio de state
+				next_state = sMenuOperation;
+			}
 			else
 			{
 				//Cambio de state
 				next_state = sMenuOperation;
 				//Se envia la opcion especificada
 				xQueueSend(xQueue_Print, &msg_com_invalid, portMAX_DELAY);
-				/*Se envia una notificacion previa con la finalidad de desbloquear
-				 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-				xTaskNotify(xHandleTask_Menu, 0, eNoAction);
-				xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+				//Entregamos el procesador a la Tarea Print
+				taskYIELD();
 			}
 		}
 	}
@@ -183,6 +193,8 @@ void vTask_Execute_Operation(void *pvParameters)
 		//Si se presenta una operacion se ejecuta
 		if(status ==pdTRUE)
 		{
+			//Aseguramos que seguimos en status de ejecucion
+			next_state = sExecution;
 			//Delay para espera la finalizacion del modo
 			timer_delay(&handler_TIMER_Delay, &countingTimer, 500);
 			//Deacuerdo a la operacion se configura
@@ -301,25 +313,23 @@ void vTask_Execute_AStar(void * pvParameters)
 {
 	//Definicion de variable de notificacion
 	BaseType_t notify_status = {0};
-	uint8_t status = 0;
+	uint8_t status = PATHFALSE;
 	const char *msg_Fail_Execute_Path = "El path generado por AStar no se a establecido \n";
-	uint32_t parameter;
-	file_cell_t *file_path;
 	Parameters_Operation_t list_operation[30];
+	//Se envia al buzon un valor falso
+	xQueueOverwrite(xMailbox_Path, &status);
 	//Ciclo de la tarea
 	while(1)
 	{
 		//Se espera por la notificacion
-		notify_status = xTaskNotifyWait(0,0,&parameter, portMAX_DELAY);
+		notify_status = xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
 		//Si es verdadero se recibe una notificacion
 		if(notify_status == pdTRUE)
 		{
-			//Se verifica si hay un path ya disponible en el Mailbox
-			status = uxQueueMessagesWaiting(xMailbox_Path);
-			if(status != 0)
+			//Se verifica se verifica el estado del path
+			xQueuePeek(xMailbox_Path, &status, 0);
+			if(status == PATHTRUE)
 			{
-				//Recepccion del Path
-				xQueuePeek(xMailbox_Mode, &file_path, portMAX_DELAY);
 				//Restablecimiento de coordenadas
 				init_coordinates();
 				//Configuracion de operaciones
@@ -355,7 +365,6 @@ void vTask_Separate_GripMap(void *pvParameters)
 	char *xReceivedString;
 	char parameterStringGM[500];
 	uint32_t data;
-	item_A_Star_t xitemAStar = {0};
 	uint8_t status_separate;
 	//Ciclo de la tarea
 	while(1)
@@ -374,8 +383,8 @@ void vTask_Separate_GripMap(void *pvParameters)
 		    //Se verifica el estado de la separacion
 		    if(status_separate)
 		    {
-		    	//Notificamos a la tarea respectiva
-		    	xTaskNotify(xHandleTask_Apply_Astar, (uint32_t) &xitemAStar, eSetValueWithoutOverwrite);
+				//Notificamos la tarea respectiva
+				xTaskNotify(xHandleTask_Apply_Astar, 0, eNoAction);
 		    }
 		    else
 		    {
@@ -396,35 +405,35 @@ void vTask_Apply_Astar(void * pvParameters)
 {
 	//Definicion de variable
 	BaseType_t notify_status = {0};
-	uint32_t data;
-	item_A_Star_t *xReceivedItemGripMap;
-	file_cell_t *file_path;
+	file_cell_t file_Open[50];
+	uint8_t index_file = 0;
+	uint8_t status = PATHFALSE;
 	const char *msg_Finish_AStar = "Calculo de A Star Finalizado \n";
 	//Ciclo de la tarea
 	while(1)
 	{
 		//Se espera por la notificacion
-		notify_status = xTaskNotifyWait(0,0,&data,portMAX_DELAY);
+		notify_status = xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
 		//Si es verdadero se recibe una notificacion
 		if(notify_status == pdTRUE)
 		{
-		  //Se realiza un casting
-		  xReceivedItemGripMap = (item_A_Star_t*)  data;
 		  //----------------------------------Inicio A Star----------------------------------
 		  //---------Creacion de la malla con cada una de sus celdas-----------
-		  build_grid_map(xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row,
-				  xReceivedItemGripMap->grid_map_colum, xReceivedItemGripMap->cell_separation);
+		  build_grid_map(xitemAStar.grid_map, xitemAStar.grid_map_row,
+				  xitemAStar.grid_map_colum, xitemAStar.cell_separation);
 		  //-------Calculo de la heuristica de la celda de acuerdo a la posicion objetivo-------
-		  heuristic_cell_map(xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row,
-				  xReceivedItemGripMap->grid_map_colum, xReceivedItemGripMap->goal_x, xReceivedItemGripMap->goal_y);
+		  heuristic_cell_map(xitemAStar.grid_map, xitemAStar.grid_map_row,
+				  xitemAStar.grid_map_colum, xitemAStar.goal_x, xitemAStar.goal_y);
 		  //------------------Aplicacion del algoritmo A star------------------
-		  file_path = aplicattion_A_Star(xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row, xReceivedItemGripMap->grid_map_colum,
-				  xReceivedItemGripMap->start_x, xReceivedItemGripMap->start_y, xReceivedItemGripMap->goal_x, xReceivedItemGripMap->goal_y);
+		  index_file = aplicattion_A_Star(file_Open, xitemAStar.grid_map, xitemAStar.grid_map_row, xitemAStar.grid_map_colum,
+				  xitemAStar.start_x, xitemAStar.start_y, xitemAStar.goal_x, xitemAStar.goal_y);
+		  file_path = &file_Open[index_file];
 		  //-----------------Impresion de la ruta encontrada--------------------
-		  send_path(file_path, xReceivedItemGripMap->grid_map, xReceivedItemGripMap->grid_map_row, xReceivedItemGripMap->grid_map_colum);
+		  send_path(file_path, xitemAStar.grid_map, xitemAStar.grid_map_row, xitemAStar.grid_map_colum);
 		  //----------------------------------Fin A Star----------------------------------
-		  //Envio de file path a MailBox
-		  xQueueOverwrite(xMailbox_Path, &file_path);
+		  //Envio como disponible el path MailBox
+		  status = PATHTRUE;
+		  xQueueOverwrite(xMailbox_Path, &status);
 		  //Se envia la opcion especificada
 		  xQueueSend(xQueue_Print, &msg_Finish_AStar, portMAX_DELAY);
 		  /*Se envia una notificacion previa con la finalidad de desbloquear
@@ -436,6 +445,8 @@ void vTask_Apply_Astar(void * pvParameters)
 		}
 	}
 }
+
+
 
 
 //--------------Tareas de parada de operacion---------------
@@ -485,17 +496,18 @@ void vTask_Stop_Execute(void * pvParameters)
 	//Definicion de variable
 	BaseType_t notify_status = {0};
 	uint8_t mode = 0;
+	uint32_t ulNotificationValue;
 
 	//Ciclo de la tarea
 	while(1)
 	{
 		//Se espera por la notificacion
-		notify_status = xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
+		notify_status = xTaskNotifyWait(0,0,&ulNotificationValue,portMAX_DELAY);
 		//Si es verdadero se recibe una notificacion
 		if(notify_status == pdTRUE)
 		{
 			//verificamos el modo
-			xQueuePeek(xMailbox_Mode, &mode, portMAX_DELAY);
+			xQueuePeek(xMailbox_Mode, &mode, 0);
 			//Verificamos las condiciones de parada
 			if(mode==1)
 			{
@@ -507,16 +519,20 @@ void vTask_Stop_Execute(void * pvParameters)
 					parameter_Posicion_Robot.yg_position_inicial = parameter_Posicion_Robot.yg_position;
 					//Se establece un Event Flag
 					xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);
+					//cambio de status
+					next_state = sMenuOperation;
 				}
 			}
 			else if(mode==2)
 			{
-				if(fabs(ang_complementary) > fabs(parameter_Path_Robot.rotative_Grad_Relative)){
+				if(fabs(ang_complementary) > (fabs(parameter_Path_Robot.rotative_Grad_Relative)-1)){
 					//Paramos los motores
 					status_motor(RESET);
 					updateDirMotor(handler_Motor_Execute);
 					//Se establece un Event Flag
 					xEventGroupSetBits(xEventGroup_Execute_Operation, EXECUTE_OPERATION_BIT);
+					//cambio de status
+					next_state = sMenuOperation;
 				}
 			}
 			else{ __NOP(); }
@@ -530,71 +546,69 @@ void vTask_Stop_Execute(void * pvParameters)
 void vTask_Measure(void * pvParameters)
 {
 	//Definicion de variable
-	BaseType_t notify_status = {0};
 	uint8_t mode = 0;
+	const TickType_t xDelaySamplingms = pdMS_TO_TICKS(period_sampling);
+	//Suspendemos la Tarea
+	vTaskSuspend(xHandleTask_Measure);
 	//Ciclo de la tarea
 	while(1)
 	{
-		//Se espera por la notificacion
-		notify_status = xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
-		//Si es verdadero se recibe una notificacion
-		if(notify_status == pdTRUE)
+		//Se bloque la tarea por un tiempo definido
+		vTaskDelay(xDelaySamplingms);
+		//Leemos el angulo
+		parameter_Posicion_Robot.grad_relativo = getAngle(&handler_MPUAccel_MPU6050, period_sampling, parameter_Posicion_Robot.grad_relativo, READ_GYRO_Z, gyro_offset);
+		//De acuerdo al modo se ejecuta una accion
+		xQueuePeek(xMailbox_Mode, &mode, 0);
+		if(mode == 1 )
 		{
-			//----------------Accion a Realizar con el tiempo del TIMER--------------------
-			//Leemos el angulo
-			parameter_Posicion_Robot.grad_relativo = getAngle(&handler_MPUAccel_MPU6050, period_sampling, parameter_Posicion_Robot.grad_relativo, READ_GYRO_Z, gyro_offset);
-			//verificamos el modo
-			xQueuePeek(xMailbox_Mode, &mode, 0);
-			if(mode == 1 )
+			//Acumulamos los angulos
+			sum_ang += parameter_Posicion_Robot.grad_relativo;
+			//----------------Accion a realizar con un tiempo especifico--------------------
+			if(counting_action>=timeAction_TIMER_Sampling)
 			{
-				//Acumulamos los angulos
-				sum_ang += parameter_Posicion_Robot.grad_relativo;
-				//----------------Accion a realizar con un tiempo especifico--------------------
-				if(counting_action>=timeAction_TIMER_Sampling)
-				{
-					//Calculamos el angulo promedio y la establecemis como el angulo relativo
-					prom_ang = sum_ang/counting_action;
-					parameter_Posicion_Robot.phi_relativo = (prom_ang*M_PI)/180;          //[rad]
-					parameter_Posicion_Robot.phi_relativo = atan2(sin(parameter_Posicion_Robot.phi_relativo),cos(parameter_Posicion_Robot.phi_relativo));
-					//Calculamos la velocidad
-					handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
-					handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
-					handler_Motor_L.parametersMotor.velocity = handler_Motor_L.parametersMotor.distance/time_accion;      //[m/s]
-					handler_Motor_R.parametersMotor.velocity = handler_Motor_R.parametersMotor.distance/time_accion;      //[m/s]
-					//Reiniciamos el numero de conteos
-					handler_Motor_R.parametersMotor.count = handler_Motor_L.parametersMotor.count = 0;
-					//Reiniciamos variable
-					sum_ang = counting_action = 0;
-					//Notificamos a la tarea respectiva
-					xTaskNotify(xHandleTask_Line_PID, 0, eNoAction);
-				}
-				else{ counting_action++;}
-			}
-			else if(mode == 2)
-			{
-				//----------------Accion a realizar con un tiempo especifico--------------------
-				if(counting_action>=timeAction_TIMER_Sampling)
-				{
-					//Calculo de la distancia recorrida por cada rueda
-					handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
-					handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
-					//Reiniciamos el numero de conteos
-					handler_Motor_R.parametersMotor.count = 0;
-					handler_Motor_L.parametersMotor.count = 0;
-					//Calculo angulo debido al desplazamiento del ICR
-					ang_for_Displament_ICR += (((handler_Motor_R.parametersMotor.distance - handler_Motor_L.parametersMotor.distance)*100)
-							/distanceBetweenWheels)*(180/M_PI); //[rad]
-					//Reiniciamos el contador de accion
-					counting_action = 0;
-				}
-				else{counting_action++;}
-				//Combinar ambos ángulos
-				ang_complementary = parameter_Posicion_Robot.grad_relativo + ang_for_Displament_ICR;
+				//Calculamos el angulo promedio y la establecemis como el angulo relativo
+				prom_ang = sum_ang/counting_action;
+				parameter_Posicion_Robot.phi_relativo = (prom_ang*M_PI)/180;          //[rad]
+				parameter_Posicion_Robot.phi_relativo = atan2(sin(parameter_Posicion_Robot.phi_relativo),cos(parameter_Posicion_Robot.phi_relativo));
+				//Calculamos la velocidad
+				handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
+				handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
+				handler_Motor_L.parametersMotor.velocity = handler_Motor_L.parametersMotor.distance/time_accion;      //[m/s]
+				handler_Motor_R.parametersMotor.velocity = handler_Motor_R.parametersMotor.distance/time_accion;      //[m/s]
+				//Reiniciamos el numero de conteos
+				handler_Motor_R.parametersMotor.count = handler_Motor_L.parametersMotor.count = 0;
+				//Reiniciamos variable
+				sum_ang = counting_action = 0;
 				//Notificamos a la tarea respectiva
-				xTaskNotify(xHandleTask_Stop_Execute, 0, eNoAction);
+				xTaskNotify(xHandleTask_Line_PID, 0, eNoAction);
 			}
-			else{ __NOP(); }
+			else{ counting_action++;}
 		}
+		else if(mode == 2)
+		{
+			//----------------Accion a realizar con un tiempo especifico--------------------
+			if(counting_action>=timeAction_TIMER_Sampling)
+			{
+				//Calculo de la distancia recorrida por cada rueda
+				handler_Motor_L.parametersMotor.distance = (cm_L*handler_Motor_L.parametersMotor.count);                   //[mm]
+				handler_Motor_R.parametersMotor.distance = (cm_R*handler_Motor_R.parametersMotor.count);				   //[mm]
+				//Reiniciamos el numero de conteos
+				handler_Motor_R.parametersMotor.count = 0;
+				handler_Motor_L.parametersMotor.count = 0;
+				//Calculo angulo debido al desplazamiento del ICR
+				ang_for_Displament_ICR += (((handler_Motor_R.parametersMotor.distance - handler_Motor_L.parametersMotor.distance)*100)
+						/distanceBetweenWheels)*(180/M_PI); //[rad]
+				//Reiniciamos el contador de accion
+				counting_action = 0;
+			}
+			else{counting_action++;}
+			//Combinar ambos ángulos
+			//ang_complementary = parameter_Posicion_Robot.grad_relativo + ang_for_Displament_ICR;
+			ang_complementary = parameter_Posicion_Robot.grad_relativo;
+			//Notificamos a la tarea respectiva
+			xTaskNotify(xHandleTask_Stop_Execute, 0, eNoAction);
+		}
+		else{ vTaskSuspend(xHandleTask_Measure); }
 	}
 }
 //------------Tarea Line PID---------------
@@ -604,7 +618,7 @@ void vTask_Line_PID(void * pvParameters)
 	BaseType_t notify_status = {0};
 	float sampling_timer = ((float) time_accion/1000);
 	float distance_c = 0;
-	char bufferMsg[20] = {0};
+	char bufferMsg[40] = {0};
 	char *prtbuffer = bufferMsg;
 	float distance_recta = 0;
 
@@ -625,10 +639,6 @@ void vTask_Line_PID(void * pvParameters)
 			//Convertimos el valor y imprimemos
 			sprintf(bufferMsg,"&%#.4f\t%#.4f\n", parameter_Posicion_Robot.xg_position , parameter_Posicion_Robot.yg_position);
 			xQueueSend(xQueue_Print, &prtbuffer, portMAX_DELAY);
-			/*Se envia una notificacion previa con la finalidad de desbloquear
-			 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-			xTaskNotify(xHandleTask_Line_PID, 0, eNoAction);
-			xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
 			//Control PID para la distancia
 			distance_recta = (distance_to_straight_line(&parameter_Path_Robot, parameter_Posicion_Robot.xg_position, parameter_Posicion_Robot.yg_position))/1000;
 			PID_simple(&parameter_PID_distace, sampling_timer, 0,  distance_recta);
@@ -676,8 +686,6 @@ void process_stringsend(char stringsend[500])
 	//De acuerdo al state se procesa el mensaje
 	if(next_state==sMenuOperation || next_state==sExecution)
 	{
-		//cambio de status
-		next_state = sNullReception;
 		//Funcion que lee la cadena de caracteres y la divide en los elementos definidos
 		sscanf(stringsend, "%s %u %u", structcmd.send_cmd, &structcmd.firtparameter, &structcmd.secondparameter);
 		//Envio de struct a la cola
@@ -697,6 +705,8 @@ void process_stringsend(char stringsend[500])
 			__NOP();
 			break;
 		}
+		//cambio de status
+		next_state = sNullReception;
 	}
 	else if(next_state==sAStar)
 	{
@@ -756,7 +766,10 @@ void set_operation_square(Parameters_Operation_t *prtList, double dis_side, doub
 	//Construccion de las operaciones
 	for(uint8_t i=1; i<5; i++)
 	{
+		//Contruimos la operacion
 		build_Operation(prtList, &parameter_build, coordination_position_square[0][i], coordination_position_square[1][i]);
+		//Aumentamos el recorrido en la lista
+		parameter_build.routelist++;
 	}
 	//Agregamos indicador de la operacion final
 	prtList[parameter_build.number_operation+1].operacion = NULL_OPERATION;
@@ -802,10 +815,12 @@ void set_operation_AStar(Parameters_Operation_t *prtList, file_cell_t *file_cell
 //-----Establecer Operaciones-----
 void set_operation_in_queue(Parameters_Operation_t list[30])
 {
+	//Definimos structura para recibir los elementos y asi vaciar la cola
+	Parameters_Operation_t xReceiveClear;
 	//Definicion bits
 	const EventBits_t xBitsSet = (ENABLE_OPERATION_BIT | EXECUTE_OPERATION_BIT);
 	//Limpiamos la cola de operaciones
-	while(xQueueReceive(xQueue_Operation, NULL, 0) == pdPASS){__NOP();}
+	while(xQueueReceive(xQueue_Operation, &xReceiveClear, 0) == pdPASS){__NOP();}
 	//Recorremos la lista de operaciones
 	for(uint8_t i=0; i<30; i++)
 	{
@@ -877,7 +892,7 @@ void turn_itself(int16_t turn_grad)     //a = [grados], b = direccion giro
 	}
 
 	//Cargamos la configuracion del modo e iniciamos el modo
-	config_mode(2,20,21);
+	config_mode(2,24,25);
 }
 //Configuracion del modo
 void config_mode(uint8_t status, float dutty_L, float dutty_R)
@@ -912,7 +927,10 @@ void init_coordinates(void)
 //----------------------Iinicio definicion de las funciones de la Operacion Motor---------------------------------
 void status_motor(uint8_t status)
 {
-	if(status == 1)
+	//Variable de modo
+	uint8_t mode = 0;
+	//Deacuerdo al estado
+	if(status == SET)
 	{
 		//Activamos el motor
 		statusInOutPWM(handler_Motor_L.phandlerPWM, CHANNEL_ENABLE);
@@ -921,8 +939,8 @@ void status_motor(uint8_t status)
 		GPIO_writePin(handler_Motor_R.phandlerGPIOIN, (handler_Motor_R.configMotor.dir)&SET);
 		GPIO_writePin(handler_Motor_L.phandlerGPIOEN, RESET);
 		GPIO_writePin(handler_Motor_R.phandlerGPIOEN, RESET);
-		//Activamos la interrupcion
-		statusiInterruptionTimer(&handler_TIMER_Sampling, INTERRUPTION_ENABLE);
+		//Reanudamos la Tarea
+		vTaskResume(xHandleTask_Measure);
 	}
 	else
 	{
@@ -933,8 +951,8 @@ void status_motor(uint8_t status)
 		GPIO_writePin(handler_Motor_R.phandlerGPIOIN, (handler_Motor_R.configMotor.dir)&RESET);
 		GPIO_writePin(handler_Motor_L.phandlerGPIOEN, SET);
 		GPIO_writePin(handler_Motor_R.phandlerGPIOEN, SET);
-		//Desactivamos interrupcion
-		statusiInterruptionTimer(&handler_TIMER_Sampling, INTERRUPTION_DISABLE);
+		//Especificar el modo de operacion por medio de una Mailbox
+		xQueueOverwrite(xMailbox_Mode, &mode);
 	}
 }
 //Funcion para al configuracion de los motores
@@ -1027,7 +1045,7 @@ uint8_t Separate_parameters(item_A_Star_t* ptritem, char *parameter_string)
         	//Convertimos valor y lo almacenamos
         	ptritem->grid_map_row = atoi(buffercharSeparate);
             //Verificacion parametros mal enviados
-            if(ptritem->grid_map_row>19){ return SGMFALSE; }
+            if(ptritem->grid_map_row>20){ return SGMFALSE; }
             break;
           }
           case 1:
@@ -1035,7 +1053,7 @@ uint8_t Separate_parameters(item_A_Star_t* ptritem, char *parameter_string)
           	//Convertimos valor y lo almacenamos
         	ptritem->grid_map_colum = atoi(buffercharSeparate);
             //Verificacion parametros mal enviados
-            if(ptritem->grid_map_colum>19){ return SGMFALSE; }
+            if(ptritem->grid_map_colum>20){ return SGMFALSE; }
             break;
           }
           case 2:
@@ -1122,7 +1140,7 @@ void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t 
 {
   //Variables
   uint8_t index = 0;
-  char buffermsg[22] = {0};
+  char buffermsg[25] = {0};
   char *ptrmsg = buffermsg;
 
   //Cambiamos los caracteres de la malla de strings por caracteres que indican la ruta establecida con A Star
@@ -1145,6 +1163,8 @@ void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t 
   buffermsg[0] = '$'; buffermsg[1] = '\0';
   //Se envia la opcion especificada
   xQueueSend(xQueue_Print, &ptrmsg, portMAX_DELAY);
+  //Entregamos el procesador a la Tarea Print
+  taskYIELD();
   //Imprimir la malla modificada
   for(int i=0;i<row;i++)
   {
@@ -1159,11 +1179,10 @@ void send_path(file_cell_t *file_cell, Cell_map_t array_string[20][20], uint8_t 
 	buffermsg[index+2] = '\0';
 	//Se envia la opcion especificada
 	xQueueSend(xQueue_Print, &ptrmsg, portMAX_DELAY);
+	  //Entregamos el procesador a la Tarea Print
+	taskYIELD();
   }
-	/*Se envia una notificacion previa con la finalidad de desbloquear
-	 la tarea, la cual se bloquea para que se envie el mensaje por USART*/
-	xTaskNotify(xHandleTask_Apply_Astar, 0, eNoAction);
-	xTaskNotifyWait(0,0,NULL, portMAX_DELAY);
+
 }
 
 

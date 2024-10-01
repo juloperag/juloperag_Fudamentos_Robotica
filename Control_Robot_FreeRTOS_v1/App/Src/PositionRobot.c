@@ -123,7 +123,7 @@ double distance_traveled(Parameters_Path_t  *ptrParameterPath, double position_x
 double calculed_ang_turn(double vector_a[2], double vector_b[2])
 {
     //Calculo de los diferentes elementos
-    double dot = vector_a[0]*vector_b[1]-vector_b[0]*vector_b[1];
+    double dot = vector_a[0]*vector_b[1]-vector_b[0]*vector_a[1];
     double magvector_a = sqrt(pow(vector_a[0],2)+pow(vector_a[1],2));
     double magvector_b = sqrt(pow(vector_b[0],2)+pow(vector_b[1],2));
     double ang_between_vector = acos((vector_a[0]*vector_b[0]+vector_a[1]*vector_b[1])/(magvector_b*magvector_a));
@@ -131,6 +131,8 @@ double calculed_ang_turn(double vector_a[2], double vector_b[2])
     ang_between_vector = (ang_between_vector*180)/M_PI;
     //agregamos la direccion de giro
     if(dot<0){ ang_between_vector = -ang_between_vector;}
+    //Aproximamos a cero si el angulo es menor a un valor
+    if((ang_between_vector>-0.1) && (ang_between_vector<0.1)){ ang_between_vector = 0; }
     //Retornar valor
     return ang_between_vector;
 }

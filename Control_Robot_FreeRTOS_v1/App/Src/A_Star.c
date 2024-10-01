@@ -3,10 +3,9 @@
 #include <math.h>
 
 //-----------------------------------------------Funciones para la implementacion de A Star------------------------------------------------------------------
-file_cell_t* aplicattion_A_Star(Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float start_x, float start_y, float goal_x, float goal_y) {
+uint8_t aplicattion_A_Star(file_cell_t file_Open[50], Cell_map_t grid[20][20], uint8_t row, uint8_t colum, float start_x, float start_y, float goal_x, float goal_y) {
   //Variables
   file_cell_t *ptrFile;                           //Puntero a la ficha de la secuencia actual de A Star
-  file_cell_t file_Open[100] = {0};               //Arreglo de fichas abiertas
   uint64_t file_Open_Availability = 0b1;          //Conjunto de bits que indica que fichas abiertas estan disponibles para la comparacion
   uint8_t bit_file_cell = 0;                      //bit de una ficha que indica su disponibilidad
   uint8_t index_ptr = 0;                          //Indice de la ficha de la secuencia actual de A Star
@@ -108,7 +107,7 @@ file_cell_t* aplicattion_A_Star(Cell_map_t grid[20][20], uint8_t row, uint8_t co
         break;
     }
   }
-  return ptrFile;
+  return index_ptr;
 }
 
 
@@ -119,7 +118,7 @@ uint8_t search_position_file_Open(file_cell_t list_file[64], uint64_t avan_file)
   uint8_t index = 110;
   float value_f = 0;
   //bucle para recorrer la lista de bits
-  for(int i = 0; i<110; i++)
+  for(int i = 0; i<60; i++)
   {
     //Recorrido
     bit_list = (avan_file >> i) & 0b1;
@@ -133,7 +132,7 @@ uint8_t search_position_file_Open(file_cell_t list_file[64], uint64_t avan_file)
   /*En caso que no se indico un valor diferente a 100 para el indice, se busca una ubicacion dentro 
   de la lista de fichas abiertas, seleccionando aquella ubicacion donde el valor de la funcion f
   sea la mayor*/
-  if (index == 110)
+  if (index == 60)
   {  
     //Recorrido del arreglo de fichas abiertas
     for(int k = 0; k<64; k++)

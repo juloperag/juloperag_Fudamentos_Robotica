@@ -18,8 +18,8 @@
 ../App/Src/main.c:1243:6:config_mode	24	static
 ../App/Src/main.c:1253:6:init_coordinates	4	static
 ../App/Src/main.c:1273:6:set_operation_square	168	static
-../App/Src/main.c:1296:6:set_operation_AStar	88	static
-../App/Src/main.c:1337:6:PID_simple	32	static
-../App/Src/main.c:1350:6:correction	24	static,ignoring_inline_asm
-../App/Src/main.c:1366:6:status_motor	16	static
-../App/Src/main.c:1397:6:config_motor	24	static
+../App/Src/main.c:1299:6:set_operation_AStar	88	static
+../App/Src/main.c:1340:6:PID_simple	32	static
+../App/Src/main.c:1353:6:correction	24	static,ignoring_inline_asm
+../App/Src/main.c:1369:6:status_motor	16	static
+../App/Src/main.c:1400:6:config_motor	24	static

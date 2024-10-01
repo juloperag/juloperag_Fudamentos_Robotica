@@ -58,7 +58,7 @@ extern TaskHandle_t xHandleTask_Print;
 extern TaskHandle_t xHandleTask_Commands;
 extern TaskHandle_t xHandleTask_Execute_Operation;
 extern TaskHandle_t xHandleTask_Line;
-extern TaskHandle_t xHandleTask_Turn_itself;
+extern TaskHandle_t xHandleTask_Turn;
 extern TaskHandle_t xHandleTask_Square;
 extern TaskHandle_t xHandleTask_Execute_Astar;
 extern TaskHandle_t xHandleTask_Separate_GridMap;
@@ -102,7 +102,6 @@ extern EventGroupHandle_t xEventGroup_Execute_Astar;
 extern USART_Handler_t handler_USART_CommTerm;               //Handler referente con el periferico USART
 extern GPIO_Handler_t handler_GPIO_BlinkyPin;                //Handler referente con el elemento GPIO_BlinkyPin
 extern BasicTimer_Handler_t handler_TIMER_Motor;
-extern BasicTimer_Handler_t handler_TIMER_Sampling;
 extern BasicTimer_Handler_t handler_TIMER_Delay;
 //----------Motor---------------
 extern Motor_Handler_t handler_Motor_R;
@@ -110,6 +109,8 @@ extern Motor_Handler_t handler_Motor_L;
 //----------MPU6050-------------
 extern MPUAccel_Handler_t handler_MPUAccel_MPU6050;
 //---------------------------Referencia de Variables------------------------
+//-----------Muestreo-------------
+extern uint8_t period_sampling;
 //------Variables para el delay-----
 extern uint16_t countingTimer;
 //------Varaible del MPU-------

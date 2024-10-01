@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="xTaskNotify"/>
+		<item key="selection" value="init_coordinates"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="init_coordinates"/>
+			<item value="init"/>
+			<item value="xHandleTask_Turn_itself"/>
+			<item value="counting_action"/>
+			<item value="square"/>
+			<item value="PathTRUE"/>
+			<item value="PathFALSE"/>
+			<item value="Task_Apply_Astar"/>
+			<item value="Apply"/>
 			<item value="xTaskNotify"/>
 			<item value="list"/>
 			<item value="countingTimer"/>
 			<item value="delay"/>
 			<item value="handler_Motor_Execute"/>
 			<item value="handler_Motor"/>
-			<item value="bufferMsg"/>
-			<item value="xQueue_StructCommand"/>
-			<item value="RESET"/>
-			<item value="period_sampling"/>
-			<item value="correction"/>
-			<item value="distance_c"/>
-			<item value="init_con"/>
-			<item value="index_String_GM"/>
-			<item value="init_coordinates"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>
+			<item value="PATHTRUE"/>
+			<item value="PATHFALSE"/>
 			<item value="ang_for_Displament_ICR"/>
 			<item value="ang_De"/>
 			<item value="ang_"/>
@@ -38,13 +40,11 @@
 			<item value="Dutty_Setpoint_R"/>
 			<item value="Dutty_Setpoint_L"/>
 			<item value="porDutty_R"/>
-			<item value="porDutty_L"/>
-			<item value="flag_mode"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="681"/>
-		<item key="DIALOG_Y_ORIGIN" value="169"/>
+		<item key="DIALOG_X_ORIGIN" value="353"/>
+		<item key="DIALOG_Y_ORIGIN" value="374"/>
 		<item key="DIALOG_WIDTH" value="545"/>
 		<item key="DIALOG_HEIGHT" value="326"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

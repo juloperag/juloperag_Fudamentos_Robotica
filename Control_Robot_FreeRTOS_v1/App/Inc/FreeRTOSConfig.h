@@ -46,12 +46,12 @@
 	extern uint32_t SystemCoreClock;
 #endif
 
-#define configUSE_PREEMPTION			1
-#define configUSE_TIME_SCLICING			1
+#define configUSE_PREEMPTION			0
+#define configUSE_TIME_SCLICING			0
 #define configUSE_IDLE_HOOK				0
 #define configUSE_TICK_HOOK				0
 #define configCPU_CLOCK_HZ				( SystemCoreClock )
-#define configTICK_RATE_HZ				( ( TickType_t ) 1000 )  //1ms
+#define configTICK_RATE_HZ				( ( TickType_t ) 1000 )  //1 ms
 #define configMAX_PRIORITIES			( 7 )                    //Cantidad de niveles de prioridad
 #define configMINIMAL_STACK_SIZE		( ( unsigned short ) 130 )
 #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 75 * 1024 ) )

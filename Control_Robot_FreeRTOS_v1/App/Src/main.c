@@ -50,7 +50,6 @@ PWM_Handler_t handler_PWM_MotorL = {0};
 Motor_Handler_t handler_Motor_L;
 //-----------General-------------------
 BasicTimer_Handler_t handler_TIMER_Motor = {0};
-BasicTimer_Handler_t handler_TIMER_Sampling = {0};   //Definimos un elementos de tipo BasicTimer_Handler_t para relizar el test
 BasicTimer_Handler_t handler_TIMER_Delay = {0};       //Se define Timer para el delay
 uint8_t period_sampling = 16;                        //[mm]
 uint16_t timeAction_TIMER_Sampling = 13;            //Frecuencia del timer contador    // 16 ms  9-->144
@@ -115,7 +114,7 @@ TaskHandle_t xHandleTask_Line = NULL;
 TaskHandle_t xHandleTask_Stop = NULL;
 TaskHandle_t xHandleTask_Measure = NULL;
 TaskHandle_t xHandleTask_Line_PID = NULL;
-TaskHandle_t xHandleTask_Turn_itself = NULL;
+TaskHandle_t xHandleTask_Turn = NULL;
 TaskHandle_t xHandleTask_Square = NULL;
 TaskHandle_t xHandleTask_Execute_Astar = NULL;
 TaskHandle_t xHandleTask_Separate_GridMap = NULL;
@@ -181,7 +180,7 @@ int main(void)
 	                    "Task_Measure",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    3,/* Priority at which the task is created. */
+	                    4,/* Priority at which the task is created. */
 	                    &xHandleTask_Measure);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
 	//Tarea de la aplicaciones de las medicciones PID de la linea recta
@@ -190,7 +189,7 @@ int main(void)
 	                    "Task_Line_PID",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    3,/* Priority at which the task is created. */
+	                    4,/* Priority at which the task is created. */
 	                    &xHandleTask_Line_PID);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
 	//Tarea que verifica si se llego a la condiccion de parada
@@ -202,14 +201,22 @@ int main(void)
 	                    3,/* Priority at which the task is created. */
 	                    &xHandleTask_Stop_Execute);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
-
+	//Tarea Stop
+	xReturned = xTaskCreate(
+						vTask_Stop,       /* Function that implements the task. */
+	                    "Task_Stop",          /* Text name for the task. */
+	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+						NULL,    /* Parameter passed into the task. */
+	                    3,/* Priority at which the task is created. */
+	                    &xHandleTask_Stop);      /* Used to pass out the created task's handle. */
+	configASSERT(xReturned == pdPASS);
 	//Tarea comandos
 	xReturned = xTaskCreate(
 						vTask_Commands,       /* Function that implements the task. */
 	                    "Task_Commands",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    4,/* Priority at which the task is created. */
+	                    3,/* Priority at which the task is created. */
 	                    &xHandleTask_Commands);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
 	//Tarea Print
@@ -218,18 +225,35 @@ int main(void)
 	                    "Task_Print",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    4,/* Priority at which the task is created. */
+	                    3,/* Priority at which the task is created. */
 	                    &xHandleTask_Print);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
-
 	//Tarea Menu
 	xReturned = xTaskCreate(
 						vTask_Menu,       /* Function that implements the task. */
 	                    "Task_Menu",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
+	                    1,/* Priority at which the task is created. */
 	                    &xHandleTask_Menu);      /* Used to pass out the created task's handle. */
+	configASSERT(xReturned == pdPASS);
+	//Tarea Execute_AStar
+	xReturned = xTaskCreate(
+						vTask_Execute_AStar,       /* Function that implements the task. */
+	                    "Task_Execute_AStar",          /* Text name for the task. */
+	                    (STACK_SIZE*5),      /* Stack size in words, not bytes. */
+						NULL,    /* Parameter passed into the task. */
+	                    2,/* Priority at which the task is created. */
+	                    &xHandleTask_Execute_Astar);      /* Used to pass out the created task's handle. */
+	configASSERT(xReturned == pdPASS);
+	//Tarea Separacion Grid map
+	xReturned = xTaskCreate(
+						vTask_Separate_GripMap,       /* Function that implements the task. */
+	                    "Task_Separate_GripMap",          /* Text name for the task. */
+	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+						NULL,    /* Parameter passed into the task. */
+	                    2,/* Priority at which the task is created. */
+	                    &xHandleTask_Separate_GridMap);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
 	//Tarea execute Operation
 	xReturned = xTaskCreate(
@@ -246,7 +270,7 @@ int main(void)
 	                    "Task_Line",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
+	                    1,/* Priority at which the task is created. */
 	                    &xHandleTask_Line);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
 	//Tarea turn itself
@@ -255,53 +279,26 @@ int main(void)
 	                    "Task_Turn",          /* Text name for the task. */
 	                    STACK_SIZE,      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
-	                    &xHandleTask_Turn_itself);      /* Used to pass out the created task's handle. */
+	                    1,/* Priority at which the task is created. */
+	                    &xHandleTask_Turn);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
 	//Tarea Square
 	xReturned = xTaskCreate(
 						vTask_Square,       /* Function that implements the task. */
 	                    "Task_Square",          /* Text name for the task. */
-	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+	                    (STACK_SIZE*3),      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
+	                    1,/* Priority at which the task is created. */
 	                    &xHandleTask_Square);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
-	//Tarea execute Operation
+	//Tarea De aplicacion A Star
 	xReturned = xTaskCreate(
 						vTask_Apply_Astar,       /* Function that implements the task. */
-	                    "Task_Apply_Astar",          /* Text name for the task. */
-	                    STACK_SIZE,      /* Stack size in words, not bytes. */
+	                    "Task_Apply",          /* Text name for the task. */
+	                    (STACK_SIZE*20),      /* Stack size in words, not bytes. */
 						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
+	                    1,/* Priority at which the task is created. */
 	                    &xHandleTask_Apply_Astar);      /* Used to pass out the created task's handle. */
-	configASSERT(xReturned == pdPASS);
-	//Tarea execute Operation
-	xReturned = xTaskCreate(
-						vTask_Separate_GripMap,       /* Function that implements the task. */
-	                    "Task_Separate_GripMap",          /* Text name for the task. */
-	                    STACK_SIZE,      /* Stack size in words, not bytes. */
-						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
-	                    &xHandleTask_Separate_GridMap);      /* Used to pass out the created task's handle. */
-	configASSERT(xReturned == pdPASS);
-	//Tarea Execute_AStar
-	xReturned = xTaskCreate(
-						vTask_Execute_AStar,       /* Function that implements the task. */
-	                    "Task_Execute_AStar",          /* Text name for the task. */
-	                    STACK_SIZE,      /* Stack size in words, not bytes. */
-						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
-	                    &xHandleTask_Execute_Astar);      /* Used to pass out the created task's handle. */
-	configASSERT(xReturned == pdPASS);
-	//Tarea Stop
-	xReturned = xTaskCreate(
-						vTask_Stop,       /* Function that implements the task. */
-	                    "Task_Stop",          /* Text name for the task. */
-	                    STACK_SIZE,      /* Stack size in words, not bytes. */
-						NULL,    /* Parameter passed into the task. */
-	                    2,/* Priority at which the task is created. */
-	                    &xHandleTask_Stop);      /* Used to pass out the created task's handle. */
 	configASSERT(xReturned == pdPASS);
 
 	//-------------------Configuracion Queue--------------
@@ -312,13 +309,13 @@ int main(void)
 	xQueue_StructCommand = xQueueCreate(10, sizeof(command_t));
 	configASSERT(xQueue_StructCommand != NULL);
 	//cola para enviar datos por consola
-	xQueue_Print = xQueueCreate(10, sizeof(char *) );
+	xQueue_Print = xQueueCreate(25, sizeof(char *) );
 	configASSERT(xQueue_Print != NULL);
 	//Buzon para definir el modo de operacion
-	xMailbox_Mode = xQueueCreate(1, sizeof( uint8_t ));
+	xMailbox_Mode = xQueueCreate(1, sizeof(uint8_t ));
 	configASSERT(xMailbox_Mode != NULL);
 	//Buzon para pasar el string del grid map
-	xMailbox_Path = xQueueCreate(1, sizeof(file_cell_t * ));
+	xMailbox_Path = xQueueCreate(1, sizeof(uint8_t ));
 	configASSERT(xMailbox_Path  != NULL);
 	//Cola para almacenar las operaciones
 	xQueue_Operation = xQueueCreate(30, sizeof(Parameters_Operation_t) );
@@ -375,7 +372,7 @@ void initSystem(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_CommTerm_TX.pGPIOx = GPIOA;
 	//Definimos el pin a utilizar
-	handler_GPIO_CommTerm_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_9; 						//PIN_x, 0-15
+	handler_GPIO_CommTerm_TX.GPIO_PinConfig.GPIO_PinNumber = PIN_2; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_CommTerm_TX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -389,7 +386,7 @@ void initSystem(void)
 	//Definimos el periferico GPIOx a usar.
 	handler_GPIO_CommTerm_RX.pGPIOx = GPIOA;
 	//Definimos el pin a utilizar
-	handler_GPIO_CommTerm_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_10; 						//PIN_x, 0-15
+	handler_GPIO_CommTerm_RX.GPIO_PinConfig.GPIO_PinNumber = PIN_3; 						//PIN_x, 0-15
 	//Definimos la configuracion de los registro para el pin seleccionado
 	// Orden de elementos: (Struct, Mode, Otyper, Ospeedr, Pupdr, AF)
 	GPIO_PIN_Config(&handler_GPIO_CommTerm_RX, GPIO_MODE_ALTFN, GPIO_OTYPER_PUSHPULL, GPIO_OSPEEDR_MEDIUM, GPIO_PUPDR_NOTHING, AF7);
@@ -519,7 +516,7 @@ void initSystem(void)
 
 	//---------------USART2----------------
 	//Definimos el periferico USARTx a utilizar
-	handler_USART_CommTerm.ptrUSARTx = USART1;
+	handler_USART_CommTerm.ptrUSARTx = USART2;
 	//Definimos la configuracion del USART seleccionado
 	handler_USART_CommTerm.USART_Config.USART_mode = USART_MODE_RXTX ;           //USART_MODE_x  x-> TX, RX, RXTX, DISABLE
 	handler_USART_CommTerm.USART_Config.USART_baudrate = USART_BAUDRATE_19200;  //USART_BAUDRATE_x  x->9600, 19200, 115200
@@ -533,19 +530,7 @@ void initSystem(void)
 
 	//-------------------Fin de Configuracion USARTx-----------------------
 
-	//---------------TIM3----------------
-	//Definimos el TIMx a usar
-	handler_TIMER_Sampling.ptrTIMx = TIM3;
-	//Definimos la configuracion del TIMER seleccionado
-	handler_TIMER_Sampling.TIMx_Config.TIMx_periodcnt = BTIMER_PCNT_1ms; //BTIMER_PCNT_xus x->10,100/ BTIMER_PCNT_1ms
-	handler_TIMER_Sampling.TIMx_Config.TIMx_mode = BTIMER_MODE_UP; // BTIMER_MODE_x x->UP, DOWN
-	handler_TIMER_Sampling.TIMx_Config.TIMX_period = period_sampling;   //Al definir 10us,100us el valor un multiplo de ellos, si es 1ms el valor es en ms
-	handler_TIMER_Sampling.TIMx_Config.TIMx_interruptEnable = INTERRUPTION_DISABLE; //INTERRUPTION_x  x->DISABLE, ENABLE
-	//Cargamos la configuracion del TIMER especifico
-	timer_Config_Init_Priority(&handler_TIMER_Sampling, e_TIMER_PRIOPITY_6);
-	BasicTimer_Config(&handler_TIMER_Sampling);
-
-	//---------------TIM3----------------
+	//---------------TIM4----------------
 	//Definimos el TIMx a usar
 	handler_TIMER_Delay.ptrTIMx = TIM4;
 	//Definimos la configuracion del TIMER seleccionado
@@ -708,9 +693,9 @@ void int_Config_Motor(void)
 	parameter_PID_distace.e = parameter_PID_distace.e_prev = 0;
 	parameter_PID_distace.u =  parameter_PID_distace.e_intel = 0;
 	//Calculo de Constantes PID
-	parameter_PID_distace.kp = 1.0;
+	parameter_PID_distace.kp = 0.8;
 	parameter_PID_distace.ki = 0.1;
-	parameter_PID_distace.kd = 0.8;
+	parameter_PID_distace.kd = 1.2;  //0.8
 };
 
 //------------------------------Fin configuracion de los motores------------------------------------------
@@ -725,7 +710,7 @@ void int_Config_Motor(void)
 
 //-------------------------USARTRX--------------------------------
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el USART2
-void BasicUSART1_Callback(void)
+void BasicUSART2_Callback(void)
 {
 	usartData = getRxData();
 
@@ -763,29 +748,27 @@ void BasicUSART1_Callback(void)
 	}
 }
 
-//-------------------------Muestreo--------------------------------
-//Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el TIM2
-void BasicTimer3_Callback(void)
-{
-	//Se define variable para verificar si una tarea de mayor proridad esta lista para Running
-	BaseType_t pxHigherPriorityTaskWoken;
-	pxHigherPriorityTaskWoken = pdFALSE;
-	//Notificamos a la tarea respectiva
-	xTaskNotifyFromISR(xHandleTask_Measure, 0, eNoAction, &pxHigherPriorityTaskWoken);
-   	//Realizamos cambio de contexto
-   	portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
-}
-
-//-------------------------Muestreo--------------------------------
+//-------------------------Delay--------------------------------
 //Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el TIM2
 void BasicTimer4_Callback(void)
 {
 	countingTimer++;
 }
 
+//-------------------------Fotocompuerta--------------------------------
+//Definimos la funcion que se desea ejecutar cuando se genera la interrupcion por el EXTI13 y EXTI13
+void callback_extInt1(void)
+{
+	//Aumentamos valor en als cuentas
+	handler_Motor_R.parametersMotor.count++;
+}
+void callback_extInt3(void)
+{
+	//Aumentamos valor en las cuentas
+	handler_Motor_L.parametersMotor.count++;
+}
+
 //----------------------------Fin de la definicion de las funciones ISR----------------------------------------
-
-
 
 
 

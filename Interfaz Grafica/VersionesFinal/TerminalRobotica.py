@@ -335,9 +335,10 @@ class FrameAStar(Frame):
             for i in range(row):
                 for j in range(cols):
                     msg = msg + (self.buttons[i][j])["text"]
-                msg = msg + ";"
+                if i<(row-1):
+                    msg = msg + ";"
             #Agregamos indicador final
-            msg = msg + "$"
+            msg = msg + "@"
             #Enviar de mensajes
             if self.booleanisComunication:
                 #Enviar comando

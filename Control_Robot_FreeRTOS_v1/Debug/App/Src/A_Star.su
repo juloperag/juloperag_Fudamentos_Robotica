@@ -1,4 +1,0 @@
-../App/Src/A_Star.c:6:14:aplicattion_A_Star	27328	static
-../App/Src/A_Star.c:115:9:search_position_file_Open	56	static
-../App/Src/A_Star.c:156:6:heuristic_cell_map	40	static
-../App/Src/A_Star.c:180:7:heuristic_single_cell	160	static

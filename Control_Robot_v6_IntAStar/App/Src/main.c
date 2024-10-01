@@ -208,9 +208,9 @@ int main(void)
 
 	//--------------------------Configuramos inicia el MPU----------------------
 	//Configuracion MPU
-	//int_MPU();
+	int_MPU();
 	//Calibracion del eje Z del giroscopio
-	//gyro_offset = calibrationMPU(&handler_MPUAccel_MPU6050, CAL_GYRO_Z);
+	gyro_offset = calibrationMPU(&handler_MPUAccel_MPU6050, CAL_GYRO_Z);
 
 
 	while(1)
@@ -1006,7 +1006,7 @@ void runCommand(char *prtcommand)
 void recepcion_Sring_Parameter_Grid_Map(char newchar)
 {
 	if(string_aStar_Complete!=1)
-		if(newchar == '$')
+		if(newchar == '@')
 		{
 			//Almacenamos el elemento nulo
 			bufferParameterStringGM[index_String_GM]= '\0';
@@ -1281,12 +1281,15 @@ void set_operation_square(Parameters_Operation_t *prtList, double dis_side, doub
 	double coordination_position_square[2][5] = {{0, dis_side, dis_side, 0, 0},{0, 0, value_side*dis_side,value_side*dis_side,0}};
 	//Definimos la posicion inicial del cuadrado
 	parameter_build.initline_x = coordination_position_square[0][0]; parameter_build.initline_y = coordination_position_square[0][0];
-	parameter_build.grad_vector_init = 0; parameter_build.number_operation = 0;
+	parameter_build.grad_vector_init = 0; parameter_build.routelist = 0; parameter_build.number_operation = 0;
 	parameter_build.delta_before[0] = dis_side; parameter_build.delta_before[1] = 0;
 	//Construccion de las operaciones
 	for(uint8_t i=1; i<5; i++)
 	{
+		//Contruimos la operacion
 		build_Operation(prtList, &parameter_build, coordination_position_square[0][i], coordination_position_square[1][i]);
+		//Aumentamos el recorrido en la lista
+		parameter_build.routelist++;
 	}
 	//Agregamos indicador de la operacion final
 	prtList[parameter_build.number_operation+1].operacion = NULL_OPERATION;
